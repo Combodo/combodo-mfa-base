@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\Renderer\BlockRenderer;
 use DBObjectSet;
 use DBSearch;
@@ -21,6 +22,7 @@ class MFABaseService
 
 	private function __construct()
 	{
+		MFABaseLog::Enable();
 	}
 
 	final public static function GetInstance(): MFABaseService
