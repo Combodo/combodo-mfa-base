@@ -1,0 +1,16 @@
+{
+  "config": {
+    "classmap-authoritative": true
+  },
+  "autoload": {
+    "psr-4": {
+      "Combodo\\iTop\\MFABase\\": "src"
+    }
+  },
+  "name": "combodo/combodo-mfa-base",
+  "type": "itop-extension",
+  "description": "Multi-factor authentication base",
+  "require": {
+    "composer-runtime-api": "^2.0"
+  }
+}

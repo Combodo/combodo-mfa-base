@@ -1,0 +1,30 @@
+{# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
+{# @license     http://opensource.org/licenses/AGPL-3.0 #}
+
+{% UITitle ForPage {'sTitle':'UI:MFA'|dict_s} %}{% EndUITitle %}
+
+{%  if Section.aMethods.aColumns %}
+
+    {% UIForm Standard {Action:'exec.php' } %}
+        {% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-light' } %}
+        {% UIInput ForHidden { sName:'exec_page', sValue:'index.php' } %}
+        {% UIInput ForHidden { sName:'operation', sValue:'Action' } %}
+
+        {% UIPanel ForInformation { sTitle:'UI:MFA:Methods'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
+            {% UIDataTable ForForm { sRef:'MFAMethods', aColumns:Section.aMethods.aColumns, aData:Section.aMethods.aData } %}{% EndUIDataTable %}
+        {% EndUIPanel %}
+
+        {%  if Section.RecoveryOptionMethods.aColumns %}
+            {% UIPanel ForInformation { sTitle:'UI:MFA:RecoveryOptionMethods'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
+                {% UIDataTable ForForm { sRef:'RecoveryCodesMethod', aColumns:Section.RecoveryOptionMethods.aColumns, aData:Section.RecoveryOptionMethods.aData } %}{% EndUIDataTable %}
+            {% EndUIPanel %}
+        {% endif %}
+    {% EndUIForm %}
+
+{% else %}
+
+    {% UIContentBlock Standard { } %}
+        {{ 'UI:MFA:NoMethod'|dict_s }}
+    {% EndUIContentBlock %}
+
+{% endif %}
