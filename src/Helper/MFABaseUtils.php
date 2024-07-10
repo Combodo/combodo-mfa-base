@@ -8,7 +8,7 @@ namespace Combodo\iTop\MFABase\Helper;
 
 class MFABaseUtils
 {
-	const MODULE_NAME = 'combodo-mfa-light';
+	const MODULE_NAME = 'combodo-mfa-base';
 
 	private static MFABaseUtils $oInstance;
 

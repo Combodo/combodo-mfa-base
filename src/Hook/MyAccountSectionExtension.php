@@ -6,6 +6,9 @@
 
 namespace Combodo\iTop\MFABase\Hook;
 
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseUtils;
+use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MyAccount\Hook\iMyAccountSectionExtension;
 use utils;
 
@@ -25,7 +28,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	 */
 	public function GetTemplatePath(): string
 	{
-		return APPROOT.'env-'.utils::GetCurrentEnvironment().'/'.MFABaseHelper::MODULE_NAME.'/templates';
+		return APPROOT.'env-'.utils::GetCurrentEnvironment().'/'.MFABaseUtils::MODULE_NAME.'/templates';
 
 	}
 

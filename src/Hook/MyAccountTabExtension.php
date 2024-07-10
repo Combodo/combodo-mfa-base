@@ -19,7 +19,7 @@ class MyAccountTabExtension implements iMyAccountTabExtension
 
 	public function GetTabCode(): string
 	{
-		return 'MyAccount:Tab:Security';
+		return 'MyAccount:Tab:MFA';
 	}
 
 	public function GetTabIsCached(): bool
@@ -29,7 +29,7 @@ class MyAccountTabExtension implements iMyAccountTabExtension
 
 	public function GetTabLabel(): string
 	{
-		return Dict::S('MyAccount:Tab:Security');
+		return Dict::S('MyAccount:Tab:MFA');
 	}
 
 	public function GetTabRank(): float
