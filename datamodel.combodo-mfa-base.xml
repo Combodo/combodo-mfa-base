@@ -5,20 +5,26 @@
       <properties>
         <category>bizmodel,searchable</category>
         <abstract>true</abstract>
-        <db_table>user_mfa</db_table>
+        <db_table>mfa_user</db_table>
         <style>
           <icon>
             <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
           </icon>
         </style>
         <naming>
-          <attributes/>
+          <attributes>
+            <attribute id="user_id_friendlyname"/>
+            <attribute id="finalclass"/>
+          </attributes>
         </naming>
         <reconciliation>
           <attributes>
             <attribute id="user_id"/>
           </attributes>
         </reconciliation>
+        <obsolescence>
+          <condition>status='inactive'</condition>
+        </obsolescence>
       </properties>
       <fields>
         <field id="user_id" xsi:type="AttributeExternalKey">
@@ -51,7 +57,21 @@
           <display_style>list</display_style>
         </field>
       </fields>
-      <methods/>
+      <methods>
+        <method id="CanBeDefault">
+          <comment>	/**
+            *
+            *
+            */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public function CanBeDefault(): bool
+	{
+		return true;
+	}]]></code>
+        </method>
+      </methods>
       <presentation>
         <list>
           <items>
@@ -83,14 +103,16 @@
       <properties>
         <category>bizmodel,searchable</category>
         <abstract>false</abstract>
-        <db_table>user_mfa_default</db_table>
+        <db_table>mfa_user_default</db_table>
         <style>
           <icon>
             <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
           </icon>
         </style>
         <naming>
-          <attributes/>
+          <attributes>
+            <attribute id="usermfa_id_friendlyname"/>
+          </attributes>
         </naming>
         <reconciliation>
           <attributes>
@@ -121,12 +143,13 @@
         </field>
         <field id="usermfa_id" xsi:type="AttributeExternalKey">
           <sql>usermfa_id</sql>
-          <filter><![CDATA[SELECT UserMFA WHERE user_id=:this->user_id AND id != :this->id]]></filter>
+          <filter>SELECT UserMFA WHERE user_id=:this-&gt;user_id AND id != :this-&gt;id</filter>
           <dependencies/>
           <is_null_allowed>false</is_null_allowed>
           <target_class>UserMFA</target_class>
-          <on_target_delete>DEL_AUTO</on_target_delete>
+          <on_target_delete>DEL_MANUAL</on_target_delete>
           <tracking_level>all</tracking_level>
+          <allow_target_creation>false</allow_target_creation>
         </field>
       </fields>
       <methods/>
@@ -161,20 +184,19 @@
           </icon>
         </style>
         <naming>
-          <attributes/>
+          <attributes>
+            <attribute id="name"/>
+            <attribute id="mfa_mode"/>
+            <attribute id="operational_state"/>
+          </attributes>
         </naming>
         <reconciliation>
           <attributes>
             <attribute id="name"/>
           </attributes>
         </reconciliation>
-        <order>
-          <columns>
-            <column id="priority" ascending="false"/>
-          </columns>
-        </order>
         <uniqueness_rules>
-          <rule id="name_uniqueness">
+          <rule id="unique_name">
             <attributes>
               <attribute id="name"/>
             </attributes>
@@ -183,6 +205,14 @@
             <is_blocking>true</is_blocking>
           </rule>
         </uniqueness_rules>
+        <obsolescence>
+          <condition>status='inactive'</condition>
+        </obsolescence>
+        <order>
+          <columns>
+            <column id="rank" ascending="true"/>
+          </columns>
+        </order>
       </properties>
       <fields>
         <field id="name" xsi:type="AttributeString">
@@ -193,20 +223,33 @@
           <dependencies/>
           <tracking_level>all</tracking_level>
         </field>
-        <field id="mandatory" xsi:type="AttributeEnum">
-          <sql>mandatory</sql>
+        <field id="mfa_mode" xsi:type="AttributeClass">
+          <class_category>UserMFA</class_category>
+          <sql>mfa_mode</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+          <validation_pattern/>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="operational_state" xsi:type="AttributeEnum">
+          <sql>operational_state</sql>
           <values>
-            <value id="yes">
-              <code>yes</code>
+            <value id="optional">
+              <code>optional</code>
               <rank>10</rank>
             </value>
-            <value id="no">
-              <code>no</code>
+            <value id="forced">
+              <code>forced</code>
               <rank>20</rank>
+            </value>
+            <value id="denied">
+              <code>denied</code>
+              <rank>30</rank>
             </value>
           </values>
           <sort_type>label</sort_type>
-          <default_value>no</default_value>
+          <default_value>optional</default_value>
           <is_null_allowed>false</is_null_allowed>
           <display_style>radio_horizontal</display_style>
           <dependencies/>
@@ -219,12 +262,25 @@
           <dependencies/>
           <tracking_level>all</tracking_level>
         </field>
-        <field id="priority" xsi:type="AttributeInteger">
-          <sql>priority</sql>
-          <default_value>0</default_value>
+        <field id="status" xsi:type="AttributeEnum">
+          <sql>status</sql>
+          <values>
+            <value id="active">
+              <code>active</code>
+              <rank>10</rank>
+            </value>
+            <value id="inactive">
+              <code>inactive</code>
+              <rank>20</rank>
+            </value>
+          </values>
+          <default_value>active</default_value>
           <is_null_allowed>false</is_null_allowed>
+          <validation_pattern/>
           <dependencies/>
           <tracking_level>all</tracking_level>
+          <sort_type>label</sort_type>
+          <display_style>list</display_style>
         </field>
         <field id="orgs_list" xsi:type="AttributeLinkedSetIndirect">
           <ext_key_to_remote>organization_id</ext_key_to_remote>
@@ -252,33 +308,34 @@
           <display_style>property</display_style>
           <edit_when>on_host_edition</edit_when>
         </field>
+        <field id="rank" xsi:type="AttributeDecimal">
+          <sql>rank</sql>
+          <default_value>10</default_value>
+          <is_null_allowed>false</is_null_allowed>
+          <digits>4</digits>
+          <decimals>1</decimals>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
       </fields>
-      <methods>
-        <method id="CanBeDefault">
-          <comment>	/**
-            *
-            *
-            */</comment>
-          <static>false</static>
-          <access>public</access>
-          <type>Custom</type>
-          <code><![CDATA[	public function CanBeDefault(): bool
-	{
-		return true;
-	}]]></code>
-        </method>
-      </methods>
+      <methods/>
       <presentation>
         <list>
           <items>
-            <item id="name">
+            <item id="rank">
               <rank>10</rank>
             </item>
-            <item id="mandatory">
+            <item id="name">
               <rank>20</rank>
             </item>
-            <item id="priority">
+            <item id="mfa_mode">
               <rank>30</rank>
+            </item>
+            <item id="operational_state">
+              <rank>40</rank>
+            </item>
+            <item id="status">
+              <rank>50</rank>
             </item>
           </items>
         </list>
@@ -292,13 +349,13 @@
                 <item id="name">
                   <rank>10</rank>
                 </item>
-                <item id="mandatory">
+                <item id="mfa_mode">
                   <rank>20</rank>
                 </item>
-                <item id="activation_date">
+                <item id="operational_state">
                   <rank>30</rank>
                 </item>
-                <item id="priority">
+                <item id="activation_date">
                   <rank>40</rank>
                 </item>
               </items>
@@ -306,8 +363,11 @@
             </item>
             <item id="col:col2">
               <items>
-                <item id="profiles_list">
+                <item id="rank">
                   <rank>10</rank>
+                </item>
+                <item id="profiles_list">
+                  <rank>20</rank>
                 </item>
               </items>
               <rank>20</rank>
@@ -322,8 +382,21 @@
             <item id="name">
               <rank>10</rank>
             </item>
+            <item id="mfa_mode">
+              <rank>20</rank>
+            </item>
           </items>
         </summary>
+        <default_search>
+          <items>
+            <item id="name">
+              <rank>10</rank>
+            </item>
+            <item id="mfa_mode">
+              <rank>20</rank>
+            </item>
+          </items>
+        </default_search>
       </presentation>
       <parent>cmdbAbstractObject</parent>
     </class>

@@ -9,6 +9,7 @@ return array(
     'Combodo\\iTop\\MFABase\\Controller\\MFABaseController' => $baseDir . '/src/Controller/MFABaseController.php',
     'Combodo\\iTop\\MFABase\\Helper\\MFABaseConfig' => $baseDir . '/src/Helper/MFABaseConfig.php',
     'Combodo\\iTop\\MFABase\\Helper\\MFABaseException' => $baseDir . '/src/Helper/MFABaseException.php',
+    'Combodo\\iTop\\MFABase\\Helper\\MFABaseLog' => $baseDir . '/src/Helper/MFABaseLog.php',
     'Combodo\\iTop\\MFABase\\Helper\\MFABaseUtils' => $baseDir . '/src/Helper/MFABaseUtils.php',
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => $baseDir . '/src/Hook/MyAccountSectionExtension.php',
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => $baseDir . '/src/Hook/MyAccountTabExtension.php',
