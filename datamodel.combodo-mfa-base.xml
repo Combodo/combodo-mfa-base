@@ -1,15 +1,512 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<itop_design xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.6">
-  <constants>
-  </constants>
+<itop_design xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.2">
   <classes>
+    <class id="UserMFA" _created_in="combodo-mfa-base" _delta="define">
+      <properties>
+        <category>bizmodel,searchable</category>
+        <abstract>true</abstract>
+        <db_table>user_mfa</db_table>
+        <style>
+          <icon>
+            <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
+          </icon>
+        </style>
+        <naming>
+          <attributes/>
+        </naming>
+        <reconciliation>
+          <attributes>
+            <attribute id="user_id"/>
+          </attributes>
+        </reconciliation>
+      </properties>
+      <fields>
+        <field id="user_id" xsi:type="AttributeExternalKey">
+          <sql>user_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>User</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="status" xsi:type="AttributeEnum">
+          <sql>status</sql>
+          <values>
+            <value id="active">
+              <code>active</code>
+              <rank>10</rank>
+            </value>
+            <value id="inactive">
+              <code>inactive</code>
+              <rank>20</rank>
+            </value>
+          </values>
+          <default_value>active</default_value>
+          <is_null_allowed>false</is_null_allowed>
+          <validation_pattern/>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+          <sort_type>label</sort_type>
+          <display_style>list</display_style>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <list>
+          <items>
+            <item id="user_id">
+              <rank>10</rank>
+            </item>
+            <item id="status">
+              <rank>20</rank>
+            </item>
+          </items>
+        </list>
+        <search>
+          <items/>
+        </search>
+        <details>
+          <items>
+            <item id="user_id">
+              <rank>10</rank>
+            </item>
+            <item id="status">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+      </presentation>
+      <parent>cmdbAbstractObject</parent>
+    </class>
+    <class id="UserMFADefault" _created_in="combodo-mfa-base" _delta="define">
+      <properties>
+        <category>bizmodel,searchable</category>
+        <abstract>false</abstract>
+        <db_table>user_mfa_default</db_table>
+        <style>
+          <icon>
+            <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
+          </icon>
+        </style>
+        <naming>
+          <attributes/>
+        </naming>
+        <reconciliation>
+          <attributes>
+            <attribute id="user_id"/>
+            <attribute id="usermfa_id"/>
+          </attributes>
+        </reconciliation>
+        <uniqueness_rules>
+          <rule id="mfa_uniqueness">
+            <attributes>
+              <attribute id="user_id"/>
+            </attributes>
+            <filter><![CDATA[]]></filter>
+            <disabled>false</disabled>
+            <is_blocking>true</is_blocking>
+          </rule>
+        </uniqueness_rules>
+      </properties>
+      <fields>
+        <field id="user_id" xsi:type="AttributeExternalKey">
+          <sql>user_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>User</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="usermfa_id" xsi:type="AttributeExternalKey">
+          <sql>usermfa_id</sql>
+          <filter><![CDATA[SELECT UserMFA WHERE user_id=:this->user_id AND id != :this->id]]></filter>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>UserMFA</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <tracking_level>all</tracking_level>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <list>
+          <items/>
+        </list>
+        <search>
+          <items/>
+        </search>
+        <details>
+          <items>
+            <item id="user_id">
+              <rank>10</rank>
+            </item>
+            <item id="usermfa_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+      </presentation>
+      <parent>cmdbAbstractObject</parent>
+    </class>
+    <class id="MFARule" _created_in="combodo-mfa-base" _delta="define">
+      <properties>
+        <category>bizmodel,searchable</category>
+        <abstract>false</abstract>
+        <db_table>mfa_rule</db_table>
+        <style>
+          <icon>
+            <fileref ref="icons8-rules_4a9d6ffb8b7d0be4873067ba796cdfe3"/>
+          </icon>
+        </style>
+        <naming>
+          <attributes/>
+        </naming>
+        <reconciliation>
+          <attributes>
+            <attribute id="name"/>
+          </attributes>
+        </reconciliation>
+        <order>
+          <columns>
+            <column id="priority" ascending="false"/>
+          </columns>
+        </order>
+        <uniqueness_rules>
+          <rule id="name_uniqueness">
+            <attributes>
+              <attribute id="name"/>
+            </attributes>
+            <filter><![CDATA[]]></filter>
+            <disabled>false</disabled>
+            <is_blocking>true</is_blocking>
+          </rule>
+        </uniqueness_rules>
+      </properties>
+      <fields>
+        <field id="name" xsi:type="AttributeString">
+          <sql>name</sql>
+          <default_value/>
+          <is_null_allowed>false</is_null_allowed>
+          <validation_pattern/>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="mandatory" xsi:type="AttributeEnum">
+          <sql>mandatory</sql>
+          <values>
+            <value id="yes">
+              <code>yes</code>
+              <rank>10</rank>
+            </value>
+            <value id="no">
+              <code>no</code>
+              <rank>20</rank>
+            </value>
+          </values>
+          <sort_type>label</sort_type>
+          <default_value>no</default_value>
+          <is_null_allowed>false</is_null_allowed>
+          <display_style>radio_horizontal</display_style>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="activation_date" xsi:type="AttributeDateTime">
+          <sql>activation_date</sql>
+          <default_value/>
+          <is_null_allowed>true</is_null_allowed>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="priority" xsi:type="AttributeInteger">
+          <sql>priority</sql>
+          <default_value>0</default_value>
+          <is_null_allowed>false</is_null_allowed>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+        </field>
+        <field id="orgs_list" xsi:type="AttributeLinkedSetIndirect">
+          <ext_key_to_remote>organization_id</ext_key_to_remote>
+          <ext_key_to_me>mfarule_id</ext_key_to_me>
+          <linked_class>lnkMFARuleToOrganization</linked_class>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+          <tracking_level>all</tracking_level>
+          <duplicates>false</duplicates>
+          <with_php_constraint>false</with_php_constraint>
+          <with_php_computation>false</with_php_computation>
+          <display_style>tab</display_style>
+          <edit_when>always</edit_when>
+        </field>
+        <field id="profiles_list" xsi:type="AttributeLinkedSetIndirect">
+          <ext_key_to_remote>profile_id</ext_key_to_remote>
+          <ext_key_to_me>mfarule_id</ext_key_to_me>
+          <linked_class>lnkMFARuleToProfile</linked_class>
+          <count_min>0</count_min>
+          <count_max>0</count_max>
+          <tracking_level>all</tracking_level>
+          <duplicates>false</duplicates>
+          <with_php_constraint>false</with_php_constraint>
+          <with_php_computation>false</with_php_computation>
+          <display_style>property</display_style>
+          <edit_when>on_host_edition</edit_when>
+        </field>
+      </fields>
+      <methods>
+        <method id="CanBeDefault">
+          <comment>	/**
+            *
+            *
+            */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public function CanBeDefault(): bool
+	{
+		return true;
+	}]]></code>
+        </method>
+      </methods>
+      <presentation>
+        <list>
+          <items>
+            <item id="name">
+              <rank>10</rank>
+            </item>
+            <item id="mandatory">
+              <rank>20</rank>
+            </item>
+            <item id="priority">
+              <rank>30</rank>
+            </item>
+          </items>
+        </list>
+        <search>
+          <items/>
+        </search>
+        <details>
+          <items>
+            <item id="col:col1">
+              <items>
+                <item id="name">
+                  <rank>10</rank>
+                </item>
+                <item id="mandatory">
+                  <rank>20</rank>
+                </item>
+                <item id="activation_date">
+                  <rank>30</rank>
+                </item>
+                <item id="priority">
+                  <rank>40</rank>
+                </item>
+              </items>
+              <rank>10</rank>
+            </item>
+            <item id="col:col2">
+              <items>
+                <item id="profiles_list">
+                  <rank>10</rank>
+                </item>
+              </items>
+              <rank>20</rank>
+            </item>
+            <item id="orgs_list">
+              <rank>30</rank>
+            </item>
+          </items>
+        </details>
+        <summary>
+          <items>
+            <item id="name">
+              <rank>10</rank>
+            </item>
+          </items>
+        </summary>
+      </presentation>
+      <parent>cmdbAbstractObject</parent>
+    </class>
+    <class id="lnkMFARuleToOrganization" _created_in="combodo-mfa-base" _delta="define">
+      <properties>
+        <category>bizmodel</category>
+        <abstract>false</abstract>
+        <db_table>lnkmfaruletoorganization</db_table>
+        <is_link>1</is_link>
+        <naming>
+          <attributes>
+            <attribute id="mfarule_id_friendlyname"/>
+            <attribute id="organization_id_friendlyname"/>
+          </attributes>
+        </naming>
+        <reconciliation>
+          <attributes>
+            <attribute id="mfarule_id"/>
+            <attribute id="organization_id"/>
+          </attributes>
+        </reconciliation>
+        <uniqueness_rules>
+          <rule id="no_duplicate">
+            <attributes>
+              <attribute id="mfarule_id"/>
+              <attribute id="organization_id"/>
+            </attributes>
+            <filter><![CDATA[]]></filter>
+            <disabled>false</disabled>
+            <is_blocking>true</is_blocking>
+          </rule>
+        </uniqueness_rules>
+      </properties>
+      <fields>
+        <field id="mfarule_id" xsi:type="AttributeExternalKey">
+          <sql>mfarule_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>MFARule</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+        </field>
+        <field id="organization_id" xsi:type="AttributeExternalKey">
+          <sql>organization_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>Organization</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <allow_target_creation>false</allow_target_creation>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <list>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="organization_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </list>
+        <search>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="organization_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </search>
+        <details>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="organization_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+      </presentation>
+      <parent>cmdbAbstractObject</parent>
+    </class>
+    <class id="lnkMFARuleToProfile" _created_in="combodo-mfa-base" _delta="define">
+      <properties>
+        <category>bizmodel</category>
+        <abstract>false</abstract>
+        <db_table>lnkmfaruletoprofile</db_table>
+        <is_link>1</is_link>
+        <naming>
+          <attributes>
+            <attribute id="mfarule_id_friendlyname"/>
+            <attribute id="profile_id_friendlyname"/>
+          </attributes>
+        </naming>
+        <reconciliation>
+          <attributes>
+            <attribute id="mfarule_id"/>
+            <attribute id="profile_id"/>
+          </attributes>
+        </reconciliation>
+        <uniqueness_rules>
+          <rule id="no_duplicate">
+            <attributes>
+              <attribute id="mfarule_id"/>
+              <attribute id="profile_id"/>
+            </attributes>
+            <filter><![CDATA[]]></filter>
+            <disabled>false</disabled>
+            <is_blocking>true</is_blocking>
+          </rule>
+        </uniqueness_rules>
+      </properties>
+      <fields>
+        <field id="mfarule_id" xsi:type="AttributeExternalKey">
+          <sql>mfarule_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>MFARule</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <allow_target_creation>false</allow_target_creation>
+        </field>
+        <field id="profile_id" xsi:type="AttributeExternalKey">
+          <sql>profile_id</sql>
+          <filter/>
+          <dependencies/>
+          <is_null_allowed>false</is_null_allowed>
+          <target_class>URP_Profiles</target_class>
+          <on_target_delete>DEL_AUTO</on_target_delete>
+          <allow_target_creation>false</allow_target_creation>
+        </field>
+      </fields>
+      <methods/>
+      <presentation>
+        <list>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="profile_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </list>
+        <search>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="profile_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </search>
+        <details>
+          <items>
+            <item id="mfarule_id">
+              <rank>10</rank>
+            </item>
+            <item id="profile_id">
+              <rank>20</rank>
+            </item>
+          </items>
+        </details>
+      </presentation>
+      <parent>cmdbAbstractObject</parent>
+    </class>
   </classes>
-  <menus>
-  </menus>
-  <user_rights>
-    <groups>
-    </groups>
-    <profiles>
-    </profiles>
-  </user_rights>
+  <files>
+    <file id="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4" xsi:type="File" _delta="define_if_not_exists">
+      <name>icons8-authentication.svg</name>
+      <mime_type>image/svg+xml</mime_type>
+      <data>PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciICB2aWV3Qm94PSIwIDAgNDggNDgiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiPjxwYXRoIGZpbGw9IiNjNDhjMDAiIGQ9Ik00NCwzN0g0djVjMCwxLjEwNSwwLjg5NSwyLDIsMmgzNmMxLjEwNSwwLDItMC44OTUsMi0yVjM3eiIvPjxsaW5lYXJHcmFkaWVudCBpZD0iOEpsTk43fkRoSWZ4VEdyeXo5ZUc2YSIgeDE9IjI0IiB4Mj0iMjQiIHkxPSIxNS42NDciIHkyPSItLjI5NiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzkyYTNiMCIvPjxzdG9wIG9mZnNldD0iLjAxNSIgc3RvcC1jb2xvcj0iI2EzYjVjNCIvPjxzdG9wIG9mZnNldD0iLjAzMiIgc3RvcC1jb2xvcj0iI2FlYzJkMSIvPjxzdG9wIG9mZnNldD0iLjA0NiIgc3RvcC1jb2xvcj0iI2IyYzZkNiIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZmlsbD0idXJsKCM4SmxOTjd+RGhJZnhUR3J5ejllRzZhKSIgZD0iTTExLDEzdjNoNHYtM2MwLTQuOTcxLDQuMDI5LTksOS05aDBjNC45NzEsMCw5LDQuMDI5LDksOXYzaDR2LTNjMC03LjE4LTUuODItMTMtMTMtMTNoMAlDMTYuODIsMCwxMSw1LjgyLDExLDEzeiIvPjxwYXRoIGZpbGw9IiNmYWQ1MDAiIGQ9Ik00NCwyM0g0di01YzAtMS4xMDUsMC44OTUtMiwyLTJoMzZjMS4xMDUsMCwyLDAuODk1LDIsMlYyM3oiLz48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNyIgeD0iNCIgeT0iMjMiIGZpbGw9IiNlZGJlMDAiLz48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNyIgeD0iNCIgeT0iMzAiIGZpbGw9IiNlM2E2MDAiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjMwIiByPSIyIiBmaWxsPSIjM2IzYjNiIi8+PGNpcmNsZSBjeD0iMjgiIGN5PSIzMCIgcj0iMiIgZmlsbD0iIzNiM2IzYiIvPjxjaXJjbGUgY3g9IjIwIiBjeT0iMzAiIHI9IjIiIGZpbGw9IiMzYjNiM2IiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjMwIiByPSIyIiBmaWxsPSIjM2IzYjNiIi8+PC9zdmc+</data>
+    </file>
+    <file id="icons8-rules_4a9d6ffb8b7d0be4873067ba796cdfe3" xsi:type="File" _delta="define_if_not_exists">
+      <name>icons8-rules.svg</name>
+      <mime_type>image/svg+xml</mime_type>
+      <data>PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciICB2aWV3Qm94PSIwIDAgNDggNDgiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiPjxsaW5lYXJHcmFkaWVudCBpZD0iNnVURXBSNndOM3FBemJVbndLNXg1YSIgeDE9IjEyLjk1MiIgeDI9IjM0LjM4NiIgeTE9IjcuNDMiIHkyPSI0Mi43NzciIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3ZGQ4ZjMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0NWIwZDAiLz48L2xpbmVhckdyYWRpZW50PjxwYXRoIGZpbGw9InVybCgjNnVURXBSNndOM3FBemJVbndLNXg1YSkiIGQ9Ik0zNiw0MkgxMGMtMS4xMDUsMC0yLTAuODk1LTItMlY4YzAtMS4xMDUsMC44OTUtMiwyLTJsMjYsMGMxLjEwNSwwLDIsMC44OTUsMiwydjMyCUMzOCw0MS4xMDUsMzcuMTA1LDQyLDM2LDQyeiIvPjxwYXRoIGZpbGw9IiMwNTcwOTMiIGQ9Ik0zMi41LDE5aC0xOWMtMC4yNzYsMC0wLjUtMC4yMjQtMC41LTAuNXYtMmMwLTAuMjc2LDAuMjI0LTAuNSwwLjUtMC41aDE5YzAuMjc2LDAsMC41LDAuMjI0LDAuNSwwLjUJdjJDMzMsMTguNzc2LDMyLjc3NiwxOSwzMi41LDE5eiIvPjxwYXRoIGZpbGw9IiMwNTcwOTMiIGQ9Ik0zMi41LDI1aC0xOWMtMC4yNzYsMC0wLjUtMC4yMjQtMC41LTAuNXYtMmMwLTAuMjc2LDAuMjI0LTAuNSwwLjUtMC41aDE5YzAuMjc2LDAsMC41LDAuMjI0LDAuNSwwLjUJdjJDMzMsMjQuNzc2LDMyLjc3NiwyNSwzMi41LDI1eiIvPjxwYXRoIGZpbGw9IiMwNTcwOTMiIGQ9Ik0zMi41LDMxaC0xOWMtMC4yNzYsMC0wLjUtMC4yMjQtMC41LTAuNXYtMmMwLTAuMjc2LDAuMjI0LTAuNSwwLjUtMC41aDE5YzAuMjc2LDAsMC41LDAuMjI0LDAuNSwwLjUJdjJDMzMsMzAuNzc2LDMyLjc3NiwzMSwzMi41LDMxeiIvPjxsaW5lYXJHcmFkaWVudCBpZD0iNnVURXBSNndOM3FBemJVbndLNXg1YiIgeDE9IjIzIiB4Mj0iMjMiIHkxPSIzNy4yODQiIHkyPSI0Mi4wMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzAxNzZkMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzE2NTM4YyIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZmlsbD0idXJsKCM2dVRFcFI2d04zcUF6YlVud0s1eDViKSIgZD0iTTYsMzh2MmMwLDEuMTA1LDAuODk1LDIsMiwyaDMwYzEuMTA1LDAsMi0wLjg5NSwyLTJ2LTJjMC0wLjU1Mi0wLjQ0OC0xLTEtMUg3CUM2LjQ0OCwzNyw2LDM3LjQ0OCw2LDM4eiIvPjwvc3ZnPg==</data>
+    </file>
+  </files>
 </itop_design>
