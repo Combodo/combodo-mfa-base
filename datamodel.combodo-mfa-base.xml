@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <itop_design xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.2">
   <classes>
-    <class id="UserMFA" _created_in="combodo-mfa-base" _delta="define">
+    <class id="MFAUserSettings" _delta="define">
       <properties>
         <category>bizmodel,searchable</category>
         <abstract>true</abstract>
-        <db_table>mfa_user</db_table>
+        <db_table>mfa_user_settings</db_table>
         <style>
           <icon>
             <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
@@ -56,6 +56,26 @@
           <sort_type>label</sort_type>
           <display_style>list</display_style>
         </field>
+        <field id="is_default" xsi:type="AttributeEnum">
+          <sql>is_default</sql>
+          <values>
+            <value id="yes">
+              <code>yes</code>
+              <rank>10</rank>
+            </value>
+            <value id="no">
+              <code>no</code>
+              <rank>20</rank>
+            </value>
+          </values>
+          <default_value>no</default_value>
+          <is_null_allowed>false</is_null_allowed>
+          <validation_pattern/>
+          <dependencies/>
+          <tracking_level>all</tracking_level>
+          <sort_type>label</sort_type>
+          <display_style>list</display_style>
+        </field>
       </fields>
       <methods>
         <method id="CanBeDefault">
@@ -81,6 +101,9 @@
             <item id="status">
               <rank>20</rank>
             </item>
+            <item id="is_default">
+              <rank>30</rank>
+            </item>
           </items>
         </list>
         <search>
@@ -94,90 +117,19 @@
             <item id="status">
               <rank>20</rank>
             </item>
-          </items>
-        </details>
-      </presentation>
-      <parent>cmdbAbstractObject</parent>
-    </class>
-    <class id="UserMFADefault" _created_in="combodo-mfa-base" _delta="define">
-      <properties>
-        <category>bizmodel,searchable</category>
-        <abstract>false</abstract>
-        <db_table>mfa_user_default</db_table>
-        <style>
-          <icon>
-            <fileref ref="icons8-authentication_feea4bacb2818a8e16ff2da883894ed4"/>
-          </icon>
-        </style>
-        <naming>
-          <attributes>
-            <attribute id="usermfa_id_friendlyname"/>
-          </attributes>
-        </naming>
-        <reconciliation>
-          <attributes>
-            <attribute id="user_id"/>
-            <attribute id="usermfa_id"/>
-          </attributes>
-        </reconciliation>
-        <uniqueness_rules>
-          <rule id="mfa_uniqueness">
-            <attributes>
-              <attribute id="user_id"/>
-            </attributes>
-            <filter><![CDATA[]]></filter>
-            <disabled>false</disabled>
-            <is_blocking>true</is_blocking>
-          </rule>
-        </uniqueness_rules>
-      </properties>
-      <fields>
-        <field id="user_id" xsi:type="AttributeExternalKey">
-          <sql>user_id</sql>
-          <filter/>
-          <dependencies/>
-          <is_null_allowed>false</is_null_allowed>
-          <target_class>User</target_class>
-          <on_target_delete>DEL_AUTO</on_target_delete>
-          <tracking_level>all</tracking_level>
-        </field>
-        <field id="usermfa_id" xsi:type="AttributeExternalKey">
-          <sql>usermfa_id</sql>
-          <filter>SELECT UserMFA WHERE user_id=:this-&gt;user_id AND id != :this-&gt;id</filter>
-          <dependencies/>
-          <is_null_allowed>false</is_null_allowed>
-          <target_class>UserMFA</target_class>
-          <on_target_delete>DEL_MANUAL</on_target_delete>
-          <tracking_level>all</tracking_level>
-          <allow_target_creation>false</allow_target_creation>
-        </field>
-      </fields>
-      <methods/>
-      <presentation>
-        <list>
-          <items/>
-        </list>
-        <search>
-          <items/>
-        </search>
-        <details>
-          <items>
-            <item id="user_id">
-              <rank>10</rank>
-            </item>
-            <item id="usermfa_id">
-              <rank>20</rank>
+            <item id="is_default">
+              <rank>30</rank>
             </item>
           </items>
         </details>
       </presentation>
       <parent>cmdbAbstractObject</parent>
     </class>
-    <class id="MFARule" _created_in="combodo-mfa-base" _delta="define">
+    <class id="MFAAdminRule" _delta="define">
       <properties>
         <category>bizmodel,searchable</category>
         <abstract>false</abstract>
-        <db_table>mfa_rule</db_table>
+        <db_table>mfa_admin_rule</db_table>
         <style>
           <icon>
             <fileref ref="icons8-rules_4a9d6ffb8b7d0be4873067ba796cdfe3"/>
@@ -224,7 +176,7 @@
           <tracking_level>all</tracking_level>
         </field>
         <field id="mfa_mode" xsi:type="AttributeClass">
-          <class_category>UserMFA</class_category>
+          <class_category>MFAMode</class_category>
           <sql>mfa_mode</sql>
           <default_value/>
           <is_null_allowed>false</is_null_allowed>
@@ -284,8 +236,8 @@
         </field>
         <field id="orgs_list" xsi:type="AttributeLinkedSetIndirect">
           <ext_key_to_remote>organization_id</ext_key_to_remote>
-          <ext_key_to_me>mfarule_id</ext_key_to_me>
-          <linked_class>lnkMFARuleToOrganization</linked_class>
+          <ext_key_to_me>mfaadminrule_id</ext_key_to_me>
+          <linked_class>lnkMFAAdminRuleToOrganization</linked_class>
           <count_min>0</count_min>
           <count_max>0</count_max>
           <tracking_level>all</tracking_level>
@@ -297,8 +249,8 @@
         </field>
         <field id="profiles_list" xsi:type="AttributeLinkedSetIndirect">
           <ext_key_to_remote>profile_id</ext_key_to_remote>
-          <ext_key_to_me>mfarule_id</ext_key_to_me>
-          <linked_class>lnkMFARuleToProfile</linked_class>
+          <ext_key_to_me>mfaadminrule_id</ext_key_to_me>
+          <linked_class>lnkMFAAdminRuleToProfile</linked_class>
           <count_min>0</count_min>
           <count_max>0</count_max>
           <tracking_level>all</tracking_level>
@@ -400,28 +352,28 @@
       </presentation>
       <parent>cmdbAbstractObject</parent>
     </class>
-    <class id="lnkMFARuleToOrganization" _created_in="combodo-mfa-base" _delta="define">
+    <class id="lnkMFAAdminRuleToOrganization" _delta="define">
       <properties>
         <category>bizmodel</category>
         <abstract>false</abstract>
-        <db_table>lnkmfaruletoorganization</db_table>
+        <db_table>lnkmfaadminruletoorganization</db_table>
         <is_link>1</is_link>
         <naming>
           <attributes>
-            <attribute id="mfarule_id_friendlyname"/>
+            <attribute id="mfaadminrule_id_friendlyname"/>
             <attribute id="organization_id_friendlyname"/>
           </attributes>
         </naming>
         <reconciliation>
           <attributes>
-            <attribute id="mfarule_id"/>
+            <attribute id="mfaadminrule_id"/>
             <attribute id="organization_id"/>
           </attributes>
         </reconciliation>
         <uniqueness_rules>
           <rule id="no_duplicate">
             <attributes>
-              <attribute id="mfarule_id"/>
+              <attribute id="mfaadminrule_id"/>
               <attribute id="organization_id"/>
             </attributes>
             <filter><![CDATA[]]></filter>
@@ -431,12 +383,12 @@
         </uniqueness_rules>
       </properties>
       <fields>
-        <field id="mfarule_id" xsi:type="AttributeExternalKey">
-          <sql>mfarule_id</sql>
+        <field id="mfaadminrule_id" xsi:type="AttributeExternalKey">
+          <sql>mfaadminrule_id</sql>
           <filter/>
           <dependencies/>
           <is_null_allowed>false</is_null_allowed>
-          <target_class>MFARule</target_class>
+          <target_class>MFAAdminRule</target_class>
           <on_target_delete>DEL_AUTO</on_target_delete>
         </field>
         <field id="organization_id" xsi:type="AttributeExternalKey">
@@ -453,7 +405,7 @@
       <presentation>
         <list>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="organization_id">
@@ -463,7 +415,7 @@
         </list>
         <search>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="organization_id">
@@ -473,7 +425,7 @@
         </search>
         <details>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="organization_id">
@@ -484,28 +436,28 @@
       </presentation>
       <parent>cmdbAbstractObject</parent>
     </class>
-    <class id="lnkMFARuleToProfile" _created_in="combodo-mfa-base" _delta="define">
+    <class id="lnkMFAAdminRuleToProfile" _delta="define">
       <properties>
         <category>bizmodel</category>
         <abstract>false</abstract>
-        <db_table>lnkmfaruletoprofile</db_table>
+        <db_table>lnkmfaadminruletoprofile</db_table>
         <is_link>1</is_link>
         <naming>
           <attributes>
-            <attribute id="mfarule_id_friendlyname"/>
+            <attribute id="mfaadminrule_id_friendlyname"/>
             <attribute id="profile_id_friendlyname"/>
           </attributes>
         </naming>
         <reconciliation>
           <attributes>
-            <attribute id="mfarule_id"/>
+            <attribute id="mfaadminrule_id"/>
             <attribute id="profile_id"/>
           </attributes>
         </reconciliation>
         <uniqueness_rules>
           <rule id="no_duplicate">
             <attributes>
-              <attribute id="mfarule_id"/>
+              <attribute id="mfaadminrule_id"/>
               <attribute id="profile_id"/>
             </attributes>
             <filter><![CDATA[]]></filter>
@@ -515,12 +467,12 @@
         </uniqueness_rules>
       </properties>
       <fields>
-        <field id="mfarule_id" xsi:type="AttributeExternalKey">
-          <sql>mfarule_id</sql>
+        <field id="mfaadminrule_id" xsi:type="AttributeExternalKey">
+          <sql>mfaadminrule_id</sql>
           <filter/>
           <dependencies/>
           <is_null_allowed>false</is_null_allowed>
-          <target_class>MFARule</target_class>
+          <target_class>MFAAdminRule</target_class>
           <on_target_delete>DEL_AUTO</on_target_delete>
           <allow_target_creation>false</allow_target_creation>
         </field>
@@ -538,7 +490,7 @@
       <presentation>
         <list>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="profile_id">
@@ -548,7 +500,7 @@
         </list>
         <search>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="profile_id">
@@ -558,7 +510,7 @@
         </search>
         <details>
           <items>
-            <item id="mfarule_id">
+            <item id="mfaadminrule_id">
               <rank>10</rank>
             </item>
             <item id="profile_id">

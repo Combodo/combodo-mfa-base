@@ -54,17 +54,17 @@ class MFABaseService
 		$aData = [];
 
 		$aConfigMethods = MFABaseConfig::GetInstance()->GetMFAMethods();
-		$aUserMFAMethods = $this->GetUserMFAMethods();
+		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsMethods();
 
-		foreach ($aConfigMethods as $sUserMFAClass => $aConfigMethod) {
-			if ($sUserMFAClass !== 'UserMFARecoveryCodes') {
+		foreach ($aConfigMethods as $sMFAUserSettingsClass => $aConfigMethod) {
+			if ($sMFAUserSettingsClass !== 'MFAUserSettingsRecoveryCodes') {
 				continue;
 			}
 			$aDatum = [];
 			if ($aConfigMethod['active']) {
-				$aDatum[] = MetaModel::GetName($sUserMFAClass);
-				$aUserMFAMethod = $aUserMFAMethods[$sUserMFAClass] ?? null;
-				if (!is_null($aUserMFAMethod)) {
+				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
+				$aMFAUserSettingsMethod = $aMFAUserSettingsMethods[$sMFAUserSettingsClass] ?? null;
+				if (!is_null($aMFAUserSettingsMethod)) {
 					$aDatum[] = Dict::S('UI:MFA:Methods:Status:Configured');
 				} else {
 					$aDatum[] = '';
@@ -93,19 +93,19 @@ class MFABaseService
 		$aData = [];
 
 		$aConfigMethods = MFABaseConfig::GetInstance()->GetMFAMethods();
-		$aUserMFAMethods = $this->GetUserMFAMethods();
+		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsMethods();
 
-		foreach ($aConfigMethods as $sUserMFAClass => $aConfigMethod) {
-			if ($sUserMFAClass === 'UserMFARecoveryCodes') {
+		foreach ($aConfigMethods as $sMFAUserSettingsClass => $aConfigMethod) {
+			if ($sMFAUserSettingsClass === 'MFAUserSettingsRecoveryCodes') {
 				continue;
 			}
 			if ($aConfigMethod['active']) {
 				$aDatum = [];
 				// Name
-				$aDatum[] = MetaModel::GetName($sUserMFAClass);
+				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
 				// Status
-				$aUserMFAMethod = $aUserMFAMethods[$sUserMFAClass] ?? null;
-				if (!is_null($aUserMFAMethod)) {
+				$aMFAUserSettingsMethod = $aMFAUserSettingsMethods[$sMFAUserSettingsClass] ?? null;
+				if (!is_null($aMFAUserSettingsMethod)) {
 					$aDatum[] = Dict::S('UI:MFA:Methods:Status:Configured');
 					$sActionLabel = Dict::S('UI:MFA:Methods:Action:Configure');
 					$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Configure:ButtonTooltip');
@@ -120,7 +120,7 @@ class MFABaseService
 				$oButton = ButtonUIBlockFactory::MakeForSecondaryAction(
 					$sActionLabel,
 					'Action',
-					"$sDataAction:$sUserMFAClass",
+					"$sDataAction:$sMFAUserSettingsClass",
 					true
 				);
 				$oButton->SetTooltip($sActionTooltip);
@@ -138,13 +138,13 @@ class MFABaseService
 		return ['aColumns' => $aColumns, 'aData' => $aData];
 	}
 
-	public function GetUserMFAMethods(): array
+	public function GetMFAUserSettingsMethods(): array
 	{
 		$oUser = UserRights::GetUserObject();
-		$oSet = new DBObjectSet(DBSearch::FromOQL('SELECT UserMFA WHERE user_id = :id'), [], ['id' => $oUser->GetKey()]);
+		$oSet = new DBObjectSet(DBSearch::FromOQL('SELECT MFAUserSettings WHERE user_id = :id'), [], ['id' => $oUser->GetKey()]);
 		$aConfiguredMethods = [];
-		while ($oUserMFA = $oSet->Fetch()) {
-			$aConfiguredMethods[$oUserMFA->Get('finalclass')] = $oUserMFA;
+		while ($oMFAUserSettings = $oSet->Fetch()) {
+			$aConfiguredMethods[$oMFAUserSettings->Get('finalclass')] = $oMFAUserSettings;
 		}
 
 		return $aConfiguredMethods;
