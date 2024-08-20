@@ -28,7 +28,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	 */
 	public function GetTemplatePath(): string
 	{
-		return APPROOT.'env-'.utils::GetCurrentEnvironment().'/'.MFABaseUtils::MODULE_NAME.'/templates';
+		return utils::GetAbsoluteModulePath(MFABaseUtils::MODULE_NAME).'templates';
 
 	}
 
@@ -37,7 +37,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	 */
 	public function GetTabCode(): string
 	{
-		return 'MyAccount:Tab:Security';
+		return 'MyAccount:Tab:MFA';
 	}
 
 	/**

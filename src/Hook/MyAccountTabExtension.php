@@ -6,6 +6,7 @@
 
 namespace Combodo\iTop\MFABase\Hook;
 
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MyAccount\Hook\iMyAccountTabExtension;
 use Dict;
 
@@ -14,7 +15,7 @@ class MyAccountTabExtension implements iMyAccountTabExtension
 
 	public function IsTabPresent(): bool
 	{
-		return true;
+		return MFABaseConfig::GetInstance()->IsEnabled();
 	}
 
 	public function GetTabCode(): string

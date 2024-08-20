@@ -44,7 +44,7 @@ SetupWebPage::AddModule(
 		// Default settings
 		//
 		'settings' => [
-			// Module specific settings go here, if any
+			'enabled' => true,
 		],
 	]
 );

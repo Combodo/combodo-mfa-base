@@ -8,4 +8,5 @@
 
 Dict::Add('EN US', 'English', 'English', array(
 	'MyAccount:Tab:MFA' => 'Multi-Factor authentication',
+	'UI:MFA' => 'MFA User settings',
 ));

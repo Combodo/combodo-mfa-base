@@ -42,8 +42,6 @@ class MFABaseConfig
 		return $this->GetBoolean('enabled', false);
 	}
 
-
-
 	public function IsDebugEnabled(): bool
 	{
 		return $this->GetBoolean('debug', false);
