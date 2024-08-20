@@ -38,7 +38,7 @@ class MFABaseService
 	{
 		$aParams = [];
 
-		$aParams['aMethods'] = $this->GetMFAMethods();
+		$aParams['aMethods'] = $this->GetMFAUserSettings();
 		$aParams['RecoveryOptionMethods'] = $this->GetRecoveryOptionMethods();
 
 		return $aParams;
@@ -54,7 +54,7 @@ class MFABaseService
 		$aData = [];
 
 		$aConfigMethods = MFABaseConfig::GetInstance()->GetMFAMethods();
-		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsMethods();
+		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsModes();
 
 		foreach ($aConfigMethods as $sMFAUserSettingsClass => $aConfigMethod) {
 			if ($sMFAUserSettingsClass !== 'MFAUserSettingsRecoveryCodes') {
@@ -81,7 +81,7 @@ class MFABaseService
 		return ['aColumns' => $aColumns, 'aData' => $aData];
 	}
 
-	public function GetMFAMethods(): array
+	public function GetMFAUserSettings(): array
 	{
 
 		$aColumns = [
@@ -92,43 +92,36 @@ class MFABaseService
 
 		$aData = [];
 
-		$aConfigMethods = MFABaseConfig::GetInstance()->GetMFAMethods();
-		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsMethods();
+		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsModes();
 
-		foreach ($aConfigMethods as $sMFAUserSettingsClass => $aConfigMethod) {
-			if ($sMFAUserSettingsClass === 'MFAUserSettingsRecoveryCodes') {
-				continue;
+		foreach ($aMFAUserSettingsMethods as $sMFAUserSettingsClass => $oMFAUserSettings) {
+			$aDatum = [];
+			// Name
+			$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
+			// Status
+			$sStatus = $oMFAUserSettings->Get('status');
+			$aDatum[] = $sStatus;
+			if ($sStatus !== 'not_configured') {
+				$sActionLabel = Dict::S('UI:MFA:Methods:Action:Configure');
+				$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Configure:ButtonTooltip');
+				$sDataAction = 'configure';
+			} else {
+				$sActionLabel = Dict::S('UI:MFA:Methods:Action:Add');
+				$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Add:ButtonTooltip');
+				$sDataAction = 'add';
 			}
-			if ($aConfigMethod['active']) {
-				$aDatum = [];
-				// Name
-				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
-				// Status
-				$aMFAUserSettingsMethod = $aMFAUserSettingsMethods[$sMFAUserSettingsClass] ?? null;
-				if (!is_null($aMFAUserSettingsMethod)) {
-					$aDatum[] = Dict::S('UI:MFA:Methods:Status:Configured');
-					$sActionLabel = Dict::S('UI:MFA:Methods:Action:Configure');
-					$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Configure:ButtonTooltip');
-					$sDataAction = 'configure';
-				} else {
-					$aDatum[] = '';
-					$sActionLabel = Dict::S('UI:MFA:Methods:Action:Add');
-					$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Add:ButtonTooltip');
-					$sDataAction = 'add';
-				}
-				// Action
-				$oButton = ButtonUIBlockFactory::MakeForSecondaryAction(
-					$sActionLabel,
-					'Action',
-					"$sDataAction:$sMFAUserSettingsClass",
-					true
-				);
-				$oButton->SetTooltip($sActionTooltip);
-				$oRenderer = new BlockRenderer($oButton);
-				$sButton = $oRenderer->RenderHtml();
-				$aDatum[] = $sButton;
-				$aData[] = $aDatum;
-			}
+			// Action
+			$oButton = ButtonUIBlockFactory::MakeForSecondaryAction(
+				$sActionLabel,
+				'Action',
+				"$sDataAction:$sMFAUserSettingsClass",
+				true
+			);
+			$oButton->SetTooltip($sActionTooltip);
+			$oRenderer = new BlockRenderer($oButton);
+			$sButton = $oRenderer->RenderHtml();
+			$aDatum[] = $sButton;
+			$aData[] = $aDatum;
 		}
 
 		if (empty($aData)) {
@@ -138,16 +131,21 @@ class MFABaseService
 		return ['aColumns' => $aColumns, 'aData' => $aData];
 	}
 
-	public function GetMFAUserSettingsMethods(): array
+	public function GetMFAUserSettingsModes(): array
 	{
+		$aModes = [];
 		$oUser = UserRights::GetUserObject();
-		$oSet = new DBObjectSet(DBSearch::FromOQL('SELECT MFAUserSettings WHERE user_id = :id'), [], ['id' => $oUser->GetKey()]);
-		$aConfiguredMethods = [];
-		while ($oMFAUserSettings = $oSet->Fetch()) {
-			$aConfiguredMethods[$oMFAUserSettings->Get('finalclass')] = $oMFAUserSettings;
+		$aMFAModes = MetaModel::EnumChildClasses('MFAUserSettings');
+		foreach ($aMFAModes as $sModeClass) {
+			if (MetaModel::IsAbstract($sModeClass)) {
+				continue;
+			}
+			$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id"), [], ['id' => $oUser->GetKey()]);
+			$oMode = $oSet->Fetch() ??  MetaModel::NewObject($sModeClass, ['user_id' => $oUser->GetKey()]);
+			$aModes[$sModeClass] = $oMode;
 		}
 
-		return $aConfiguredMethods;
+		return $aModes;
 	}
 
 }

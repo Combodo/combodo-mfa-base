@@ -16,7 +16,7 @@ class MFABaseController extends Controller
 	{
 		$aParams = [];
 
-		$aParams['aMethods'] = MFABaseService::GetInstance()->GetMFAMethods();
+		$aParams['aMethods'] = MFABaseService::GetInstance()->GetMFAUserSettings();
 
 		$this->DisplayAjaxPage($aParams, 'ConfigMFA');
 	}
