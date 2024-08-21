@@ -28,7 +28,9 @@ class ComposerStaticInit82e29b7fbd0d36d303017d22d2ca07ee
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseUtils' => __DIR__ . '/../..' . '/src/Helper/MFABaseUtils.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountSectionExtension.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountTabExtension.php',
+        'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => __DIR__ . '/../..' . '/src/Service/MFAAdminRuleService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFABaseService' => __DIR__ . '/../..' . '/src/Service/MFABaseService.php',
+        'Combodo\\iTop\\MFABase\\Service\\MFAUserSettingsService' => __DIR__ . '/../..' . '/src/Service/MFAUserSettingsService.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
