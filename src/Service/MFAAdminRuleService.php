@@ -23,4 +23,8 @@ class MFAAdminRuleService
 		return static::$oInstance;
 	}
 
+	public function GetAdminRulesByUserId(int $userId) : array {
+		return [];
+	}
+
 }

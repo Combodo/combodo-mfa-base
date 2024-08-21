@@ -5,6 +5,11 @@
   "autoload": {
     "psr-4": {
       "Combodo\\iTop\\MFABase\\": "src"
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Combodo\\iTop\\MFABase\\Test\\": "test/"
+      }
     }
   },
   "name": "combodo/combodo-mfa-base",
