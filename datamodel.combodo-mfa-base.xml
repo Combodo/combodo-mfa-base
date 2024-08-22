@@ -183,7 +183,6 @@
         <field id="mfa_mode" xsi:type="AttributeClass">
           <class_category>MFAMode</class_category>
           <sql>mfa_mode</sql>
-          <more_values>MFAUserSettingsRecoveryCode,MFAUserSettingsTotpApp,MFAUserSettingsTotpPMail</more_values>
           <default_value/>
           <is_null_allowed>false</is_null_allowed>
           <validation_pattern/>
