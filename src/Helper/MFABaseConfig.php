@@ -27,7 +27,7 @@ class MFABaseConfig
 
 	public function Get(string $sParamName, $default = null)
 	{
-		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, $sParamName, $default);
+		return MetaModel::GetConfig()->GetModuleSetting(MFABaseUtils::MODULE_NAME, $sParamName, $default);
 	}
 
 	public function GetBoolean(string $sParamName, $default = null): bool
@@ -49,7 +49,18 @@ class MFABaseConfig
 
 	public function GetMFAMethods(): array
 	{
-		return MetaModel::GetModuleSetting('combodo-mfa-modes', 'methods', []);
+		return MetaModel::GetConfig()->GetModuleSetting(MFABaseUtils::MODULE_NAME, 'modes', []);
+	}
+
+	public function IsMFAMethodEnabled(string $sClass) {
+		$aMethods = $this->GetMFAMethods();
+		if (count($aMethods)==0){
+			return true;
+		}
+
+		var_dump($sClass);
+		var_dump($aMethods);
+		return in_array($sClass, $aMethods);
 	}
 
 }
