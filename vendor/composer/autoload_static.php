@@ -21,13 +21,16 @@ class ComposerStaticInit82e29b7fbd0d36d303017d22d2ca07ee
     );
 
     public static $classMap = array (
+        'Combodo\\iTop\\MFABase\\Controller\\LoginMFABaseController' => __DIR__ . '/../..' . '/src/Controller/LoginMFABaseController.php',
         'Combodo\\iTop\\MFABase\\Controller\\MFABaseController' => __DIR__ . '/../..' . '/src/Controller/MFABaseController.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseConfig' => __DIR__ . '/../..' . '/src/Helper/MFABaseConfig.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseException' => __DIR__ . '/../..' . '/src/Helper/MFABaseException.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseLog' => __DIR__ . '/../..' . '/src/Helper/MFABaseLog.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseUtils' => __DIR__ . '/../..' . '/src/Helper/MFABaseUtils.php',
+        'Combodo\\iTop\\MFABase\\Hook\\LoginMFABase' => __DIR__ . '/../..' . '/src/Hook/LoginMFABase.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountSectionExtension.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountTabExtension.php',
+        'Combodo\\iTop\\MFABase\\Page\\LoginMFABaseWebPage' => __DIR__ . '/../..' . '/src/Page/LoginMFABaseWebPage.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => __DIR__ . '/../..' . '/src/Service/MFAAdminRuleService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFABaseService' => __DIR__ . '/../..' . '/src/Service/MFABaseService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAUserSettingsService' => __DIR__ . '/../..' . '/src/Service/MFAUserSettingsService.php',

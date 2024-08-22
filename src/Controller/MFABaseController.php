@@ -7,19 +7,9 @@
 namespace Combodo\iTop\MFABase\Controller;
 
 use Combodo\iTop\Application\TwigBase\Controller\Controller;
-use Combodo\iTop\MFABase\Service\MFABaseService;
 
 class MFABaseController extends Controller
 {
-
-	public function OperationConfigMFA(): void
-	{
-		$aParams = [];
-
-		$aParams['aMethods'] = MFABaseService::GetInstance()->GetMFAUserSettings();
-
-		$this->DisplayAjaxPage($aParams, 'ConfigMFA');
-	}
 
 	public function OperationAction(): void
 	{

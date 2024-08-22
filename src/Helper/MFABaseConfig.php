@@ -49,7 +49,12 @@ class MFABaseConfig
 
 	public function GetMFAMethods(): array
 	{
-		return MetaModel::GetConfig()->GetModuleSetting(MFABaseUtils::MODULE_NAME, 'modes', []);
+		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'methods', []);
+	}
+
+	public function GetMFALoginModes(): array
+	{
+		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'allowed-login-types', ['form', 'basic', 'url', 'external']);
 	}
 
 	public function IsMFAMethodEnabled(string $sClass) {

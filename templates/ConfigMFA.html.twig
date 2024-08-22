@@ -3,20 +3,20 @@
 
 {% UITitle ForPage {'sTitle':'UI:MFA'|dict_s} %}{% EndUITitle %}
 
-{%  if Section.aMethods.aColumns %}
+{%  if Section.aMFAUserSettings.aColumns %}
 
     {% UIForm Standard {Action:'exec.php' } %}
-        {% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-light' } %}
+        {% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-base' } %}
         {% UIInput ForHidden { sName:'exec_page', sValue:'index.php' } %}
         {% UIInput ForHidden { sName:'operation', sValue:'Action' } %}
 
-        {% UIPanel ForInformation { sTitle:'UI:MFA:Methods'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
-            {% UIDataTable ForForm { sRef:'MFAMethods', aColumns:Section.aMethods.aColumns, aData:Section.aMethods.aData } %}{% EndUIDataTable %}
+        {% UIPanel ForInformation { sTitle:'UI:MFA:Modes'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
+            {% UIDataTable ForForm { sRef:'MFAModes', aColumns:Section.aMFAUserSettings.aColumns, aData:Section.aMFAUserSettings.aData } %}{% EndUIDataTable %}
         {% EndUIPanel %}
 
         {%  if Section.RecoveryOptionMethods.aColumns %}
-            {% UIPanel ForInformation { sTitle:'UI:MFA:RecoveryOptionMethods'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
-                {% UIDataTable ForForm { sRef:'RecoveryCodesMethod', aColumns:Section.RecoveryOptionMethods.aColumns, aData:Section.RecoveryOptionMethods.aData } %}{% EndUIDataTable %}
+            {% UIPanel ForInformation { sTitle:'UI:MFA:RecoveryOptionMode'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
+                {% UIDataTable ForForm { sRef:'RecoveryCodesMode', aColumns:Section.RecoveryOptionMethods.aColumns, aData:Section.RecoveryOptionMethods.aData } %}{% EndUIDataTable %}
             {% EndUIPanel %}
         {% endif %}
     {% EndUIForm %}
@@ -24,7 +24,7 @@
 {% else %}
 
     {% UIContentBlock Standard { } %}
-        {{ 'UI:MFA:NoMethod'|dict_s }}
+        {{ 'UI:MFA:NoMode'|dict_s }}
     {% EndUIContentBlock %}
 
 {% endif %}

@@ -1,0 +1,27 @@
+{# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
+{# @license     http://opensource.org/licenses/AGPL-3.0 #}
+
+{% extends "base.html.twig" %}
+
+{% block login_content %}
+	<div id="login-content">
+		<div id="login-title">
+			<h1>{{ 'Login:MFA:UserWarningAboutMFAMode:Title'|dict_s }}</h1>
+			<p>{{ 'Login:MFA:UserWarningAboutMFAMode:Explain'|dict_format(sMFAMode, sMFAActivationDate) }}</p>
+		</div>
+		<div id="login-form">
+			<form id="login_form" method="post">
+				<div id="login-form-content">
+					<div id="login-submit">
+						<div>
+							<input type="hidden" value="no-warning" name="view_flag">
+							<input type="submit" value="{{ 'Login:MFA:Continue'|dict_s }}" tabindex="3">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
+
+

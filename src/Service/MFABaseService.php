@@ -7,13 +7,16 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
+use Combodo\iTop\MFABase\Controller\LoginMFABaseController;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
+use Combodo\iTop\MFABase\Helper\MFABaseUtils;
 use Combodo\iTop\Renderer\BlockRenderer;
 use DBObjectSet;
 use DBSearch;
 use Dict;
 use MetaModel;
+use MFAAdminRule;
 use UserRights;
 
 class MFABaseService
@@ -38,7 +41,7 @@ class MFABaseService
 	{
 		$aParams = [];
 
-		$aParams['aMethods'] = $this->GetMFAUserSettings();
+		$aParams['aMFAUserSettings'] = $this->GetMFAUserSettings();
 		$aParams['RecoveryOptionMethods'] = $this->GetRecoveryOptionMethods();
 
 		return $aParams;
@@ -83,31 +86,31 @@ class MFABaseService
 
 	public function GetMFAUserSettings(): array
 	{
-
 		$aColumns = [
-			['label' => Dict::S('UI:MFA:Methods:Name')],
-			['label' => Dict::S('UI:MFA:Methods:Status')],
-			['label' => Dict::S('UI:MFA:Methods:Action')],
+			['label' => Dict::S('UI:MFA:Modes:Name')],
+			['label' => Dict::S('UI:MFA:Modes:Status')],
+			['label' => Dict::S('UI:MFA:Modes:Action')],
 		];
 
 		$aData = [];
 
-		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsModes();
+		$aMFAUserSettingsModes = $this->GetMFAUserSettingsModes();
 
-		foreach ($aMFAUserSettingsMethods as $sMFAUserSettingsClass => $oMFAUserSettings) {
+		foreach ($aMFAUserSettingsModes as $sMFAUserSettingsClass => $oMFAUserSettings) {
 			$aDatum = [];
 			// Name
 			$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
 			// Status
-			$sStatus = $oMFAUserSettings->Get('status');
+			/** @var \cmdbAbstractObject $oMFAUserSettings */
+			$sStatus = $oMFAUserSettings->GetEditValue('status');
 			$aDatum[] = $sStatus;
 			if ($sStatus !== 'not_configured') {
-				$sActionLabel = Dict::S('UI:MFA:Methods:Action:Configure');
-				$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Configure:ButtonTooltip');
+				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Configure');
+				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
 				$sDataAction = 'configure';
 			} else {
-				$sActionLabel = Dict::S('UI:MFA:Methods:Action:Add');
-				$sActionTooltip = Dict::S('UI:MFA:Methods:Action:Add:ButtonTooltip');
+				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Add');
+				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip');
 				$sDataAction = 'add';
 			}
 			// Action
@@ -146,6 +149,51 @@ class MFABaseService
 		}
 
 		return $aModes;
+	}
+
+	/**
+	 *
+	 * @param string $sUserLogin
+	 * @param string $sLoginMode
+	 * @param string $sViewFlag
+	 *
+	 * @return bool
+	 */
+	public function ValidateLogin(string $sUserLogin, string $sLoginMode, string $sViewFlag): bool
+	{
+		if (!in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes())) {
+			return true;
+		}
+
+		// MFA is active for this mode, check if additional information is needed
+		$sUserId =  UserRights::GetUserId($sUserLogin);
+		if (is_null($sUserId)) {
+			return true;
+		}
+
+		$aMissingModes = MFAUserSettingsService::GetInstance()->GetNotConfiguredMandatoryMFAAdminRules($sUserId);
+		$aMissingModes = [MetaModel::NewObject(MFAAdminRule::class, [
+			'name' => 'toto',
+			'mfa_mode' => 'MFAUserSettingsTotpApp',
+			'operational_state' => 'forced',
+			'activation_date' => '2025-01-01 00:00:00',
+		])];
+		if (count($aMissingModes) > 0 && $sViewFlag !== 'no-warning') {
+			// Manage mandatory modes
+			$oMFAAdminRule = reset($aMissingModes);
+			$oController = new LoginMFABaseController(__DIR__.'/../../templates/login', MFABaseUtils::MODULE_NAME);
+			$oController->DisplayUserWarningAboutMissingMFAMode($oMFAAdminRule);
+			exit;
+		}
+
+		$aUserSettings = MFAUserSettingsService::GetInstance()->GetActiveMFASettings($sUserId);
+		if (count($aUserSettings) === 0) {
+
+			return true;
+		}
+
+
+		return true;
 	}
 
 }

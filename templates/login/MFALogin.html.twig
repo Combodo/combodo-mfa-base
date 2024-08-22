@@ -1,0 +1,23 @@
+{# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
+{# @license     http://opensource.org/licenses/AGPL-3.0 #}
+
+{% extends "base.html.twig" %}
+
+{% block login_content %}
+	<div id="login-content">
+		<h1>sTitle</h1>
+		{% for Section in aSections %}
+			{% if Section.sHtmlTwig %}
+				{% include Section.sHtmlTwig %}
+			{% endif %}
+		{% endfor %}
+	</div>
+{% endblock %}
+
+{% block ready_script %}
+	{% for Section in aSections %}
+		{% if Section.sReadyJsTwig %}
+			{% include Section.sReadyJsTwig %}
+		{% endif %}
+	{% endfor %}
+{% endblock %}
