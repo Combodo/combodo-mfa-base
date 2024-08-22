@@ -22,6 +22,9 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$this->org1 = $this->CreateOrganization("org1");
 		$this->org2 = $this->CreateOrganization("org2");
 		$this->CleanupAdminRules();
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', []);
 	}
 
 	protected function tearDown(): void
@@ -145,6 +148,21 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		} else {
 			$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
 		}
+	}
+
+	public function testRule_ModuleMFAModeConfig() {
+		$oRule = $this->CreateRule("default rule", "MFAUserSettingsRecoveryCode", "forced", []);
+		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', []);
+		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["MFAUserSettingsRecoveryCode"]);
+		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["AAA"]);
+		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
 	}
 
 	public function testNonMatchingRule() {

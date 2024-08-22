@@ -13,6 +13,8 @@ use DBObjectSearch;
 use ormLinkSet;
 use DBObjectSet;
 use MFAAdminRule;
+use Combodo\iTop\MFABase\Helper\MFABaseLog;
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 
 class MFAAdminRuleService
 {
@@ -39,7 +41,7 @@ class MFAAdminRuleService
 	 * @return MFAAdminRule[]
 	 */
 	public function GetAdminRulesByUserId(string $sUserId) : array {
-		if (! MetaModel::GetConfig()->GetModuleSetting('combodo-mfa-base', 'enabled', true)){
+		if (! MFABaseConfig::GetInstance()->IsEnabled()){
 			return [];
 		}
 
@@ -79,17 +81,25 @@ class MFAAdminRuleService
 
 				if ($aOrgSet->count()==0){
 					if (! in_array($sMfaMode, $aRuleMfaModes)){
-						$aRes[]=$oRule;
-						$aRuleMfaModes[]=$sMfaMode;
+						if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))){
+							$aRes[]=$oRule;
+							$aRuleMfaModes[]=$sMfaMode;
+						} else {
+							MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
+						}
 					}
 				} else{
 					while ($oProfile = $aOrgSet->Fetch()) {
 						if (in_array($oProfile->Get('organization_id'), $oOrgs)){
-							if (! in_array($sMfaMode, $aRuleMfaModes)){
-								$aRes[]=$oRule;
-								$aRuleMfaModes[]=$sMfaMode;
+							if (! in_array($sMfaMode, $aRuleMfaModes)) {
+								if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))) {
+									$aRes[] = $oRule;
+									$aRuleMfaModes[] = $sMfaMode;
+								} else {
+									MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
+								}
+								break;
 							}
-							break;
 						}
 					}
 				}
