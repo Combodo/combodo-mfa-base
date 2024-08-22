@@ -5,16 +5,38 @@ namespace Combodo\iTop\MFABase\Test;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use MFAAdminRule;
+use MetaModel;
+use Config;
 
-class MFAAdminRuleService2Test extends ItopDataTestCase {
+class MFAAdminRuleServiceTest extends ItopDataTestCase {
+	private $sConfigTmpBackupFile;
+
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->RequireOnceItopFile('/env-production/combodo-mfa-base/vendor/autoload.php');
 
+		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
+		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
+
 		$this->org1 = $this->CreateOrganization("org1");
 		$this->org2 = $this->CreateOrganization("org2");
 		$this->CleanupAdminRules();
+	}
+
+	protected function tearDown(): void
+	{
+		parent::tearDown();
+
+		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
+			//put config back
+			$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
+			@chmod($sConfigPath, 0770);
+			$oConfig = new Config($this->sConfigTmpBackupFile);
+			$oConfig->WriteToFile($sConfigPath);
+			@chmod($sConfigPath, 0440);
+			@unlink($this->sConfigTmpBackupFile);
+		}
 	}
 
 	public function CleanupAdminRules() {
@@ -99,6 +121,30 @@ class MFAAdminRuleService2Test extends ItopDataTestCase {
 		}
 
 		return $oRule;
+	}
+
+	public function Rule_ModuleConfig() {
+		return [
+			'module disabled' => [false],
+			'module enabled' => [true],
+		];
+	}
+
+	/**
+	 * @dataProvider Rule_ModuleConfig
+	 */
+	public function testRule_ModuleConfig(bool $bModuleEnabled) {
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
+
+		$oRule = $this->CreateRule("default rule", "MFAUserSettingsRecoveryCode", "forced", []);
+
+		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+
+		if ($bModuleEnabled) {
+			$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		} else {
+			$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		}
 	}
 
 	public function testNonMatchingRule() {
