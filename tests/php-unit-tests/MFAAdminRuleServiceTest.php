@@ -254,13 +254,13 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$aExpectedRuleNames = [];
 		foreach ($aExpectedRules as $oRule){
 			/** @var MFAAdminRule $oRule */
-			$aExpectedRuleNames[]=$oRule->Get('name');
+			$aExpectedRuleNames[$oRule->Get('mfa_mode')]=$oRule->Get('name');
 		}
 
 		$RuleNames = [];
-		foreach ($aRules as $oRule){
+		foreach ($aRules as $sMode => $oRule){
 			/** @var MFAAdminRule $oRule */
-			$RuleNames[]=$oRule->Get('name');
+			$RuleNames[$sMode]=$oRule->Get('name');
 		}
 
 		$this->assertEquals($aExpectedRuleNames, $RuleNames);

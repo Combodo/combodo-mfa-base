@@ -57,7 +57,6 @@ class MFAAdminRuleService
 		$aRes = [];
 		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
 		$oSet = new DBObjectSet($oSearch, ['rank' => true ]);
-		$aRuleMfaModes=[];
 		while ($oRule = $oSet->Fetch()) {
 			$bProfileOk=false;
 
@@ -80,10 +79,9 @@ class MFAAdminRuleService
 				$sMfaMode = $oRule->Get('mfa_mode');
 
 				if ($aOrgSet->count()==0){
-					if (! in_array($sMfaMode, $aRuleMfaModes)){
+					if (! array_key_exists($sMfaMode, $aRes)){
 						if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))){
-							$aRes[]=$oRule;
-							$aRuleMfaModes[]=$sMfaMode;
+							$aRes["$sMfaMode"]=$oRule;
 						} else {
 							MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
 						}
@@ -91,10 +89,9 @@ class MFAAdminRuleService
 				} else{
 					while ($oProfile = $aOrgSet->Fetch()) {
 						if (in_array($oProfile->Get('organization_id'), $oOrgs)){
-							if (! in_array($sMfaMode, $aRuleMfaModes)) {
+							if (! array_key_exists($sMfaMode, $aRes)) {
 								if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))) {
-									$aRes[] = $oRule;
-									$aRuleMfaModes[] = $sMfaMode;
+									$aRes["$sMfaMode"] = $oRule;
 								} else {
 									MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
 								}
@@ -110,7 +107,7 @@ class MFAAdminRuleService
 		return $aRes;
 	}
 
-	public function GetUserProfiles(User $oUser) : array {
+	private function GetUserProfiles(User $oUser) : array {
 		/** @var ormLinkSet $aProfileSet */
 		$aProfileSet = $oUser->Get('profile_list');
 		if ($aProfileSet->count()==0){
@@ -124,7 +121,7 @@ class MFAAdminRuleService
 		return $aRes;
 	}
 
-	public function GetUserOrgs(User $oUser) : array {
+	private function GetUserOrgs(User $oUser) : array {
 		if (empty($oUser->Get('org_id'))){
 			return [];
 		}

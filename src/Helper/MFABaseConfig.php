@@ -58,8 +58,6 @@ class MFABaseConfig
 			return true;
 		}
 
-		var_dump($sClass);
-		var_dump($aMethods);
 		return in_array($sClass, $aMethods);
 	}
 
