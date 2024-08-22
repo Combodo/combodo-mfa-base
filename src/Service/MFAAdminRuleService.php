@@ -42,7 +42,7 @@ class MFAAdminRuleService
 
 		$aRes = [];
 		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
-		$oSet = new DBObjectSet($oSearch);
+		$oSet = new DBObjectSet($oSearch, ['rank' => true ]);
 		$aRuleMfaModes=[];
 		while ($oRule = $oSet->Fetch()) {
 			$bProfileOk=false;
