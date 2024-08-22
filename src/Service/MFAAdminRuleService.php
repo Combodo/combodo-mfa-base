@@ -12,6 +12,7 @@ use CoreException;
 use DBObjectSearch;
 use ormLinkSet;
 use DBObjectSet;
+use MFAAdminRule;
 
 class MFAAdminRuleService
 {
@@ -30,10 +31,21 @@ class MFAAdminRuleService
 		return static::$oInstance;
 	}
 
-	public function GetAdminRulesByUserId(int $userId) : array {
+	/**
+	 * Return MFA admin rules ordered by rank.
+	 *
+	 * @param string $sUserId
+	 *
+	 * @return MFAAdminRule[]
+	 */
+	public function GetAdminRulesByUserId(string $sUserId) : array {
+		if (! MetaModel::GetConfig()->GetModuleSetting('combodo-mfa-base', 'enabled', true)){
+			return [];
+		}
+
 		try{
 			/** @var User $oUser */
-			$oUser = MetaModel::GetObject(User::class, $userId);
+			$oUser = MetaModel::GetObject(User::class, $sUserId);
 			$oOrgs = $this->GetUserOrgs($oUser);
 			$aUserProfiles = $this->GetUserProfiles($oUser);
 		} catch(CoreException $e){
@@ -101,7 +113,6 @@ class MFAAdminRuleService
 		}
 		return $aRes;
 	}
-
 
 	public function GetUserOrgs(User $oUser) : array {
 		if (empty($oUser->Get('org_id'))){
