@@ -306,14 +306,17 @@
                 <item id="name">
                   <rank>10</rank>
                 </item>
-                <item id="mfa_mode">
+                <item id="status">
                   <rank>20</rank>
                 </item>
-                <item id="operational_state">
+                <item id="mfa_mode">
                   <rank>30</rank>
                 </item>
-                <item id="activation_date">
+                <item id="operational_state">
                   <rank>40</rank>
+                </item>
+                <item id="activation_date">
+                  <rank>50</rank>
                 </item>
               </items>
               <rank>10</rank>
