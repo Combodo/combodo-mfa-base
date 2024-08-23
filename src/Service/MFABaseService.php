@@ -7,16 +7,15 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\MFABase\Controller\LoginMFABaseController;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
-use Combodo\iTop\MFABase\Helper\MFABaseUtils;
 use Combodo\iTop\Renderer\BlockRenderer;
 use DBObjectSet;
 use DBSearch;
 use Dict;
 use MetaModel;
 use MFAAdminRule;
+use MFAUserSettings;
 use UserRights;
 
 class MFABaseService
@@ -153,47 +152,29 @@ class MFABaseService
 
 	/**
 	 *
-	 * @param string $sUserLogin
-	 * @param string $sLoginMode
-	 * @param string $sViewFlag
+	 * @param string $sUserId
+	 * @param MFAUserSettings[] $aUserSettings
 	 *
 	 * @return bool
 	 */
-	public function ValidateLogin(string $sUserLogin, string $sLoginMode, string $sViewFlag): bool
+	public function ValidateLogin(string $sUserId, array $aUserSettings): bool
 	{
-		if (!in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes())) {
-			return true;
-		}
-
-		// MFA is active for this mode, check if additional information is needed
-		$sUserId =  UserRights::GetUserId($sUserLogin);
-		if (is_null($sUserId)) {
-			return true;
-		}
-
-		$aMissingModes = MFAUserSettingsService::GetInstance()->GetNotConfiguredMandatoryMFAAdminRules($sUserId);
-		$aMissingModes = [MetaModel::NewObject(MFAAdminRule::class, [
-			'name' => 'toto',
-			'mfa_mode' => 'MFAUserSettingsTotpApp',
-			'operational_state' => 'forced',
-			'activation_date' => '2025-01-01 00:00:00',
-		])];
-		if (count($aMissingModes) > 0 && $sViewFlag !== 'no-warning') {
-			// Manage mandatory modes
-			$oMFAAdminRule = reset($aMissingModes);
-			$oController = new LoginMFABaseController(__DIR__.'/../../templates/login', MFABaseUtils::MODULE_NAME);
-			$oController->DisplayUserWarningAboutMissingMFAMode($oMFAAdminRule);
-			exit;
-		}
-
-		$aUserSettings = MFAUserSettingsService::GetInstance()->GetActiveMFASettings($sUserId);
-		if (count($aUserSettings) === 0) {
-
-			return true;
-		}
-
-
 		return true;
 	}
+
+	public function IsLoginModeApplicable($sLoginMode): bool
+	{
+		return in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes());
+	}
+
+	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
+	{
+		return true;
+	}
+
+	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void
+	{
+	}
+
 
 }

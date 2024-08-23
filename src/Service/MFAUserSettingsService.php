@@ -6,12 +6,11 @@
 
 namespace Combodo\iTop\MFABase\Service;
 
-use MFAUserSettings;
-use MFAAdminRule;
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use DBObjectSearch;
 use DBObjectSet;
-use Combodo\iTop\MFABase\Helper\MFABaseLog;
-use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use MFAAdminRule;
+use MFAUserSettings;
 
 class MFAUserSettingsService
 {
@@ -20,21 +19,17 @@ class MFAUserSettingsService
 
 	protected function __construct()
 	{
+		if (!isset(self::$oMFAAdminRuleService)) {
+			self::$oMFAAdminRuleService = MFAAdminRuleService::GetInstance();
+		}
 	}
 
 	/**
 	 * Test purpose only
 	 */
-	final public static function SetMFAAdminRuleService(MFAAdminRuleService $oMFAAdminRuleService) {
+	final public static function SetMFAAdminRuleService(MFAAdminRuleService $oMFAAdminRuleService)
+	{
 		self::$oMFAAdminRuleService = $oMFAAdminRuleService;
-	}
-
-	private static function GetMFAAdminRuleService() : MFAAdminRuleService {
-		if (! isset(self::$oMFAAdminRuleService)){
-			self::$oMFAAdminRuleService = MFAAdminRuleService::GetInstance();
-		}
-
-		return self::$oMFAAdminRuleService;
 	}
 
 	final public static function GetInstance(): MFAUserSettingsService
@@ -55,13 +50,14 @@ class MFAUserSettingsService
 	 *
 	 * @return MFAUserSettings[]
 	 */
-	public function GetAllMFASettings(string $sUserId, ?array $aAdminRules=null) : array {
-		if (! MFABaseConfig::GetInstance()->IsEnabled()){
+	public function GetAllMFASettings(string $sUserId, ?array $aAdminRules = null): array
+	{
+		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
 			return [];
 		}
 
-		if (is_null($aAdminRules)){
-			$aAdminRules = MFAUserSettingsService::GetMFAAdminRuleService()->GetAdminRulesByUserId($sUserId);;
+		if (is_null($aAdminRules)) {
+			$aAdminRules = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);;
 		}
 		$bAll = count($aAdminRules) == 0;
 
@@ -69,21 +65,17 @@ class MFAUserSettingsService
 			"SELECT MFAUserSettings WHERE user_id=:user_id", ['user_id' => $sUserId]);
 		$oSet = new DBObjectSet($oSearch);
 
-		$aSettings=[];
+		$aSettings = [];
 		while ($oSettings = $oSet->Fetch()) {
-			if (! MFABaseConfig::GetInstance()->IsMFAMethodEnabled(get_class($oSettings))) {
-				continue;
-			}
-
-			if ($bAll){
+			if ($bAll) {
 				$aSettings[] = $oSettings;
 				continue;
 			}
 
 			/** @var MFAAdminRule $oAdminRule */
 			$oAdminRule = $aAdminRules[get_class($oSettings)] ?? null;
-			if (! is_null($oAdminRule)){
-				$aSettings[]=$oSettings;
+			if (!is_null($oAdminRule)) {
+				$aSettings[] = $oSettings;
 			}
 		}
 
@@ -98,54 +90,36 @@ class MFAUserSettingsService
 	 *
 	 * @return MFAUserSettings[]
 	 */
-	public function GetActiveMFASettings(string $sUserId) : array {
-		if (! MFABaseConfig::GetInstance()->IsEnabled()){
+	public function GetActiveMFASettings(string $sUserId): array
+	{
+		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
 			return [];
 		}
 
-		$aAdminRules = MFAUserSettingsService::GetMFAAdminRuleService()->GetAdminRulesByUserId($sUserId);
+		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
 		$bAll = count($aAdminRules) == 0;
 		$aSettings = $this->GetAllMFASettings($sUserId, $aAdminRules);
 
-		$aRes=[];
-		foreach ($aSettings as $oSettings){
+		$aRes = [];
+		foreach ($aSettings as $oSettings) {
 			/** @var MFAUserSettings $oSettings */
-			if ($oSettings->Get('') != "active"){
+			if ($oSettings->Get('') != "active") {
 				continue;
 			}
 
-			if ($bAll){
+			if ($bAll) {
 				$aRes[] = $oSettings;
 				continue;
 			}
 
 			/** @var MFAAdminRule $oAdminRule */
 			$oAdminRule = $aAdminRules[get_class($oSettings)] ?? null;
-			if (! is_null($oAdminRule) && $oAdminRule->Get('operational_state') !== "denied"){
-				$aRes[]=$oSettings;
+			if (!is_null($oAdminRule) && $oAdminRule->Get('operational_state') !== "denied") {
+				$aRes[] = $oSettings;
 			}
 		}
 
 		return $aRes;
 	}
 
-	/**
-	 * after application date
-	 * @param string $sUserId
-	 *
-	 * @return MFAAdminRule[]
-	 */
-	public function GetNotConfiguredMandatoryMFAAdminRules(string $sUserId) : array {
-		return [];
-	}
-
-	/**
-	 * before application date
-	 * @param string $sUserId
-	 *
-	 * @return array
-	 */
-	public function GetFutureMandatoryMFAAdminRules(string $sUserId) : array {
-		return [];
-	}
 }

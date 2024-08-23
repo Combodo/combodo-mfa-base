@@ -5,9 +5,9 @@ namespace Combodo\iTop\MFABase\Test;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use MFAAdminRule;
-use MetaModel;
 use Config;
+use MetaModel;
+use MFAAdminRule;
 use MFAUserSettings;
 
 class MFAUserSettingsServiceTest extends ItopDataTestCase {
@@ -60,12 +60,12 @@ class MFAUserSettingsServiceTest extends ItopDataTestCase {
 		$sUserId = $oUser->GetKey();
 		if ($bModuleEnabled) {
 			$this->oMFAAdminRuleService->expects($this->exactly(1))
-				->method("GetAdminRulesByUserId")
+				->method("GetAdminRuleByUserId")
 				->willReturn([])
 				->with($sUserId);
 		} else {
 			$this->oMFAAdminRuleService->expects($this->exactly(0))
-				->method("GetAdminRulesByUserId");
+				->method("GetAdminRuleByUserId");
 		}
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);

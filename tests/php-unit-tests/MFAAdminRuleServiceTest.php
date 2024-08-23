@@ -4,9 +4,9 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use MFAAdminRule;
-use MetaModel;
 use Config;
+use MetaModel;
+use MFAAdminRule;
 
 class MFAAdminRuleServiceTest extends ItopDataTestCase {
 	private $sConfigTmpBackupFile;
@@ -79,15 +79,15 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 	public function testNonExistingUser() {
 		$this->CreateRule("rule", "MFAUserSettingsRecoveryCode", "forced");
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId(66666));
+		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId(66666));
 	}
 
 	public function testNoExistingRule() {
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oPortalUserInOrg2->GetKey()));
+		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function CreateRule(string $sName, string $sMfaClass, $sState, $aOrgs=[], $aProfiles=[], $iRank=100) : MFAAdminRule {
@@ -144,9 +144,9 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 
 		if ($bModuleEnabled) {
-			$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+			$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 		} else {
-			$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+			$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 		}
 	}
 
@@ -156,13 +156,13 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', []);
-		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["MFAUserSettingsRecoveryCode"]);
-		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["AAA"]);
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 	}
 
 	public function testNonMatchingRule() {
@@ -170,10 +170,10 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$this->CreateRule("rule with Administrator", "MFAUserSettingsRecoveryCode", "optional", [], [ItopDataTestCase::$aURP_Profiles['Administrator']]);
 
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oPortalUserInOrg2->GetKey()));
+		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function testMatchingRule_Org() {
@@ -192,11 +192,11 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 		$aExpectedRules = [$oNoOrgRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$aExpectedRules = [$oRule3, $oRule5, $oNoOrgRule1];
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oPortalUserInOrg2->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function testMatchingRule_ProfileAndOrg() {
@@ -216,11 +216,11 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 		$aExpectedRules = [$oNoProfileNoOrgRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$aExpectedRules = [$oRule2, $oRule5, $oNoProfileNoOrgRule1];
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oPortalUserInOrg2->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function testMatchingRule_Profile() {
@@ -242,11 +242,11 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 		$aExpectedRules = [$oNoProfileRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$aExpectedRules = [$oRule3, $oRule5, $oNoProfileRule1];
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRulesByUserId($oPortalUserInOrg2->GetKey()));
+		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 

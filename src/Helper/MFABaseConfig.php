@@ -57,13 +57,4 @@ class MFABaseConfig
 		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'allowed-login-types', ['form', 'basic', 'url', 'external']);
 	}
 
-	public function IsMFAMethodEnabled(string $sClass) {
-		$aMethods = $this->GetMFAMethods();
-		if (count($aMethods)==0){
-			return true;
-		}
-
-		return in_array($sClass, $aMethods);
-	}
-
 }

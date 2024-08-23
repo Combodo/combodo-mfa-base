@@ -6,15 +6,14 @@
 
 namespace Combodo\iTop\MFABase\Service;
 
-use MetaModel;
-use User;
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use CoreException;
 use DBObjectSearch;
-use ormLinkSet;
 use DBObjectSet;
+use MetaModel;
 use MFAAdminRule;
-use Combodo\iTop\MFABase\Helper\MFABaseLog;
-use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use ormLinkSet;
+use User;
 
 class MFAAdminRuleService
 {
@@ -38,91 +37,80 @@ class MFAAdminRuleService
 	 *
 	 * @param string $sUserId
 	 *
-	 * @return MFAAdminRule[]
+	 * @return MFAAdminRule|null
 	 */
-	public function GetAdminRulesByUserId(string $sUserId) : array {
-		if (! MFABaseConfig::GetInstance()->IsEnabled()){
-			return [];
+	public function GetAdminRuleByUserId(string $sUserId): ?MFAAdminRule
+	{
+		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
+			return null;
 		}
 
-		try{
+		try {
 			/** @var User $oUser */
 			$oUser = MetaModel::GetObject(User::class, $sUserId);
 			$oOrgs = $this->GetUserOrgs($oUser);
 			$aUserProfiles = $this->GetUserProfiles($oUser);
-		} catch(CoreException $e){
-			return [];
+		} catch (CoreException $e) {
+			return null;
 		}
 
-		$aRes = [];
 		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
-		$oSet = new DBObjectSet($oSearch, ['rank' => true ]);
+		$oSet = new DBObjectSet($oSearch, ['rank' => true]);
+		/** @var MFAAdminRule $oRule */
 		while ($oRule = $oSet->Fetch()) {
-			$bProfileOk=false;
+			$bProfileOk = false;
 
 			/** @var ormLinkSet $aProfileSet */
 			$aProfileSet = $oRule->Get('profiles_list');
-			if ($aProfileSet->count()==0){
-				$bProfileOk=true;
-			} else{
+			if ($aProfileSet->count() == 0) {
+				$bProfileOk = true;
+			} else {
 				while ($oProfile = $aProfileSet->Fetch()) {
-					if (in_array($oProfile->Get('profile_id'), $aUserProfiles)){
-						$bProfileOk=true;
+					if (in_array($oProfile->Get('profile_id'), $aUserProfiles)) {
+						$bProfileOk = true;
 						break;
 					}
 				}
 			}
 
-			if ($bProfileOk){
+			if ($bProfileOk) {
 				/** @var ormLinkSet $aOrgSet */
 				$aOrgSet = $oRule->Get('orgs_list');
-				$sMfaMode = $oRule->Get('mfa_mode');
 
-				if ($aOrgSet->count()==0){
-					if (! array_key_exists($sMfaMode, $aRes)){
-						if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))){
-							$aRes["$sMfaMode"]=$oRule;
-						} else {
-							MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
-						}
-					}
-				} else{
+				if ($aOrgSet->count() == 0) {
+					return $oRule;
+				} else {
 					while ($oProfile = $aOrgSet->Fetch()) {
-						if (in_array($oProfile->Get('organization_id'), $oOrgs)){
-							if (! array_key_exists($sMfaMode, $aRes)) {
-								if (MFABaseConfig::GetInstance()->IsMFAMethodEnabled($oRule->Get('mfa_mode'))) {
-									$aRes["$sMfaMode"] = $oRule;
-								} else {
-									MFABaseLog::Info("Found disabled admin rule.", null, [$sMfaMode]);
-								}
-								break;
-							}
+						if (in_array($oProfile->Get('organization_id'), $oOrgs)) {
+							return $oRule;
 						}
 					}
 				}
 			}
-
 		}
 
-		return $aRes;
+		return null;
 	}
 
-	private function GetUserProfiles(User $oUser) : array {
+	private function GetUserProfiles(User $oUser): array
+	{
 		/** @var ormLinkSet $aProfileSet */
 		$aProfileSet = $oUser->Get('profile_list');
-		if ($aProfileSet->count()==0){
+		if ($aProfileSet->count() == 0) {
 			return [];
 		}
 
-		$aRes=[];
+		$aRes = [];
 		while ($oProfile = $aProfileSet->Fetch()) {
-			$aRes[]=$oProfile->Get('profileid');
+			$aRes[] = $oProfile->Get('profileid');
 		}
+
 		return $aRes;
 	}
 
-	private function GetUserOrgs(User $oUser) : array {
-		if (empty($oUser->Get('org_id'))){
+	private function GetUserOrgs(User $oUser): array
+	{
+		if (empty($oUser->Get('org_id'))) {
 			return [];
 		}
 
@@ -138,5 +126,14 @@ class MFAAdminRuleService
 		}
 
 		return $aUserOrgs;
+	}
+
+	public function IsForcedNow(MFAAdminRule $oMFAAdminRule): bool
+	{
+		if (!$oMFAAdminRule->IsForced()) {
+			return false;
+		}
+
+		return true;
 	}
 }
