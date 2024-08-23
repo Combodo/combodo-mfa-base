@@ -156,7 +156,6 @@
         <naming>
           <attributes>
             <attribute id="name"/>
-            <attribute id="mfa_mode"/>
             <attribute id="operational_state"/>
           </attributes>
         </naming>
