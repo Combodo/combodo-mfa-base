@@ -79,22 +79,22 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 	public function testNonExistingUser() {
 		$this->CreateRule("rule", "MFAUserSettingsRecoveryCode", "forced");
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId(66666));
+		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId(66666));
 	}
 
 	public function testNoExistingRule() {
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
+		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function CreateRule(string $sName, string $sMfaClass, $sState, $aOrgs=[], $aProfiles=[], $iRank=100) : MFAAdminRule {
 		/** @var MFAAdminRule $oRule */
 		$oRule = $this->createObject(MFAAdminRule::class, array(
 			'name' => $sName,
-			'mfa_mode' => $sMfaClass,
+			'preferred_mfa_mode' => $sMfaClass,
 			'operational_state' => $sState,
 			'rank' => $iRank,
 		));
@@ -133,136 +133,100 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		];
 	}
 
-	/**
-	 * @dataProvider Rule_ModuleConfig
-	 */
-	public function testRule_ModuleConfig(bool $bModuleEnabled) {
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
-
-		$oRule = $this->CreateRule("default rule", "MFAUserSettingsRecoveryCode", "forced", []);
-
-		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-
-		if ($bModuleEnabled) {
-			$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
-		} else {
-			$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
-		}
-	}
-
-	public function testRule_ModuleMFAModeConfig() {
-		$oRule = $this->CreateRule("default rule", "MFAUserSettingsRecoveryCode", "forced", []);
-		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', []);
-		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
-
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["MFAUserSettingsRecoveryCode"]);
-		$this->CheckRules([$oRule], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
-
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', ["AAA"]);
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
-	}
-
 	public function testNonMatchingRule() {
 		$this->CreateRule("rule in org1", "MFAUserSettingsRecoveryCode", "forced", [ $this->org1->GetKey() ]);
 		$this->CreateRule("rule with Administrator", "MFAUserSettingsRecoveryCode", "optional", [], [ItopDataTestCase::$aURP_Profiles['Administrator']]);
 
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
 		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules([], MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+		$this->CheckRules(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
 	public function testMatchingRule_Org() {
 		$i=0;
-		$oRule1 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 3);
-		$oRule2 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 2);
-		$oRule3 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 1);
+		$oRule1 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 10);
 
 		$oRule4 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "forced", [ $this->org2->GetKey() ], [], 10);
 		$oRule5 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "optional", [ $this->org2->GetKey() ], [], 5);
-		$oRule6 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "denied", [ $this->org2->GetKey() ], [], 7);
+		$oRule6 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "forced", [ $this->org2->GetKey() ], [], 7);
 
 		$oNoOrgRule1 = $this->CreateRule("testMatchingRule_NoOrg" . $i++, "MFAUserSettingsTotpApp", "optional", [], [], 7);
 		$oNoOrgRule2 = $this->CreateRule("testMatchingRule_NoOrg" . $i++, "MFAUserSettingsTotpApp", "forced", [], [], 8);
-		$oNoOrgRule3 = $this->CreateRule("testMatchingRule_NoOrg" . $i++, "MFAUserSettingsTotpApp", "denied", [], [], 9);
+		$oNoOrgRule3 = $this->CreateRule("testMatchingRule_NoOrg" . $i++, "MFAUserSettingsTotpApp", "forced", [], [], 9);
 
-		$aExpectedRules = [$oNoOrgRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($oNoOrgRule1, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
-		$aExpectedRules = [$oRule3, $oRule5, $oNoOrgRule1];
-		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
+		$this->CheckRules($oRule5, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+
+		$oPortalUserInOrg1 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org1->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
+		$this->CheckRules($oRule3, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg1->GetKey()));
 	}
 
 	public function testMatchingRule_ProfileAndOrg() {
 		$i=0;
 		$aWith2Orgs = [$this->org2->GetKey(), $this->org1->GetKey()];
-		$oRule1 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 3);
-		$oRule2 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 2);
-		$oRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Administrator']], 1);
+		$oRule1 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Administrator']], 10);
 
 		$oRule4 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "forced", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 10);
 		$oRule5 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "optional", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 5);
-		$oRule6 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "denied", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 7);
+		$oRule6 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "optional", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 7);
 
 		$oNoProfileNoOrgRule1 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpApp", "optional", [], [], 7);
 		$oNoProfileNoOrgRule2 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpApp", "forced", [], [], 8);
-		$oNoProfileNoOrgRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpApp", "denied", [], [], 9);
+		$oNoProfileNoOrgRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpApp", "optional", [], [], 9);
 
-		$aExpectedRules = [$oNoProfileNoOrgRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($oNoProfileNoOrgRule1, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
-		$aExpectedRules = [$oRule2, $oRule5, $oNoProfileNoOrgRule1];
-		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg2", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
+		$this->CheckRules($oRule5, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+
+		$oPortalUserInOrg1 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org1->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
+		$this->CheckRules($oRule2, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg1->GetKey()));
 	}
 
 	public function testMatchingRule_Profile() {
 		$i=0;
 		$aWith2profiles = [ItopDataTestCase::$aURP_Profiles['Administrator'], ItopDataTestCase::$aURP_Profiles['Portal user']];
-		$oRule1 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 3);
-		$oRule2 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 2);
-		$oRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 1);
+		$oRule1 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 10);
 
 
 		$aWith1profiles = [ItopDataTestCase::$aURP_Profiles['Portal user']];
 		$oRule4 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsRecoveryCode", "forced", [], $aWith1profiles, 10);
 		$oRule5 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsRecoveryCode", "optional", [], $aWith1profiles, 5);
-		$oRule6 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsRecoveryCode", "denied", [], $aWith1profiles, 7);
+		$oRule6 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsRecoveryCode", "optional", [], $aWith1profiles, 7);
 
 		$oNoProfileRule1 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpApp", "optional", [], [], 7);
 		$oNoProfileRule2 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpApp", "forced", [], [], 8);
-		$oNoProfileRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpApp", "denied", [], [], 9);
+		$oNoProfileRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpApp", "optional", [], [], 9);
 
-		$aExpectedRules = [$oNoProfileRule1];
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
+		$this->CheckRules($oNoProfileRule1, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
-		$aExpectedRules = [$oRule3, $oRule5, $oNoProfileRule1];
-		$oPortalUserInOrg2 = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
-		$this->CheckRules($aExpectedRules, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
+		$oPortalUser = $this->CreateUserWithProfilesAndOrg("PortalUserInOrg1", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Portal user']]);
+		$this->CheckRules($oRule5, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUser->GetKey()));
+
+		$oAdminUser = $this->CreateUserWithProfilesAndOrg("adminUser", $this->org2->GetKey(), [ItopDataTestCase::$aURP_Profiles['Administrator']]);
+		$this->CheckRules($oRule3, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oAdminUser->GetKey()));
 	}
 
 
-	public function CheckRules(array $aExpectedRules, array $aRules) {
-		$aExpectedRuleNames = [];
-		foreach ($aExpectedRules as $oRule){
-			/** @var MFAAdminRule $oRule */
-			$aExpectedRuleNames[$oRule->Get('mfa_mode')]=$oRule->Get('name');
+	public function CheckRules($aExpectedRule, ?MFAAdminRule $oRule) {
+		if (is_null($aExpectedRule)){
+			$this->assertNull($oRule);
+		} else {
+			$this->assertEquals($aExpectedRule->Get('preferred_mfa_mode'), $oRule->Get('preferred_mfa_mode'));
+			$this->assertEquals($aExpectedRule->Get('name'), $oRule->Get('name'));
 		}
-
-		$RuleNames = [];
-		foreach ($aRules as $sMode => $oRule){
-			/** @var MFAAdminRule $oRule */
-			$RuleNames[$sMode]=$oRule->Get('name');
-		}
-
-		$this->assertEquals($aExpectedRuleNames, $RuleNames);
 	}
 }
