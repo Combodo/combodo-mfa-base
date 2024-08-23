@@ -146,9 +146,9 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 
 	public function testMatchingRule_Org() {
 		$i=0;
-		$oRule1 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 30);
-		$oRule2 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 20);
-		$oRule3 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpPMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 10);
+		$oRule1 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsTotpMail", "forced", [ $this->org2->GetKey(), $this->org1->GetKey() ], [], 10);
 
 		$oRule4 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "forced", [ $this->org2->GetKey() ], [], 10);
 		$oRule5 = $this->CreateRule("testMatchingRule_Org" . $i++, "MFAUserSettingsRecoveryCode", "optional", [ $this->org2->GetKey() ], [], 5);
@@ -171,9 +171,9 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 	public function testMatchingRule_ProfileAndOrg() {
 		$i=0;
 		$aWith2Orgs = [$this->org2->GetKey(), $this->org1->GetKey()];
-		$oRule1 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 30);
-		$oRule2 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 20);
-		$oRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpPMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Administrator']], 10);
+		$oRule1 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Portal user']], 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsTotpMail", "forced", $aWith2Orgs, [ItopDataTestCase::$aURP_Profiles['Administrator']], 10);
 
 		$oRule4 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "forced", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 10);
 		$oRule5 = $this->CreateRule("testMatchingRule_ProfileAndOrg" . $i++, "MFAUserSettingsRecoveryCode", "optional", [ $this->org2->GetKey() ], [ItopDataTestCase::$aURP_Profiles['Portal user']], 5);
@@ -196,9 +196,9 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 	public function testMatchingRule_Profile() {
 		$i=0;
 		$aWith2profiles = [ItopDataTestCase::$aURP_Profiles['Administrator'], ItopDataTestCase::$aURP_Profiles['Portal user']];
-		$oRule1 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 30);
-		$oRule2 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 20);
-		$oRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpPMail", "forced", [], $aWith2profiles, 10);
+		$oRule1 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpMail", "forced", [], $aWith2profiles, 30);
+		$oRule2 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpMail", "forced", [], $aWith2profiles, 20);
+		$oRule3 = $this->CreateRule("testMatchingRule_Profile" . $i++, "MFAUserSettingsTotpMail", "forced", [], $aWith2profiles, 10);
 
 
 		$aWith1profiles = [ItopDataTestCase::$aURP_Profiles['Portal user']];
