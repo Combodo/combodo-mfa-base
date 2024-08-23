@@ -48,7 +48,7 @@ class MFAAdminRuleService
 		try {
 			/** @var User $oUser */
 			$oUser = MetaModel::GetObject(User::class, $sUserId);
-			$oOrgs = $this->GetUserOrgs($oUser);
+			$aUserOrgIds = $this->GetUserOrgs($oUser);
 			$aUserProfiles = $this->GetUserProfiles($oUser);
 		} catch (CoreException $e) {
 			return null;
@@ -74,17 +74,27 @@ class MFAAdminRuleService
 			}
 
 			if ($bProfileOk) {
+				if (count($aUserOrgIds) === 0) {
+					return $oRule;
+				}
+
 				/** @var ormLinkSet $aOrgSet */
 				$aOrgSet = $oRule->Get('orgs_list');
 
-				if ($aOrgSet->count() == 0) {
+				if ($aOrgSet->count() === 0) {
 					return $oRule;
 				} else {
-					while ($oProfile = $aOrgSet->Fetch()) {
-						if (in_array($oProfile->Get('organization_id'), $oOrgs)) {
+					$aRuleOrgIds = $aOrgSet->GetColumnAsArray('org_id');
+					$aIntersection = array_intersect($aUserOrgIds, $aRuleOrgIds);
+					if (count($aIntersection) !== 0) {
+						return $oRule;
+					}
+
+					/*while ($oCurrentOrg = $aOrgSet->Fetch()) {
+						if (in_array($oCurrentOrg->Get('organization_id'), $aOrgIds)) {
 							return $oRule;
 						}
-					}
+					}*/
 				}
 			}
 		}
@@ -114,8 +124,12 @@ class MFAAdminRuleService
 			return [];
 		}
 
-		$aUserOrgs = [$oUser->Get('org_id')];
-		$sHierarchicalKeyCode = MetaModel::IsHierarchicalClass('Organization');
+		$aOrgSet = $oUser->Get('allowed_org_list');
+		return $aOrgSet->GetColumnAsArray('allowed_org_id');
+
+
+
+		/*$sHierarchicalKeyCode = MetaModel::IsHierarchicalClass('Organization');
 		if ($sHierarchicalKeyCode !== false) {
 			$sOrgQuery = 'SELECT Org FROM Organization AS Org JOIN Organization AS Root ON Org.'.$sHierarchicalKeyCode.' ABOVE Root.id WHERE Root.id = :id';
 			$oOrgSet = new DBObjectSet(DBObjectSearch::FromOQL_AllData($sOrgQuery), [], ['id' => $oUser->Get('org_id')]);
@@ -123,9 +137,9 @@ class MFAAdminRuleService
 				$oOrg = $aRow['Org'];
 				$aUserOrgs[] = $oOrg->GetKey();
 			}
-		}
+		}*/
 
-		return $aUserOrgs;
+		//return $aUserOrgs;
 	}
 
 	public function IsForcedNow(MFAAdminRule $oMFAAdminRule): bool
