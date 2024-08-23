@@ -61,7 +61,7 @@ class MFAUserSettingsServiceTest extends ItopDataTestCase {
 		if ($bModuleEnabled) {
 			$this->oMFAAdminRuleService->expects($this->exactly(1))
 				->method("GetAdminRuleByUserId")
-				->willReturn([])
+				->willReturn(null)
 				->with($sUserId);
 		} else {
 			$this->oMFAAdminRuleService->expects($this->exactly(0))

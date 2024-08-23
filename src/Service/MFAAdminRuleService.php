@@ -102,6 +102,15 @@ class MFAAdminRuleService
 		return null;
 	}
 
+	public function GetDeniedModes(?MFAAdminRule $oAdminRule) : array {
+		if (is_null($oAdminRule)){
+			return [];
+		}
+
+		$oDeniedLinkset = $oAdminRule->Get('denied_mfamodes_list');
+		return $oDeniedLinkset->GetColumnAsArray("mfamode_id_friendlyname");
+	}
+
 	private function GetUserProfiles(User $oUser): array
 	{
 		/** @var ormLinkSet $aProfileSet */
@@ -126,9 +135,7 @@ class MFAAdminRuleService
 
 		$aOrgSet = $oUser->Get('allowed_org_list');
 		return $aOrgSet->GetColumnAsArray('allowed_org_id');
-
-
-
+		
 		/*$sHierarchicalKeyCode = MetaModel::IsHierarchicalClass('Organization');
 		if ($sHierarchicalKeyCode !== false) {
 			$sOrgQuery = 'SELECT Org FROM Organization AS Org JOIN Organization AS Root ON Org.'.$sHierarchicalKeyCode.' ABOVE Root.id WHERE Root.id = :id';

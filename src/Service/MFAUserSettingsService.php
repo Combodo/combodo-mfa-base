@@ -43,23 +43,19 @@ class MFAUserSettingsService
 
 	/**
 	 * @param string $sUserId
-	 * @param MFAAdminRule[]|null $aAdminRules
-	 *
 	 * Return user settings by user. By default is first. Otherwise ordered by Admin rules rank.
 	 * When no admin rules found for this user, all rules are optional.
 	 *
 	 * @return MFAUserSettings[]
 	 */
-	public function GetAllMFASettings(string $sUserId, ?array $aAdminRules = null): array
+	public function GetAllMFASettings(string $sUserId): array
 	{
 		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
 			return [];
 		}
 
-		if (is_null($aAdminRules)) {
-			$aAdminRules = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);;
-		}
-		$bAll = count($aAdminRules) == 0;
+		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
+		$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
 		$oSearch = DBObjectSearch::FromOQL(
 			"SELECT MFAUserSettings WHERE user_id=:user_id", ['user_id' => $sUserId]);
@@ -67,16 +63,11 @@ class MFAUserSettingsService
 
 		$aSettings = [];
 		while ($oSettings = $oSet->Fetch()) {
-			if ($bAll) {
-				$aSettings[] = $oSettings;
+			if (in_array(get_class($oSettings), $aDeniedMfaModes)) {
 				continue;
 			}
 
-			/** @var MFAAdminRule $oAdminRule */
-			$oAdminRule = $aAdminRules[get_class($oSettings)] ?? null;
-			if (!is_null($oAdminRule)) {
-				$aSettings[] = $oSettings;
-			}
+			$aSettings[] = $oSettings;
 		}
 
 		return $aSettings;
@@ -96,25 +87,12 @@ class MFAUserSettingsService
 			return [];
 		}
 
-		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
-		$bAll = count($aAdminRules) == 0;
-		$aSettings = $this->GetAllMFASettings($sUserId, $aAdminRules);
+		$aSettings = $this->GetAllMFASettings($sUserId);
 
 		$aRes = [];
 		foreach ($aSettings as $oSettings) {
 			/** @var MFAUserSettings $oSettings */
-			if ($oSettings->Get('') != "active") {
-				continue;
-			}
-
-			if ($bAll) {
-				$aRes[] = $oSettings;
-				continue;
-			}
-
-			/** @var MFAAdminRule $oAdminRule */
-			$oAdminRule = $aAdminRules[get_class($oSettings)] ?? null;
-			if (!is_null($oAdminRule) && $oAdminRule->Get('operational_state') !== "denied") {
+			if ($oSettings->Get('status') === "active") {
 				$aRes[] = $oSettings;
 			}
 		}
