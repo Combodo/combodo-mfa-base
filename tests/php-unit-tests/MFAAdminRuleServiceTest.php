@@ -5,7 +5,9 @@ namespace Combodo\iTop\MFABase\Test;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
+use DateTime;
 use MetaModel;
+use MFAMode;
 use MFAAdminRule;
 
 class MFAAdminRuleServiceTest extends ItopDataTestCase {
@@ -77,7 +79,7 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 			'language' => 'EN US',
 			'profile_list' => $oProfileLinkSet,
 			'contactid' => $oPerson->GetKey(),
-			'allowed_org_list' => $oAllowedOrgSet
+			'allowed_org_list' => $oAllowedOrgSet,
 		));
 		return $oUser;
 	}
@@ -95,7 +97,7 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
-	public function CreateRule(string $sName, string $sMfaClass, $sState, $aOrgs=[], $aProfiles=[], $iRank=100) : MFAAdminRule {
+	public function CreateRule(string $sName, string $sMfaClass, $sState, $aOrgs=[], $aProfiles=[], $iRank=100, $aDeniedModes=[]) : MFAAdminRule {
 		/** @var MFAAdminRule $oRule */
 		$oRule = $this->createObject(MFAAdminRule::class, array(
 			'name' => $sName,
@@ -122,6 +124,20 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 				$aOrgSet->AddItem(\MetaModel::NewObject('lnkMFAAdminRuleToOrganization', ['org_id' => $iOrgId]));
 			}
 			$aParams['orgs_list'] = $aOrgSet;
+		}
+
+		if (count($aDeniedModes)!=0) {
+			/** @var \ormLinkSet $oDeniedLinkset */
+			$oDeniedLinkset = $oRule->Get('denied_mfamodes_list');
+			foreach ($aDeniedModes as $sMfaMode) {
+				/** @var MFAMode $oMfaMode */
+				$oMfaMode = $this->createObject(MFAMode::class, array(
+					'name' => $sMfaMode,
+				));
+
+				$oDeniedLinkset->AddItem(\MetaModel::NewObject('lnkMFAAdminRuleToMFAMode', ['mfamode_id' => $oMfaMode]));
+			}
+			$aParams['denied_mfamodes_list'] = $oDeniedLinkset;
 		}
 
 		if (count($aParams)!=0) {
@@ -233,7 +249,6 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$this->CheckRules($oRule3, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oAdminUser->GetKey()));
 	}
 
-
 	public function CheckRules($aExpectedRule, ?MFAAdminRule $oRule) {
 		if (is_null($aExpectedRule)){
 			$this->assertNull($oRule);
@@ -241,5 +256,54 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 			$this->assertEquals($aExpectedRule->Get('preferred_mfa_mode'), $oRule->Get('preferred_mfa_mode'));
 			$this->assertEquals($aExpectedRule->Get('name'), $oRule->Get('name'));
 		}
+	}
+
+	public function testGetDeniedModes_null() {
+		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetDeniedModes(null));
+	}
+
+	public function testGetDeniedModes_nodenymode() {
+		$oRule = $this->CreateRule("rule without any deny mode", "MFAUserSettingsTotpApp", "optional", [], [], 70);
+
+		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetDeniedModes($oRule));
+	}
+
+	public function testGetDeniedModes() {
+		$aDeniedModes=[\MFAUserSettingsTotpApp::class, \MFAUserSettingsTotpMail::class];
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTotpApp", "optional", [], [], 70, $aDeniedModes);
+
+		$this->assertEquals($aDeniedModes, array_values(MFAAdminRuleService::GetInstance()->GetDeniedModes($oRule)));
+	}
+
+	public function IsForcedNowProvider() {
+		$oForceActivateDatetimeExpired = new DateTime("now - 1 minute");
+		$sForceActivateDatetimeExpired = $oForceActivateDatetimeExpired->format('Y-m-d H:i:s');
+		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 minute");
+		$sForceActivateDatetimeInTheFuture = $oForceActivateDatetimeInTheFuture->format('Y-m-d H:i:s');
+
+		return [
+			'forced + action date i the passed' => [ 'forced', $sForceActivateDatetimeExpired, true ],
+			'forced + action date in the future' => [ 'forced', $sForceActivateDatetimeInTheFuture, false ],
+			'optional + action date i the passed' => [ 'optional', $sForceActivateDatetimeExpired, false ],
+			'optional + action date in the future' => [ 'optional', $sForceActivateDatetimeInTheFuture, false ],
+			'forced + no action date' => [ 'forced', null, false ],
+			'optional + no action date' => [ 'optional', null, false ],
+		];
+	}
+
+	/**
+	 * @dataProvider IsForcedNowProvider
+	 */
+	public function testIsForcedNow(string $sState, ?string $sForcedActivationDate, bool $bExpectedForcedNow) {
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTotpApp", $sState, [], [], 70);
+
+		$oNow = new DateTime();
+		$sNow = $oNow->format('Y-m-d H:i:s');
+		if (! is_null($sForcedActivationDate)){
+			$oRule = $this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sForcedActivationDate]);
+
+		}
+		$sComment = "sNow: $sNow sForcedActivationDate: $sForcedActivationDate obj forced_activation_date : " . $oRule->Get('forced_activation_date');
+		$this->assertEquals($bExpectedForcedNow, MFAAdminRuleService::GetInstance()->IsForcedNow($oRule), $sComment);
 	}
 }

@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use CoreException;
+use DateTime;
 use DBObjectSearch;
 use DBObjectSet;
 use MetaModel;
@@ -135,7 +136,7 @@ class MFAAdminRuleService
 
 		$aOrgSet = $oUser->Get('allowed_org_list');
 		return $aOrgSet->GetColumnAsArray('allowed_org_id');
-		
+
 		/*$sHierarchicalKeyCode = MetaModel::IsHierarchicalClass('Organization');
 		if ($sHierarchicalKeyCode !== false) {
 			$sOrgQuery = 'SELECT Org FROM Organization AS Org JOIN Organization AS Root ON Org.'.$sHierarchicalKeyCode.' ABOVE Root.id WHERE Root.id = :id';
@@ -155,6 +156,11 @@ class MFAAdminRuleService
 			return false;
 		}
 
-		return true;
+		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW()");
+		//$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
+		$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
+		$oForcedAdminRuleSet = new DBObjectSet($oSearch);
+
+		return $oForcedAdminRuleSet->CountExceeds(0);
 	}
 }
