@@ -6,6 +6,14 @@
 {% block login_content %}
 	<div id="login-content">
 		<h1>sTitle</h1>
+
+		{% block mfa_warning %}
+			<div id="mfa_warning">
+				{% import "macros.twig" as Macro %}
+				{{ Macro.BlockExtension(aPluginFormData, 'mfa_warning') }}
+			</div>
+		{% endblock %}
+
 		{% for Section in aSections %}
 			{% if Section.sHtmlTwig %}
 				{% include Section.sHtmlTwig %}

@@ -82,6 +82,42 @@
         </field>
       </fields>
       <methods>
+         <method id="GetTwigContextForConfiguration">
+          <comment>/**
+            *
+            * @return LoginTwigContext
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public abstract function GetTwigContextForConfiguration(): LoginTwigContext;]]></code>
+        </method>
+
+         <method id="GetTwigContextForLoginValidation">
+          <comment>/**
+            *
+            * @return LoginTwigContext
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public abstract function GetTwigContextForLoginValidation(): LoginTwigContext;]]></code>
+        </method>
+
+         <method id="GetTwigContextForModeSwitch">
+          <comment>/**
+	          * Provide Display information for link to configure MFA in another mode than currently displayed or default one
+            * @return LoginTwigContext
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public abstract function GetTwigContextForModeSwitch(): LoginTwigContext;]]></code>
+        </method>
+
         <method id="CanBeDefault">
           <comment>/**
             *
@@ -322,7 +358,7 @@
             <item id="name">
               <rank>20</rank>
             </item>
-            <item id="mfa_mode">
+            <item id="preferred_mfa_mode">
               <rank>30</rank>
             </item>
             <item id="operational_state">
@@ -346,7 +382,7 @@
                 <item id="status">
                   <rank>20</rank>
                 </item>
-                <item id="mfa_mode">
+                <item id="preferred_mfa_mode">
                   <rank>30</rank>
                 </item>
                 <item id="operational_state">
@@ -382,7 +418,7 @@
             <item id="name">
               <rank>10</rank>
             </item>
-            <item id="mfa_mode">
+            <item id="preferred_mfa_mode">
               <rank>20</rank>
             </item>
           </items>
@@ -392,7 +428,7 @@
             <item id="name">
               <rank>10</rank>
             </item>
-            <item id="mfa_mode">
+            <item id="preferred_mfa_mode">
               <rank>20</rank>
             </item>
           </items>

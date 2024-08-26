@@ -6,9 +6,12 @@
 
 namespace Combodo\iTop\MFABase\Service;
 
+use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
+use Combodo\iTop\MFABase\Controller\LoginMFABaseController;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
+use Combodo\iTop\MFABase\Helper\MFABaseUtils;
 use Combodo\iTop\Renderer\BlockRenderer;
 use DBObjectSet;
 use DBSearch;
@@ -34,6 +37,12 @@ class MFABaseService
 		}
 
 		return static::$oInstance;
+	}
+
+
+	public function IsLoginModeApplicable($sLoginMode): bool
+	{
+		return in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes());
 	}
 
 	public function GetConfigMFAParams(): array
@@ -162,11 +171,6 @@ class MFABaseService
 		return true;
 	}
 
-	public function IsLoginModeApplicable($sLoginMode): bool
-	{
-		return in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes());
-	}
-
 	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
 	{
 		return true;
@@ -174,6 +178,8 @@ class MFABaseService
 
 	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void
 	{
+		$oController = new LoginMFABaseController(\utils::GetAbsoluteModulePath(MFABaseUtils::MODULE_NAME) .'templates/login', MFABaseUtils::MODULE_NAME);
+		$oController->DisplayUserWarningAboutMissingMFAMode($oMFAAdminRule);
 	}
 
 

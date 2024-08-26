@@ -13,8 +13,7 @@ use utils;
 
 class LoginMFABaseController extends Controller
 {
-
-	public function DisplayUserWarningAboutMissingMFAMode(MFAAdminRule $oRule)
+	public function DisplayMfaLoginPage(MFAAdminRule $oRule)
 	{
 		$aParams['sMFAActivationDate'] = $oRule->Get('activation_date');
 		$aParams['sResetLoginURL'] = utils::GetAbsoluteUrlAppRoot().'pages/logoff.php?operation=do_logoff';
@@ -23,6 +22,18 @@ class LoginMFABaseController extends Controller
 		//$oPage->add_saas(AuthentTwoFactorHelper::GetSCSSFile());
 		$oPage->DisplayLoginPage($aParams, 'UserWarningAboutMissingMFAMode');
 		$oPage->output();
+	}
+
+	public function DisplayUserWarningAboutMissingMFAMode(MFAAdminRule $oRule)
+	{
+		$aParams['sMFAActivationDate'] = $oRule->Get('forced_activation_date');
+		$aParams['sMyAccountMenuLink'] = utils::GetAbsoluteUrlModulePage("combodo-my-account",'index.php') . "#TwigBaseTabContainer=tab_MyAccountTabMFA";
+
+		$oPage = new LoginMFABaseWebPage();
+		//$oPage->add_saas(AuthentTwoFactorHelper::GetSCSSFile());
+		$oPage->DisplayLoginPage($aParams, 'UserWarningAboutMissingMFAMode');
+		$oPage->output();
+		exit();
 	}
 
 }

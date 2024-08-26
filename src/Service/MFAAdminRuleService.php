@@ -157,7 +157,6 @@ class MFAAdminRuleService
 		}
 
 		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW()");
-		//$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
 		$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
 		$oForcedAdminRuleSet = new DBObjectSet($oSearch);
 
