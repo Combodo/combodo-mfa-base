@@ -13,7 +13,7 @@ use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use LoginWebPage;
 use UserRights;
 
-class LoginMFABase extends \AbstractLoginFSMExtension
+class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 {
 	public function ListSupportedLoginModes()
 	{

@@ -32,7 +32,6 @@ class MFABaseLog extends LogAPI
 
 	public static function Info($sMessage, $sChannel = null, $aContext = [])
 	{
-		IssueLog::Info($sMessage, self::CHANNEL_DEFAULT, $aContext);
 		parent::Info($sMessage, self::CHANNEL_DEFAULT, $aContext);
 	}
 

@@ -8,5 +8,9 @@ namespace Combodo\iTop\MFABase\Helper;
 
 class MFABaseException extends \Exception
 {
-
+	public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+	{
+		MFABaseLog::Error($message);
+		parent::__construct($message, $code, $previous);
+	}
 }

@@ -6,20 +6,21 @@
 
 namespace Combodo\iTop\MFABase\Service;
 
-use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\MFABase\Controller\LoginMFABaseController;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
-use Combodo\iTop\MFABase\Helper\MFABaseUtils;
+use Combodo\iTop\MFABase\View\MFATwigRenderer;
 use Combodo\iTop\Renderer\BlockRenderer;
 use DBObjectSet;
 use DBSearch;
 use Dict;
+use LoginWebPage;
 use MetaModel;
 use MFAAdminRule;
 use MFAUserSettings;
 use UserRights;
+use utils;
 
 class MFABaseService
 {
@@ -152,7 +153,7 @@ class MFABaseService
 				continue;
 			}
 			$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id"), [], ['id' => $oUser->GetKey()]);
-			$oMode = $oSet->Fetch() ??  MetaModel::NewObject($sModeClass, ['user_id' => $oUser->GetKey()]);
+			$oMode = $oSet->Fetch() ?? MetaModel::NewObject($sModeClass, ['user_id' => $oUser->GetKey()]);
 			$aModes[$sModeClass] = $oMode;
 		}
 
@@ -160,15 +161,62 @@ class MFABaseService
 	}
 
 	/**
+	 * Display the screen to enter the code, and validate the code entered by the user
+	 * Use selected_mfa_mode posted var to choose the mode of MFA to validate
 	 *
-	 * @param string $sUserId
-	 * @param MFAUserSettings[] $aUserSettings
+	 * @param string $sUserId the user wanting to log in
+	 * @param MFAUserSettings[] $aUserSettings The MFA modes configured by the user
 	 *
 	 * @return bool
 	 */
 	public function ValidateLogin(string $sUserId, array $aUserSettings): bool
 	{
-		return true;
+		$oChosenMode = null;
+		$sChosenMode = utils::ReadPostedParam('selected_mfa_mode', null);
+		foreach ($aUserSettings as $oUserSettings) {
+			if ((is_null($sChosenMode) && $oUserSettings->Get('is_default') === 'yes')
+				|| (get_class($oUserSettings) === $sChosenMode)) {
+				$oChosenMode = $oUserSettings;
+				break;
+			}
+		}
+
+		if (is_null($oChosenMode)) {
+			foreach ($aUserSettings as $oUserSettings) {
+				if ($oUserSettings->CanBeDefault()) {
+					$oChosenMode = $oUserSettings;
+					break;
+				}
+			}
+		}
+
+		if (is_null($oChosenMode)) {
+			throw new MFABaseException("No default MFA possible for user $sUserId");
+		}
+
+		$oMFATwigRenderer = new MFATwigRenderer();
+		if ($oChosenMode->HasToDisplayValidation()) {
+			// Display validation screen for chosen mode and a link for all other modes
+			$aTwigLoaders = [];
+			$oLoginContext = $oChosenMode->GetTwigContextForLoginValidation();
+			$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
+
+			// Add the contexts for Mode change in the MFA screen
+			foreach ($aUserSettings as $oUserSettings) {
+				if ($oUserSettings === $oChosenMode) {
+					continue;
+				}
+
+				$oLoginContext = $oUserSettings->GetTwigContextForModeSwitch();
+				$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
+			}
+
+			// Render the MFA validation screen
+			$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig');
+			exit();
+		}
+
+		return $oChosenMode->ValidateLogin($sUserId);
 	}
 
 	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
@@ -178,9 +226,11 @@ class MFABaseService
 
 	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void
 	{
-		$oController = new LoginMFABaseController(\utils::GetAbsoluteModulePath(MFABaseUtils::MODULE_NAME) .'templates/login', MFABaseUtils::MODULE_NAME);
-		$oController->DisplayUserWarningAboutMissingMFAMode($oMFAAdminRule);
+		$aParams = [];
+		$aParams['sMFAActivationDate'] = $oMFAAdminRule->Get('forced_activation_date');
+
+		$oMFATwigRenderer = new MFATwigRenderer();
+		$oMFATwigRenderer->Render(new LoginWebPage(), 'UserWarningAboutMissingMFAMode.html.twig', $aParams);
+		exit();
 	}
-
-
 }
