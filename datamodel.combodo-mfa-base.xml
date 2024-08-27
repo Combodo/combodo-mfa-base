@@ -268,7 +268,7 @@
           <dependencies/>
           <tracking_level>all</tracking_level>
         </field>
-        <field id="forced_activation_date" xsi:type="AttributeDateTime">
+        <field id="forced_activation_date" xsi:type="AttributeDate">
           <sql>forced_activation_date</sql>
           <default_value/>
           <is_null_allowed>true</is_null_allowed>

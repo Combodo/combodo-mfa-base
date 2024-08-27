@@ -7,7 +7,7 @@
 	<div id="login-content">
 		<div id="login-title">
 			<h1>{{ 'Login:MFA:UserWarningAboutMFAMode:Title'|dict_s }}</h1>
-			<p>{{ 'Login:MFA:UserWarningAboutMFAMode:Explain'|dict_format(sMFAMode, sMFAActivationDate) }}</p>
+			<p>{{ 'Login:MFA:UserWarningAboutMFAMode:Explain'|dict_format(sMFAMode, sMFAActivationDate|date_format) }}</p>
 		</div>
 		<div id="login-form">
 			<form id="login_form" method="post">

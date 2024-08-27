@@ -8,7 +8,6 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use CoreException;
-use DateTime;
 use DBObjectSearch;
 use DBObjectSet;
 use MetaModel;
@@ -156,7 +155,7 @@ class MFAAdminRuleService
 			return false;
 		}
 
-		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW()");
+		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW() OR ISNULL(forced_activation_date)");
 		$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
 		$oForcedAdminRuleSet = new DBObjectSet($oSearch);
 

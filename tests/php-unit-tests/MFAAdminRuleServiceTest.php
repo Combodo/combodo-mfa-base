@@ -7,8 +7,8 @@ use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
 use DateTime;
 use MetaModel;
-use MFAMode;
 use MFAAdminRule;
+use MFAMode;
 
 class MFAAdminRuleServiceTest extends ItopDataTestCase {
 	private $sConfigTmpBackupFile;
@@ -276,17 +276,17 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 	}
 
 	public function IsForcedNowProvider() {
-		$oForceActivateDatetimeExpired = new DateTime("now - 1 minute");
-		$sForceActivateDatetimeExpired = $oForceActivateDatetimeExpired->format('Y-m-d H:i:s');
-		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 minute");
-		$sForceActivateDatetimeInTheFuture = $oForceActivateDatetimeInTheFuture->format('Y-m-d H:i:s');
+		$oForceActivateDatetimeExpired = new DateTime("now - 1 day");
+		$sForceActivateDatetimeExpired = $oForceActivateDatetimeExpired->format('Y-m-d');
+		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 day");
+		$sForceActivateDatetimeInTheFuture = $oForceActivateDatetimeInTheFuture->format('Y-m-d');
 
 		return [
 			'forced + action date i the passed' => [ 'forced', $sForceActivateDatetimeExpired, true ],
 			'forced + action date in the future' => [ 'forced', $sForceActivateDatetimeInTheFuture, false ],
 			'optional + action date i the passed' => [ 'optional', $sForceActivateDatetimeExpired, false ],
 			'optional + action date in the future' => [ 'optional', $sForceActivateDatetimeInTheFuture, false ],
-			'forced + no action date' => [ 'forced', null, false ],
+			'forced + no action date' => [ 'forced', null, true ],
 			'optional + no action date' => [ 'optional', null, false ],
 		];
 	}
@@ -298,7 +298,7 @@ class MFAAdminRuleServiceTest extends ItopDataTestCase {
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTotpApp", $sState, [], [], 70);
 
 		$oNow = new DateTime();
-		$sNow = $oNow->format('Y-m-d H:i:s');
+		$sNow = $oNow->format('Y-m-d');
 		if (! is_null($sForcedActivationDate)){
 			$oRule = $this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sForcedActivationDate]);
 
