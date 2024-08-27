@@ -54,10 +54,6 @@ class LoginMFABase extends \AbstractLoginFSMExtension
 		}
 
 		// MFA will be forced in the future
-		$bRedirectoToMyaccount = ! is_null(\utils::ReadPostedParam("redirect-to-mfa", null));
-		if ($bRedirectoToMyaccount){
-			//LoginWebPage::HTTPRedirect("$sURL");
-		}
 		$bDisplayWarning = is_null(\utils::ReadPostedParam("skip-mfa-warning", null));
 		if ($bDisplayWarning){
 			$oMFABaseService->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);

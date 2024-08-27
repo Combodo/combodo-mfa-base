@@ -7,10 +7,17 @@
 	<div id="login-content">
 		<h1>sTitle</h1>
 
-		{% block mfa_warning %}
-			<div id="mfa_warning">
+		{% block mfa_configuration %}
+			<div id="mfa_configuration">
 				{% import "macros.twig" as Macro %}
-				{{ Macro.BlockExtension(aPluginFormData, 'mfa_warning') }}
+				{{ Macro.BlockExtension(aPluginFormData, 'mfa_configuration') }}
+			</div>
+		{% endblock %}
+
+		{% block mfa_validation %}
+			<div id="mfa_validation">
+				{% import "macros.twig" as Macro %}
+				{{ Macro.BlockExtension(aPluginFormData, 'mfa_validation') }}
 			</div>
 		{% endblock %}
 
