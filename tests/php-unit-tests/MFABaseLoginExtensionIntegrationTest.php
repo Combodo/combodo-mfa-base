@@ -1,0 +1,118 @@
+<?php
+
+namespace Combodo\iTop\MFABase\Test;
+
+use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
+use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
+use DateTime;
+use MetaModel;
+use Config;
+use MFAAdminRule;
+use User;
+require_once __DIR__ . "/AbstractMFATest.php";
+
+/**
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ * @backupGlobals disabled
+ *
+ */
+class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
+	//iTop called from outside
+	//users need to be persisted in DB
+	const USE_TRANSACTION = false;
+
+	protected string $sConfigTmpBackupFile;
+	protected Config $oiTopConfig;
+	protected string $sPassword;
+	protected User $oUser;
+
+	protected function setUp(): void {
+		parent::setUp();
+		$this->RequireOnceItopFile('env-production/combodo-mfa-base/vendor/autoload.php');
+
+		$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
+
+		clearstatcache();
+		echo sprintf("rights via ls on %s:\n %s \n", $sConfigPath, exec("ls -al $sConfigPath"));
+		$sFilePermOutput = substr(sprintf('%o', fileperms('/etc/passwd')), -4);
+		echo sprintf("rights via fileperms on %s:\n %s \n", $sConfigPath, $sFilePermOutput);
+
+		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
+		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
+
+		$this->sUniqId = "MFABASE" . uniqid();
+		$this->CleanupAdminRules();
+		$this->CleanupMFASettings();
+		$this->sPassword = "abCDEF12345@";
+		/** @var User oUser */
+		$this->oUser = $this->CreateContactlessUser('login' . uniqid(),
+			ItopDataTestCase::$aURP_Profiles['Service Desk Agent'],
+			$this->sPassword
+		);
+
+		$this->oiTopConfig = new \Config($sConfigPath);
+		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		$this->SaveItopConfFile();
+	}
+
+	private function SaveItopConfFile(){
+		@chmod($this->oiTopConfig->GetLoadedFile(), 0770);
+		$this->oiTopConfig->WriteToFile();
+		@chmod($this->oiTopConfig->GetLoadedFile(), 0440);
+	}
+
+	protected function tearDown(): void {
+		parent::tearDown();
+
+		if (! is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)){
+			//put config back
+			$sConfigPath = $this->oiTopConfig->GetLoadedFile();
+			@chmod($sConfigPath, 0770);
+			$oConfig = new \Config($this->sConfigTmpBackupFile);
+			$oConfig->WriteToFile($sConfigPath);
+			@chmod($sConfigPath, 0440);
+		}
+
+		$_SESSION = [];
+	}
+
+
+	protected function CallItopUrl($sUri, ?array $aPostFields=null, $bXDebugEnabled=false){
+		$ch = curl_init();
+		if ($bXDebugEnabled){
+			curl_setopt($ch, CURLOPT_COOKIE, "XDEBUG_SESSION=phpstorm");
+		}
+
+		$sUrl = $this->oiTopConfig->Get('app_root_url') . "/$sUri";
+		curl_setopt($ch, CURLOPT_URL, $sUrl);
+		curl_setopt($ch, CURLOPT_POST, 1);// set post data to true
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $aPostFields);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$sOutput = curl_exec($ch);
+		//\IssueLog::Info("$sUrl error code:", null, ['error' => curl_error($ch)]);
+		curl_close ($ch);
+
+		return $sOutput;
+	}
+
+	public function testDisplayWarningOnMFAActivation_MFAForceRuleInTheFuture() {
+		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 day");
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTotpApp", "forced", [], [], 70);
+		$sMFAActivationDate = $oForceActivateDatetimeInTheFuture->format('Y-m-d');
+		$this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sMFAActivationDate]);
+
+		$sLogin = $this->oUser->Get('login');
+		$aPostFields = [
+			'auth_user' => $sLogin,
+			'auth_pwd' => $this->sPassword,
+		];
+		$sOutput = $this->CallItopUrl("/pages/UI.php", $aPostFields);
+
+		$sExpectedMessage = \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain',
+			"", //\MetaModel::GetName(get_class($oRule)),
+			$sMFAActivationDate);
+		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
+	}
+}
