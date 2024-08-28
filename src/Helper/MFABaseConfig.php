@@ -57,4 +57,8 @@ class MFABaseConfig
 		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'allowed-login-types', ['form', 'basic', 'url', 'external']);
 	}
 
+	public function IsLoginModeApplicable($sLoginMode): bool
+	{
+		return in_array($sLoginMode, $this->GetMFALoginModes());
+	}
 }

@@ -7,6 +7,7 @@
 namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\Application\Helper\Session;
+use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
@@ -22,13 +23,13 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnCredentialsOK(&$iErrorCode)
 	{
-		$oMFABaseService = MFABaseService::GetInstance();
-		if (!$oMFABaseService->IsLoginModeApplicable(Session::Get('login_mode'))) {
+		if (!MFABaseConfig::GetInstance()->IsLoginModeApplicable(Session::Get('login_mode'))) {
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
 		}
 
 		$sUserId =  UserRights::GetUserId(Session::Get('auth_user'));
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetActiveMFASettings($sUserId);
+		$oMFABaseService = MFABaseService::GetInstance();
 		if (count($aUserSettings) !== 0) {
 			if ($oMFABaseService->ValidateLogin($sUserId, $aUserSettings)) {
 				return LoginWebPage::LOGIN_FSM_CONTINUE;
@@ -54,10 +55,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		}
 
 		// MFA will be forced in the future
-		$bDisplayWarning = is_null(\utils::ReadPostedParam("skip-mfa-warning", null));
-		if ($bDisplayWarning){
-			$oMFABaseService->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
-		}
+		$oMFABaseService->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}

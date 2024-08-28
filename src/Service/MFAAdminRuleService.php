@@ -14,6 +14,7 @@ use MetaModel;
 use MFAAdminRule;
 use ormLinkSet;
 use User;
+use UserRights;
 
 class MFAAdminRuleService
 {
@@ -129,24 +130,8 @@ class MFAAdminRuleService
 
 	private function GetUserOrgs(User $oUser): array
 	{
-		if (empty($oUser->Get('org_id'))) {
-			return [];
-		}
-
-		$aOrgSet = $oUser->Get('allowed_org_list');
-		return $aOrgSet->GetColumnAsArray('allowed_org_id');
-
-		/*$sHierarchicalKeyCode = MetaModel::IsHierarchicalClass('Organization');
-		if ($sHierarchicalKeyCode !== false) {
-			$sOrgQuery = 'SELECT Org FROM Organization AS Org JOIN Organization AS Root ON Org.'.$sHierarchicalKeyCode.' ABOVE Root.id WHERE Root.id = :id';
-			$oOrgSet = new DBObjectSet(DBObjectSearch::FromOQL_AllData($sOrgQuery), [], ['id' => $oUser->Get('org_id')]);
-			while ($aRow = $oOrgSet->FetchAssoc()) {
-				$oOrg = $aRow['Org'];
-				$aUserOrgs[] = $oOrg->GetKey();
-			}
-		}*/
-
-		//return $aUserOrgs;
+		$oAddon = UserRights::GetModuleInstance();
+		return $oAddon->GetUserOrgs($oUser, '');
 	}
 
 	public function IsForcedNow(MFAAdminRule $oMFAAdminRule): bool

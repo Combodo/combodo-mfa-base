@@ -40,12 +40,6 @@ class MFABaseService
 		return static::$oInstance;
 	}
 
-
-	public function IsLoginModeApplicable($sLoginMode): bool
-	{
-		return in_array($sLoginMode, MFABaseConfig::GetInstance()->GetMFALoginModes());
-	}
-
 	public function GetConfigMFAParams(): array
 	{
 		$aParams = [];
@@ -197,7 +191,6 @@ class MFABaseService
 		$oMFATwigRenderer = new MFATwigRenderer();
 		if ($oChosenMode->HasToDisplayValidation()) {
 			// Display validation screen for chosen mode and a link for all other modes
-			$aTwigLoaders = [];
 			$oLoginContext = $oChosenMode->GetTwigContextForLoginValidation();
 			$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
 
@@ -226,6 +219,10 @@ class MFABaseService
 
 	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void
 	{
+		if (!is_null(\utils::ReadPostedParam('skip-mfa-warning', null))) {
+			return;
+		}
+
 		$aParams = [];
 		$aParams['sMFAActivationDate'] = $oMFAAdminRule->Get('forced_activation_date');
 
