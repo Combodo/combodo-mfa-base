@@ -23,15 +23,14 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnCredentialsOK(&$iErrorCode)
 	{
-		if (!MFABaseConfig::GetInstance()->IsLoginModeApplicable(Session::Get('login_mode'))) {
+		if (! MFABaseConfig::GetInstance()->IsEnabled()) {
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
 		}
 
 		$sUserId =  UserRights::GetUserId(Session::Get('auth_user'));
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetActiveMFASettings($sUserId);
-		$oMFABaseService = MFABaseService::GetInstance();
 		if (count($aUserSettings) !== 0) {
-			if ($oMFABaseService->ValidateLogin($sUserId, $aUserSettings)) {
+			if (MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings)) {
 				return LoginWebPage::LOGIN_FSM_CONTINUE;
 			}
 			$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
@@ -46,7 +45,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		}
 
 		if ($oMFAAdminRuleService->IsForcedNow($oMFAAdminRule)) {
-			if ($oMFABaseService->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule)) {
+			if (MFABaseService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule)) {
 				return LoginWebPage::LOGIN_FSM_CONTINUE;
 			}
 			$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
@@ -55,7 +54,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		}
 
 		// MFA will be forced in the future
-		$oMFABaseService->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
+		MFABaseService::GetInstance()->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}

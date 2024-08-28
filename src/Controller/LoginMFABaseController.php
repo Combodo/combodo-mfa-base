@@ -26,6 +26,7 @@ class LoginMFABaseController extends Controller
 
 	public function DisplayUserWarningAboutMissingMFAMode(MFAAdminRule $oRule)
 	{
+		$aParams['sMFAMode'] = \MetaModel::GetName(get_class($oRule));
 		$aParams['sMFAActivationDate'] = $oRule->Get('forced_activation_date');
 		$aParams['sMyAccountMenuLink'] = utils::GetAbsoluteUrlModulePage("combodo-my-account",'index.php') . "#TwigBaseTabContainer=tab_MyAccountTabMFA";
 

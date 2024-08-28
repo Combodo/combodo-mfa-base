@@ -7,10 +7,9 @@ use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
 use MetaModel;
-use MFAAdminRule;
 use MFAUserSettings;
 
-class MFAUserSettingsServiceTest extends ItopDataTestCase {
+class MFAUserSettingsServiceTest extends AbstractMFATest {
 	private $sConfigTmpBackupFile;
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
 	private $oMFAAdminRuleService;
@@ -27,7 +26,6 @@ class MFAUserSettingsServiceTest extends ItopDataTestCase {
 		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'modes', []);
 	}
 
 	protected function tearDown(): void
@@ -92,16 +90,5 @@ class MFAUserSettingsServiceTest extends ItopDataTestCase {
 		}
 
 		$this->assertEquals($aExpectedRuleNames, $RuleNames);
-	}
-
-	private function CreateSetting($sUserSettingClass, $sUserId, string $sStatus, $aAdditionFields=[], bool $bIsDefault=false) : MFAUserSettings {
-		/** @var MFAUserSettings $oSettings */
-		$aParams = array_merge($aAdditionFields, [
-			'status' => $sStatus,
-			'is_default' => $bIsDefault ? "yes" : "no",
-			'user_id' => $sUserId,
-		]);
-		$oSettings  = $this->createObject($sUserSettingClass, $aParams);
-		return $oSettings;
 	}
 }
