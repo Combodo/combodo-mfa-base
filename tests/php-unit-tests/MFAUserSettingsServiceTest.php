@@ -123,19 +123,103 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
 
-	public function CheckSettings(array $aExpectedSettings, array $Settings) {
-		$aExpectedRuleNames = [];
-		foreach ($aExpectedSettings as $oRule){
-			/** @var MFAUserSettings $oRule */
-			$aExpectedRuleNames[get_class($oRule)]=$oRule->GetKey();
+	public function GetAllAllowedMFASettings_ModuleConfig() {
+		return [
+			'module disabled' => [false],
+			'module enabled' => [true],
+		];
+	}
+
+	/**
+	 * @dataProvider Rule_ModuleConfig
+	 */
+	public function testGetAllAllowedMFASettings(bool $bModuleEnabled) {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+		if ($bModuleEnabled) {
+			$this->oMFAAdminRuleService->expects($this->exactly(1))
+				->method("GetAdminRuleByUserId")
+				->willReturn(null)
+				->with($sUserId);
+		} else {
+			$this->oMFAAdminRuleService->expects($this->exactly(0))
+				->method("GetAdminRuleByUserId");
 		}
 
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "active", ["secret" => "toto"]);
+		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "inactive", ["secret" => "toto"]);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "active", []);
+		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
+		if ($bModuleEnabled){
+			$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
+		} else {
+			$this->assertEquals([], $MFAUserSettings);
+		}
+	}
+
+	public function testGetAllAllowedMFASettings_AdminRuleSetWithoutDeniedMode() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced");
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn($oRule)
+			->with($sUserId);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetDeniedModes")
+			->with($oRule)
+			->willReturn([]);
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "inactive", ["secret" => "toto"]);
+		$oNotActiveSetting = MetaModel::NewObject("MFAUserSettingsTOTPMail", ['user_id' => $sUserId]);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "inactive", []);
+		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
+		$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
+	}
+
+	public function CheckSettings(array $aExpectedSettings, array $Settings) {
 		$RuleNames = [];
 		foreach ($Settings as $sMode => $oRule){
 			/** @var MFAUserSettings $oRule */
 			$RuleNames[get_class($oRule)]=$oRule->GetKey();
 		}
 
+		$aExpectedRuleNames = [];
+		foreach ($aExpectedSettings as $oRule){
+			/** @var MFAUserSettings $oRule */
+			if ($oRule->GetKey()<0){
+				//no need to compare GetKey()
+				$aExpectedRuleNames[get_class($oRule)]=$RuleNames[get_class($oRule)]??-1;
+			} else {
+				$aExpectedRuleNames[get_class($oRule)]=$oRule->GetKey();
+			}
+		}
+
+
 		$this->assertEquals($aExpectedRuleNames, $RuleNames);
+	}
+
+	public function testGetAllAllowedMFASettings_AdminRuleSetWithDeniedMode() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+		$aDeniedModes=[\MFAUserSettingsTOTPApp::class];
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->with($sUserId)
+			->willReturn($oRule);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetDeniedModes")
+			->with($oRule)
+			->willReturn($aDeniedModes);
+
+		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "inactive", ["secret" => "toto"]);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "inactive", ["secret" => "toto"]);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "inactive", []);
+		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
+		$this->CheckSettings([$oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
 	}
 }
