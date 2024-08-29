@@ -9,6 +9,8 @@ namespace Combodo\iTop\MFABase\Service;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use DBObjectSearch;
 use DBObjectSet;
+use DBSearch;
+use MetaModel;
 use MFAAdminRule;
 use MFAUserSettings;
 
@@ -43,12 +45,12 @@ class MFAUserSettingsService
 
 	/**
 	 * @param string $sUserId
-	 * Return user settings by user. By default is first. Otherwise ordered by Admin rules rank.
-	 * When no admin rules found for this user, all rules are optional.
+	 * Return user settings by user (from DB and not yet configured in DB).
+	 * The denied modes are filtered.
 	 *
 	 * @return MFAUserSettings[]
 	 */
-	public function GetAllMFASettings(string $sUserId): array
+	public function GetAllAllowedMFASettings(string $sUserId): array
 	{
 		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
 			return [];
@@ -57,18 +59,26 @@ class MFAUserSettingsService
 		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
 		$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
-		$oSearch = DBObjectSearch::FromOQL(
-			"SELECT MFAUserSettings WHERE user_id=:user_id", ['user_id' => $sUserId]);
-		$oSet = new DBObjectSet($oSearch);
-
+		$aConfiguredMFAModes = MetaModel::EnumChildClasses(MFAUserSettings::class);
 		$aSettings = [];
-		while ($oSettings = $oSet->Fetch()) {
-			if (in_array(get_class($oSettings), $aDeniedMfaModes)) {
+		foreach ($aConfiguredMFAModes as $sModeClass) {
+			if (MetaModel::IsAbstract($sModeClass)) {
 				continue;
 			}
-
-			$aSettings[] = $oSettings;
+			if (in_array($sModeClass, $aDeniedMfaModes)) {
+				continue;
+			}
+			$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id"), [], ['id' => $sUserId]);
+			$oMode = $oSet->Fetch() ?? MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
+			$aSettings[] = $oMode;
 		}
+
+		usort($aSettings, function (MFAUserSettings $a, MFAUserSettings $b) {
+			if ($a->CanBeDefault() && $b->CanBeDefault()) return 0;
+			if ($a->CanBeDefault()) return -1;
+			if ($b->CanBeDefault()) return 1;
+			return 0;
+		});
 
 		return $aSettings;
 	}
@@ -87,17 +97,23 @@ class MFAUserSettingsService
 			return [];
 		}
 
-		$aSettings = $this->GetAllMFASettings($sUserId);
+		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
+		$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
-		$aRes = [];
-		foreach ($aSettings as $oSettings) {
-			/** @var MFAUserSettings $oSettings */
-			if ($oSettings->Get('status') === "active") {
-				$aRes[] = $oSettings;
+		$oSearch = DBObjectSearch::FromOQL(
+			'SELECT MFAUserSettings WHERE user_id=:user_id AND status="active"', ['user_id' => $sUserId]);
+		$oSet = new DBObjectSet($oSearch);
+
+		$aSettings = [];
+		while ($oSettings = $oSet->Fetch()) {
+			if (in_array(get_class($oSettings), $aDeniedMfaModes)) {
+				continue;
 			}
+
+			$aSettings[] = $oSettings;
 		}
 
-		return $aRes;
+		return $aSettings;
 	}
 
 }

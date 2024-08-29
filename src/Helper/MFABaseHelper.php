@@ -6,20 +6,20 @@
 
 namespace Combodo\iTop\MFABase\Helper;
 
-class MFABaseUtils
+class MFABaseHelper
 {
 	const MODULE_NAME = 'combodo-mfa-base';
 
-	private static MFABaseUtils $oInstance;
+	private static MFABaseHelper $oInstance;
 
 	private function __construct()
 	{
 	}
 
-	final public static function GetInstance(): MFABaseUtils
+	final public static function GetInstance(): MFABaseHelper
 	{
 		if (!isset(static::$oInstance)) {
-			static::$oInstance = new MFABaseUtils();
+			static::$oInstance = new MFABaseHelper();
 		}
 
 		return static::$oInstance;

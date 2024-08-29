@@ -10,7 +10,7 @@ namespace Combodo\iTop\MFABase\View;
 use Combodo\iTop\Application\Branding;
 use Combodo\iTop\Application\TwigBase\Twig\Extension;
 use Combodo\iTop\Application\WebPage\NiceWebPage;
-use Combodo\iTop\MFABase\Helper\MFABaseUtils;
+use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Dict;
 use LoginWebPage;
 use Twig\Environment;
@@ -79,7 +79,7 @@ class MFATwigRenderer
 	public function Render(NiceWebPage $oPage, $sTwigFile, $aVars = [])
 	{
 		$oMFABaseLoader = new FilesystemLoader([], APPROOT.'templates');
-		$aMFABaseTemplatesPaths = ['pages/login', utils::GetAbsoluteModulePath(MFABaseUtils::MODULE_NAME).'templates/login'];
+		$aMFABaseTemplatesPaths = ['pages/login', utils::GetAbsoluteModulePath(MFABaseHelper::MODULE_NAME).'templates/login'];
 		$oMFABaseLoader->setPaths($aMFABaseTemplatesPaths);
 		$this->aTwigLoaders[] = $oMFABaseLoader;
 

@@ -32,7 +32,7 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:MFAUserSettings/Attribute:status/Value:inactive' => 'Inactive',
 	'Class:MFAUserSettings/Attribute:status/Value:not_configured' => 'Not configured',
 
-	'Class:MFAUserSettingsTotpApp' => 'MFA TOTP by application',
-	'Class:MFAUserSettingsTotpMail' => 'MFA TOTP by mail',
+	'Class:MFAUserSettingsTOTPApp' => 'MFA TOTP by application',
+	'Class:MFAUserSettingsTOTPMail' => 'MFA TOTP by mail',
 	'Class:MFAUserSettingsRecoveryCode' => 'MFA Recovery codes',
 ));

@@ -82,7 +82,18 @@
         </field>
       </fields>
       <methods>
-         <method id="GetTwigContextForConfiguration">
+        <method id="GetConfigurationURLForMyAccountRedirection">
+          <comment>/**
+            *
+            * @return LoginTwigContext
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public abstract function GetConfigurationURLForMyAccountRedirection(): string;]]></code>
+        </method>
+        <method id="GetTwigContextForConfiguration">
           <comment>/**
             *
             * @return LoginTwigContext
@@ -93,8 +104,7 @@
           <type>Custom</type>
           <code><![CDATA[	public abstract function GetTwigContextForConfiguration(): LoginTwigContext;]]></code>
         </method>
-
-         <method id="GetTwigContextForLoginValidation">
+        <method id="GetTwigContextForLoginValidation">
           <comment>/**
             *
             * @return LoginTwigContext
@@ -105,20 +115,6 @@
           <type>Custom</type>
           <code><![CDATA[	public abstract function GetTwigContextForLoginValidation(): LoginTwigContext;]]></code>
         </method>
-
-         <method id="GetTwigContextForModeSwitch">
-          <comment>/**
-	          * Provide Display information for link to configure MFA in another mode than currently displayed or default one
-            * @return LoginTwigContext
-            */
-          </comment>
-          <static>false</static>
-          <access>public</access>
-          <type>Custom</type>
-          <code><![CDATA[	public abstract function GetTwigContextForModeSwitch(): LoginTwigContext;]]></code>
-        </method>
-
-
         <method id="HasToDisplayValidation">
           <comment>/**
             * Indicates if the validation screen has to be displayed or not
@@ -130,7 +126,6 @@
           <type>Custom</type>
           <code><![CDATA[	public abstract function HasToDisplayValidation(): bool;]]></code>
         </method>
-
         <method id="ValidateLogin">
           <comment>/**
             * Indicates if the validation code given by the user is valid or not
@@ -142,7 +137,6 @@
           <type>Custom</type>
           <code><![CDATA[	public abstract function ValidateLogin(): bool;]]></code>
         </method>
-
         <method id="CanBeDefault">
           <comment>/**
             *
@@ -348,10 +342,11 @@
       </fields>
       <methods>
         <method id="IsForced">
-          <comment>	/**
+          <comment>/**
             *
             * @author Eric Espie
-            */</comment>
+            */
+          </comment>
           <static>false</static>
           <access>public</access>
           <type>Custom</type>
@@ -621,7 +616,7 @@
       <properties>
         <category>bizmodel,searchable</category>
         <abstract>false</abstract>
-        <db_table>mfamode</db_table>
+        <db_table>mfa_mode</db_table>
         <style>
           <icon>
             <fileref ref="icons8-access-48_6ffd549ca99df301f29087ce569cbcdc"/>

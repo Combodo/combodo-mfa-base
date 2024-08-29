@@ -13,12 +13,6 @@
         {% UIPanel ForInformation { sTitle:'UI:MFA:Modes'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
             {% UIDataTable ForForm { sRef:'MFAModes', aColumns:Section.aMFAUserSettings.aColumns, aData:Section.aMFAUserSettings.aData } %}{% EndUIDataTable %}
         {% EndUIPanel %}
-
-        {%  if Section.RecoveryOptionMethods.aColumns %}
-            {% UIPanel ForInformation { sTitle:'UI:MFA:RecoveryOptionMode'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
-                {% UIDataTable ForForm { sRef:'RecoveryCodesMode', aColumns:Section.RecoveryOptionMethods.aColumns, aData:Section.RecoveryOptionMethods.aData } %}{% EndUIDataTable %}
-            {% EndUIPanel %}
-        {% endif %}
     {% EndUIForm %}
 
 {% else %}

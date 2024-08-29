@@ -7,15 +7,27 @@
 namespace Combodo\iTop\MFABase\Controller;
 
 use Combodo\iTop\Application\TwigBase\Controller\Controller;
+use MetaModel;
+use UserRights;
+use utils;
 
 class MFABaseController extends Controller
 {
 
-	public function OperationAction(): void
+	public function OperationAction()
 	{
 		$aParams = [];
 
-		$this->OperationConfigMFA();
+		$sAction = utils::ReadPostedParam('Action', '', utils::ENUM_SANITIZATION_FILTER_CONTEXT_PARAM);
+		$aItems = explode(':', $sAction);
+		$sVerb = $aItems[0];
+		$sModeClass = $aItems[1];
+
+		$sUserId = UserRights::GetUserId();
+		$oUserSettings = MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
+		$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+
+		$this->DisplayPage($aParams);
 	}
 
 }

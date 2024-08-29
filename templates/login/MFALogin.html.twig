@@ -5,7 +5,7 @@
 
 {% block login_content %}
 	<div id="login-content">
-		<h1>sTitle</h1>
+		<h1>{{ sTitle }}</h1>
 
 		{% block mfa_configuration %}
 			<div id="mfa_configuration">
@@ -19,6 +19,18 @@
 				{% import "macros.twig" as Macro %}
 				{{ Macro.BlockExtension(aPluginFormData, 'mfa_validation') }}
 			</div>
+			{% for sUserSettingsClass in aSwitchData %}
+				{% set sLinkLabel = "MFA:login:switch:label:" ~ sUserSettingsClass %}
+				<form id="switch-form-{{ sUserSettingsClass }}" method="post">
+					<input type="hidden" name="selected_mfa_mode" value="{{ sUserSettingsClass }}">
+					<div class="v-spacer"><a onclick="$('#switch-form-{{ sUserSettingsClass }}').submit();">{{ sLinkLabel|dict_s }}</a></div>
+				</form>
+			{% endfor %}
 		{% endblock %}
 	</div>
+{% endblock %}
+
+{% block script %}
+	{% import "macros.twig" as Macro %}
+	{{ Macro.BlockExtension(aPluginFormData, 'script') }}
 {% endblock %}

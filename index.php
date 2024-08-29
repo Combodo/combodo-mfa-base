@@ -5,10 +5,10 @@
  */
 
 use Combodo\iTop\MFABase\Controller\MFABaseController;
-use Combodo\iTop\MFABase\Helper\MFABaseUtils;
+use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 
 require_once(APPROOT.'application/startup.inc.php');
 
-$oController = new MFABaseController(__DIR__.'/templates', MFABaseUtils::MODULE_NAME);
+$oController = new MFABaseController(__DIR__.'/templates', MFABaseHelper::MODULE_NAME);
 $oController->SetDefaultOperation('ConfigMFA');
 $oController->HandleOperation();

@@ -27,7 +27,7 @@ class MFABaseConfig
 
 	public function Get(string $sParamName, $default = null)
 	{
-		return MetaModel::GetConfig()->GetModuleSetting(MFABaseUtils::MODULE_NAME, $sParamName, $default);
+		return MetaModel::GetConfig()->GetModuleSetting(MFABaseHelper::MODULE_NAME, $sParamName, $default);
 	}
 
 	public function GetBoolean(string $sParamName, $default = null): bool
@@ -47,14 +47,9 @@ class MFABaseConfig
 		return $this->GetBoolean('debug', false);
 	}
 
-	public function GetMFAMethods(): array
-	{
-		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'methods', []);
-	}
-
 	public function GetMFALoginModes(): array
 	{
-		return MetaModel::GetModuleSetting(MFABaseUtils::MODULE_NAME, 'allowed-login-types', ['form', 'basic', 'url', 'external']);
+		return MetaModel::GetModuleSetting(MFABaseHelper::MODULE_NAME, 'allowed-login-types', ['form', 'basic', 'url', 'external']);
 	}
 
 	public function IsLoginModeApplicable($sLoginMode): bool

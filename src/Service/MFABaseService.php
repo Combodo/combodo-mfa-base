@@ -6,14 +6,12 @@
 
 namespace Combodo\iTop\MFABase\Service;
 
+use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\MFABase\View\MFATwigRenderer;
 use Combodo\iTop\Renderer\BlockRenderer;
-use DBObjectSet;
-use DBSearch;
 use Dict;
 use LoginWebPage;
 use MetaModel;
@@ -45,46 +43,8 @@ class MFABaseService
 		$aParams = [];
 
 		$aParams['aMFAUserSettings'] = $this->GetMFAUserSettings();
-		$aParams['RecoveryOptionMethods'] = $this->GetRecoveryOptionMethods();
 
 		return $aParams;
-	}
-
-	public function GetRecoveryOptionMethods(): array
-	{
-		$aColumns = [
-			['label' => Dict::S('UI:MFA:Methods:Name')],
-			['label' => Dict::S('UI:MFA:Methods:Status')],
-			['label' => Dict::S('UI:MFA:Methods:Action')],
-		];
-		$aData = [];
-
-		$aConfigMethods = MFABaseConfig::GetInstance()->GetMFAMethods();
-		$aMFAUserSettingsMethods = $this->GetMFAUserSettingsModes();
-
-		foreach ($aConfigMethods as $sMFAUserSettingsClass => $aConfigMethod) {
-			if ($sMFAUserSettingsClass !== 'MFAUserSettingsRecoveryCodes') {
-				continue;
-			}
-			$aDatum = [];
-			if ($aConfigMethod['active']) {
-				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
-				$aMFAUserSettingsMethod = $aMFAUserSettingsMethods[$sMFAUserSettingsClass] ?? null;
-				if (!is_null($aMFAUserSettingsMethod)) {
-					$aDatum[] = Dict::S('UI:MFA:Methods:Status:Configured');
-				} else {
-					$aDatum[] = '';
-				}
-				$aDatum[] = '';
-			}
-			$aData[] = $aDatum;
-		}
-
-		if (empty($aData)) {
-			return [];
-		}
-
-		return ['aColumns' => $aColumns, 'aData' => $aData];
 	}
 
 	public function GetMFAUserSettings(): array
@@ -96,18 +56,19 @@ class MFABaseService
 		];
 
 		$aData = [];
+		$sUserId = UserRights::GetUserId();
+		$aMFAUserSettingsModes = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 
-		$aMFAUserSettingsModes = $this->GetMFAUserSettingsModes();
-
-		foreach ($aMFAUserSettingsModes as $sMFAUserSettingsClass => $oMFAUserSettings) {
+		foreach ($aMFAUserSettingsModes as $oMFAUserSettings) {
 			$aDatum = [];
 			// Name
+			$sMFAUserSettingsClass = get_class($oMFAUserSettings);
 			$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
 			// Status
 			/** @var \cmdbAbstractObject $oMFAUserSettings */
 			$sStatus = $oMFAUserSettings->GetEditValue('status');
 			$aDatum[] = $sStatus;
-			if ($sStatus !== 'not_configured') {
+			if ($oMFAUserSettings->Get('status') !== 'not_configured') {
 				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Configure');
 				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
 				$sDataAction = 'configure';
@@ -137,22 +98,6 @@ class MFABaseService
 		return ['aColumns' => $aColumns, 'aData' => $aData];
 	}
 
-	public function GetMFAUserSettingsModes(): array
-	{
-		$aModes = [];
-		$oUser = UserRights::GetUserObject();
-		$aMFAModes = MetaModel::EnumChildClasses('MFAUserSettings');
-		foreach ($aMFAModes as $sModeClass) {
-			if (MetaModel::IsAbstract($sModeClass)) {
-				continue;
-			}
-			$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id"), [], ['id' => $oUser->GetKey()]);
-			$oMode = $oSet->Fetch() ?? MetaModel::NewObject($sModeClass, ['user_id' => $oUser->GetKey()]);
-			$aModes[$sModeClass] = $oMode;
-		}
-
-		return $aModes;
-	}
 
 	/**
 	 * Display the screen to enter the code, and validate the code entered by the user
@@ -165,61 +110,77 @@ class MFABaseService
 	 */
 	public function ValidateLogin(string $sUserId, array $aUserSettings): bool
 	{
-		$oChosenMode = null;
-		$sChosenMode = utils::ReadPostedParam('selected_mfa_mode', null);
+		$oChosenUserSettings = null;
+		$sChosenUserSettings = utils::ReadPostedParam('selected_mfa_mode', null);
 		foreach ($aUserSettings as $oUserSettings) {
-			if ((is_null($sChosenMode) && $oUserSettings->Get('is_default') === 'yes')
-				|| (get_class($oUserSettings) === $sChosenMode)) {
-				$oChosenMode = $oUserSettings;
+			if ((is_null($sChosenUserSettings) && $oUserSettings->Get('is_default') === 'yes')
+				|| (get_class($oUserSettings) === $sChosenUserSettings)) {
+				$oChosenUserSettings = $oUserSettings;
 				break;
 			}
 		}
 
-		if (is_null($oChosenMode)) {
+		if (is_null($oChosenUserSettings)) {
 			foreach ($aUserSettings as $oUserSettings) {
 				if ($oUserSettings->CanBeDefault()) {
-					$oChosenMode = $oUserSettings;
+					$oChosenUserSettings = $oUserSettings;
 					break;
 				}
 			}
 		}
 
-		if (is_null($oChosenMode)) {
+		if (is_null($oChosenUserSettings)) {
 			throw new MFABaseException("No default MFA possible for user $sUserId");
 		}
 
 		$oMFATwigRenderer = new MFATwigRenderer();
-		if ($oChosenMode->HasToDisplayValidation()) {
+		if ($oChosenUserSettings->HasToDisplayValidation()) {
 			// Display validation screen for chosen mode and a link for all other modes
-			$oLoginContext = $oChosenMode->GetTwigContextForLoginValidation();
+			// This is to get the 2FA user input
+			$oLoginContext = $oChosenUserSettings->GetTwigContextForLoginValidation();
 			$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
 
 			// Add the contexts for Mode change in the MFA screen
+			$aSwitchData = [];
 			foreach ($aUserSettings as $oUserSettings) {
-				if ($oUserSettings === $oChosenMode) {
+				if ($oUserSettings === $oChosenUserSettings) {
 					continue;
 				}
 
-				$oLoginContext = $oUserSettings->GetTwigContextForModeSwitch();
-				$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
+				$aSwitchData[] = get_class($oUserSettings);
 			}
 
 			// Render the MFA validation screen
-			$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig');
+			$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig', [
+				'aSwitchData' => $aSwitchData
+			]);
 			exit();
 		}
 
-		return $oChosenMode->ValidateLogin($sUserId);
+		// Validate 2FA user input
+		return $oChosenUserSettings->ValidateLogin($sUserId);
 	}
 
 	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
 	{
-		return true;
+		if (Session::IsSet('mfa-configuration-validated')) {
+			return true;
+		}
+
+		$sPreferredModeClass =  $oMFAAdminRule->Get('preferred_mfa_mode');
+		$oMFAUserSettings = MetaModel::NewObject($sPreferredModeClass, ['user_id' => $sUserId]);
+		$oMFATwigRenderer = new MFATwigRenderer();
+		// Display validation screen for chosen mode and a link for all other modes
+		$oLoginContext = $oMFAUserSettings->GetTwigContextForConfiguration();
+		$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
+		$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig');
+		exit();
+
 	}
 
 	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void
 	{
-		if (!is_null(\utils::ReadPostedParam('skip-mfa-warning', null))) {
+		if (!is_null(utils::ReadPostedParam('skip-mfa-warning', null))) {
 			return;
 		}
 
