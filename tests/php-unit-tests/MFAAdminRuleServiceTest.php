@@ -9,6 +9,8 @@ use DateTime;
 use MetaModel;
 use MFAAdminRule;
 
+require_once __DIR__.'/AbstractMFATest.php';
+
 class MFAAdminRuleServiceTest extends AbstractMFATest {
 	private $sConfigTmpBackupFile;
 

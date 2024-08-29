@@ -4,11 +4,12 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
+use Config;
 use DateTime;
 use MetaModel;
-use Config;
 use MFAAdminRule;
 use User;
+
 require_once __DIR__ . "/AbstractMFATest.php";
 
 /**
@@ -99,7 +100,7 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 
 	public function testDisplayWarningOnMFAActivation_MFAForceRuleInTheFuture() {
 		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 day");
-		$oRule = $this->CreateRule("rule", "MFAUserSettingsTotpApp", "forced", [], [], 70);
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
 		$sMFAActivationDate = $oForceActivateDatetimeInTheFuture->format('Y-m-d');
 		$this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sMFAActivationDate]);
 

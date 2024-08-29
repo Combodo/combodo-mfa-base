@@ -9,6 +9,8 @@ use Config;
 use MetaModel;
 use MFAUserSettings;
 
+require_once __DIR__.'/AbstractMFATest.php';
+
 class MFAUserSettingsServiceTest extends AbstractMFATest {
 	private $sConfigTmpBackupFile;
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
@@ -67,7 +69,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		}
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
-		$oSetting = $this->CreateSetting("MFAUserSettingsTotpApp", $sUserId, "active", ["secret" => "toto"]);
+		$oSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "active", ["secret" => "toto"]);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllMFASettings($sUserId);
 		if ($bModuleEnabled){
 			$this->CheckSettings([$oSetting], $MFAUserSettings);
