@@ -151,9 +151,7 @@ class MFABaseService
 			}
 
 			// Render the MFA validation screen
-			$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig', [
-				'aSwitchData' => $aSwitchData
-			]);
+			$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig', ['aSwitchData' => $aSwitchData]);
 			exit();
 		}
 
