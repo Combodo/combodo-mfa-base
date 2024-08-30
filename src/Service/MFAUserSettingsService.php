@@ -29,9 +29,25 @@ class MFAUserSettingsService
 	/**
 	 * Test purpose only
 	 */
+	final public static function SetInstance(MFAUserSettingsService $oInstance)
+	{
+		self::$oInstance = $oInstance;
+	}
+
+	/**
+	 * Test purpose only
+	 */
 	final public static function SetMFAAdminRuleService(MFAAdminRuleService $oMFAAdminRuleService)
 	{
 		self::$oMFAAdminRuleService = $oMFAAdminRuleService;
+	}
+
+	/**
+	 * Test purpose only
+	 */
+	final public static function ResetInstance()
+	{
+		self::$oInstance = new static();
 	}
 
 	final public static function GetInstance(): MFAUserSettingsService

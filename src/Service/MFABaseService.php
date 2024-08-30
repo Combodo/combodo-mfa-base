@@ -38,6 +38,22 @@ class MFABaseService
 		return static::$oInstance;
 	}
 
+	/**
+	 * Test purpose only
+	 */
+	final public static function SetInstance(MFABaseService $oInstance)
+	{
+		self::$oInstance = $oInstance;
+	}
+
+	/**
+	 * Test purpose only
+	 */
+	final public static function ResetInstance()
+	{
+		self::$oInstance = new static();
+	}
+
 	public function GetConfigMFAParams(): array
 	{
 		$aParams = [];
@@ -173,7 +189,6 @@ class MFABaseService
 		$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
 		$oMFATwigRenderer->Render(new LoginWebPage(), 'MFALogin.html.twig');
 		exit();
-
 	}
 
 	public function DisplayWarningOnMFAActivation(string $sUserId, MFAAdminRule $oMFAAdminRule): void

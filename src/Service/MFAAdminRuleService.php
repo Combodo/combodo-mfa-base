@@ -34,6 +34,22 @@ class MFAAdminRuleService
 	}
 
 	/**
+	 * Test purpose only
+	 */
+	final public static function SetInstance(MFAAdminRuleService $oInstance)
+	{
+		self::$oInstance = $oInstance;
+	}
+
+	/**
+	 * Test purpose only
+	 */
+	final public static function ResetInstance()
+	{
+		self::$oInstance = new static();
+	}
+
+	/**
 	 * Return MFA admin rules ordered by rank.
 	 *
 	 * @param string $sUserId
