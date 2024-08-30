@@ -23,7 +23,9 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnCredentialsOK(&$iErrorCode)
 	{
-		if (! MFABaseConfig::GetInstance()->IsEnabled()) {
+		// Control of mfa-configuration-validated to avoid double code validation
+		if (! MFABaseConfig::GetInstance()->IsEnabled() || Session::IsSet('mfa-configuration-validated')) {
+			Session::Unset('mfa-configuration-validated');
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
 		}
 

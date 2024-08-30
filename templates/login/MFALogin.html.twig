@@ -5,7 +5,12 @@
 
 {% block login_content %}
 	<div id="login-content">
-		<h1>{{ sTitle }}</h1>
+		{% block mfa_title %}
+			<div id="login-title">
+			{% import "macros.twig" as Macro %}
+				{{ Macro.BlockExtension(aPluginFormData, 'mfa_title') }}
+			</div>
+		{% endblock %}
 
 		{% block mfa_configuration %}
 			<div id="mfa_configuration">
