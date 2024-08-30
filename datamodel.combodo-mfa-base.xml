@@ -20,6 +20,7 @@
         <reconciliation>
           <attributes>
             <attribute id="user_id"/>
+            <attribute id="finalclass"/>
           </attributes>
         </reconciliation>
         <obsolescence>
