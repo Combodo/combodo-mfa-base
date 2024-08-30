@@ -26,6 +26,7 @@ class MFABaseLog extends LogAPI
 
 	public static function Error($sMessage, $sChannel = null, $aContext = [])
 	{
+		// replicate log in error.log
 		IssueLog::Error($sMessage, self::CHANNEL_DEFAULT, $aContext);
 		parent::Error($sMessage, self::CHANNEL_DEFAULT, $aContext);
 	}

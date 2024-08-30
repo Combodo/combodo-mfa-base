@@ -91,6 +91,8 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		curl_setopt($ch, CURLOPT_POST, 1);// set post data to true
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $aPostFields);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 		$sOutput = curl_exec($ch);
 		//\IssueLog::Info("$sUrl error code:", null, ['error' => curl_error($ch)]);
 		curl_close ($ch);
@@ -114,6 +116,7 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		$sExpectedMessage = \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain',
 			"", //\MetaModel::GetName(get_class($oRule)),
 			$sMFAActivationDate);
+		var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
 	}
 }
