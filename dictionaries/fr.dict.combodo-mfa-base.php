@@ -31,8 +31,4 @@ Dict::Add('FR FR', 'French', 'French', array(
 	'Class:MFAUserSettings/Attribute:status/Value:active' => 'Active',
 	'Class:MFAUserSettings/Attribute:status/Value:inactive' => 'Inactive',
 	'Class:MFAUserSettings/Attribute:status/Value:not_configured' => 'Not configured',
-
-	'Class:MFAUserSettingsTotpApp' => 'MFA TOTP by application',
-	'Class:MFAUserSettingsTotpMail' => 'MFA TOTP by mail',
-	'Class:MFAUserSettingsRecoveryCode' => 'MFA Recovery codes',
 ));
