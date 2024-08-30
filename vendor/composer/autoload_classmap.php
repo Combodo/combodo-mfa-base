@@ -6,7 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Combodo\\iTop\\MFABase\\Controller\\LoginMFABaseController' => $baseDir . '/src/Controller/LoginMFABaseController.php',
     'Combodo\\iTop\\MFABase\\Controller\\MFABaseController' => $baseDir . '/src/Controller/MFABaseController.php',
     'Combodo\\iTop\\MFABase\\Helper\\MFABaseConfig' => $baseDir . '/src/Helper/MFABaseConfig.php',
     'Combodo\\iTop\\MFABase\\Helper\\MFABaseException' => $baseDir . '/src/Helper/MFABaseException.php',

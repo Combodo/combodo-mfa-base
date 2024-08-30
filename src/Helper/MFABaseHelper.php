@@ -6,6 +6,8 @@
 
 namespace Combodo\iTop\MFABase\Helper;
 
+use utils;
+
 class MFABaseHelper
 {
 	const MODULE_NAME = 'combodo-mfa-base';
@@ -23,5 +25,10 @@ class MFABaseHelper
 		}
 
 		return static::$oInstance;
+	}
+
+	public static function GetSCSSFile(): string
+	{
+		return 'env-'.utils::GetCurrentEnvironment().'/'.self::MODULE_NAME.'/assets/css/MFABase.scss';
 	}
 }

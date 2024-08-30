@@ -7,6 +7,7 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseException;
 use DBObjectSearch;
 use DBObjectSet;
 use DBSearch;
@@ -132,4 +133,40 @@ class MFAUserSettingsService
 		return $aSettings;
 	}
 
+	/**
+	 * Get MFAUserSettings for a user and class.
+	 * If not yet in DB, the UserSettings are created.
+	 *
+	 * Warning, Mandatory fields must be added in BEFORE_WRITE event.
+	 *
+	 * @param string $sUserId
+	 * @param string $sMFAUserSettingsClass
+	 *
+	 * @return \MFAUserSettings
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	public function GetMFAUserSettings(string $sUserId, string $sMFAUserSettingsClass): MFAUserSettings
+	{
+		$aSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
+		$oSettings = null;
+		foreach ($aSettings as $oSettings) {
+			if (get_class($oSettings) === $sMFAUserSettingsClass) {
+				break;
+			}
+		}
+
+		if (is_null($oSettings)) {
+			throw new MFABaseException('No MFA Mode allowed to be configured');
+		}
+
+		if ($oSettings->IsNew()) {
+			$oSettings->AllowWrite();
+			$oSettings->DBInsert();
+		} else {
+			// To get all the fields of the leaf class
+			$oSettings->Reload();
+		}
+
+		return $oSettings;
+	}
 }
