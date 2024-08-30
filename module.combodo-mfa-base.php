@@ -19,6 +19,7 @@ SetupWebPage::AddModule(
 		],
 		'mandatory' => false,
 		'visible' => true,
+		'installer' => 'MFABaseInstaller',
 
 		// Components
 		//
@@ -50,3 +51,54 @@ SetupWebPage::AddModule(
 		],
 	]
 );
+
+if (! class_exists('MFABaseInstaller'))
+{
+// Module installation handler
+// Don't forget 'installer' in AddModule() !!!
+//
+	class MFABaseInstaller extends ModuleInstallerAPI
+	{
+		/**
+		 * Create missing entries in MFAMode for existing MFAUserSettings classes
+		 *
+		 * @param \Config $oConfiguration
+		 * @param $sPreviousVersion
+		 * @param $sCurrentVersion
+		 *
+		 * @throws \ArchivedObjectException
+		 * @throws \CoreCannotSaveObjectException
+		 * @throws \CoreException
+		 * @throws \CoreUnexpectedValue
+		 * @throws \CoreWarning
+		 * @throws \MySQLException
+		 * @throws \OQLException
+		 */
+		public static function AfterDataLoad(Config $oConfiguration, $sPreviousVersion, $sCurrentVersion)
+		{
+			$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT MFAMode"));
+			$aModes = [];
+			while ($oMode = $oSet->Fetch()) {
+				$aModes[] = $oMode->Get('name');
+			}
+
+			$aConfiguredMFAModes = MetaModel::EnumChildClasses(MFAUserSettings::class);
+			$aSettings = [];
+			foreach ($aConfiguredMFAModes as $sModeClass) {
+				if (MetaModel::IsAbstract($sModeClass)) {
+					continue;
+				}
+				if (in_array($sModeClass, $aModes)) {
+					continue;
+				}
+				$aSettings[] = $sModeClass;
+			}
+
+			foreach ($aSettings as $sMode) {
+				$oMode = MetaModel::NewObject(MFAMode::class, ['name' =>$sMode]);
+				$oMode->DBInsert();
+			}
+		}
+	}
+}
+
