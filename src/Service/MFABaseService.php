@@ -68,7 +68,7 @@ class MFABaseService
 	{
 		$aColumns = [
 			['label' => Dict::S('UI:MFA:Modes:Name')],
-			['label' => Dict::S('UI:MFA:Modes:Status')],
+			['label' => Dict::S('UI:MFA:Modes:Validated')],
 			['label' => Dict::S('UI:MFA:Modes:Action')],
 		];
 
@@ -83,9 +83,9 @@ class MFABaseService
 			$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
 			// Status
 			/** @var \cmdbAbstractObject $oMFAUserSettings */
-			$sStatus = $oMFAUserSettings->GetEditValue('status');
+			$sStatus = $oMFAUserSettings->GetEditValue('validated');
 			$aDatum[] = $sStatus;
-			if ($oMFAUserSettings->Get('status') !== 'not_configured') {
+			if ($oMFAUserSettings->Get('validated') !== 'no') {
 				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Configure');
 				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
 				$sDataAction = 'configure';

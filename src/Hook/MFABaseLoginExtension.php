@@ -30,7 +30,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		}
 
 		$sUserId =  UserRights::GetUserId(Session::Get('auth_user'));
-		$aUserSettings = MFAUserSettingsService::GetInstance()->GetActiveMFASettings($sUserId);
+		$aUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 		if (count($aUserSettings) !== 0) {
 			if (MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings)) {
 				return LoginWebPage::LOGIN_FSM_CONTINUE;

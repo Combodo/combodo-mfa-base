@@ -16,7 +16,7 @@ Dict::Add('FR FR', 'French', 'French', array(
 
 	'UI:MFA:Modes'  => 'MFA Modes',
 	'UI:MFA:Modes:Name' => 'Name',
-	'UI:MFA:Modes:Status' => 'Status',
+	'UI:MFA:Modes:Validated' => 'Validated',
 	'UI:MFA:Modes:Action' => 'Action',
 	'UI:MFA:Modes:Action:Configure' => 'Configure',
 	'UI:MFA:Modes:Action:Configure:ButtonTooltip' => 'Configure the MFA Mode',
@@ -28,7 +28,6 @@ Dict::Add('FR FR', 'French', 'French', array(
 	'Login:MFA:Continue' => 'Continue',
 
 	'Class:MFAUserSettings' => 'MFA user settings',
-	'Class:MFAUserSettings/Attribute:status/Value:active' => 'Active',
-	'Class:MFAUserSettings/Attribute:status/Value:inactive' => 'Inactive',
-	'Class:MFAUserSettings/Attribute:status/Value:not_configured' => 'Not configured',
+	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Yes',
+	'Class:MFAUserSettings/Attribute:validated/Value:no' => 'No',
 ));

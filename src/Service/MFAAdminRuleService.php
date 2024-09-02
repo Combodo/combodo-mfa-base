@@ -64,7 +64,7 @@ class MFAAdminRuleService
 
 		try {
 			/** @var User $oUser */
-			$oUser = MetaModel::GetObject(User::class, $sUserId);
+			$oUser = MetaModel::GetObject(User::class, $sUserId, true, true);
 			$aUserOrgIds = $this->GetUserOrgs($oUser);
 			$aUserProfiles = $this->GetUserProfiles($oUser);
 		} catch (CoreException $e) {

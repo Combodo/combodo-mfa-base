@@ -108,7 +108,7 @@ class MFAUserSettingsService
 	 *
 	 * @return MFAUserSettings[]
 	 */
-	public function GetActiveMFASettings(string $sUserId): array
+	public function GetValidatedMFASettings(string $sUserId): array
 	{
 		if (!MFABaseConfig::GetInstance()->IsEnabled()) {
 			return [];
@@ -118,7 +118,7 @@ class MFAUserSettingsService
 		$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
 		$oSearch = DBObjectSearch::FromOQL(
-			'SELECT MFAUserSettings WHERE user_id=:user_id AND status="active"', ['user_id' => $sUserId]);
+			'SELECT MFAUserSettings WHERE user_id=:user_id AND validated="yes"', ['user_id' => $sUserId]);
 		$oSet = new DBObjectSet($oSearch);
 
 		$aSettings = [];

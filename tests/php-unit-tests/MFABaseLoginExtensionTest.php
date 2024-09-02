@@ -71,7 +71,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 	public function testOnCredentialsOK_MfaDisabled() {
 		$this->oMFAUserSettingsService->expects($this->exactly(0))
-			->method("GetActiveMFASettings");
+			->method("GetValidatedMFASettings");
 		$this->oMFAAdminRuleService->expects($this->exactly(0))
 			->method("GetAdminRuleByUserId");
 
@@ -98,9 +98,9 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 
-		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "active", ["secret" => "toto"]);
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
-			->method("GetActiveMFASettings")
+			->method("GetValidatedMFASettings")
 			->willReturn([$oActiveSetting]);
 
 		$this->oMFAAdminRuleService->expects($this->exactly(0))
@@ -133,7 +133,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$sUserId = $oUser->GetKey();
 
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
-			->method("GetActiveMFASettings")
+			->method("GetValidatedMFASettings")
 			->willReturn([]);
 
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
@@ -158,7 +158,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
-			->method("GetActiveMFASettings")
+			->method("GetValidatedMFASettings")
 			->willReturn([]);
 
 		$oRule = $this->CreateRule("Rule", "MFAUserSettingsTOTPApp", "optional", [], [], 70);
@@ -187,7 +187,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
-			->method("GetActiveMFASettings")
+			->method("GetValidatedMFASettings")
 			->willReturn([]);
 
 		$oForceActivateDatetimeInTheFuture = new DateTime("now + 1 day");
@@ -234,7 +234,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
-			->method("GetActiveMFASettings")
+			->method("GetValidatedMFASettings")
 			->willReturn([]);
 
 		$oNow = new DateTime("now - 1 day");

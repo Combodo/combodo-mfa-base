@@ -24,7 +24,6 @@
           </attributes>
         </reconciliation>
         <obsolescence>
-          <condition>status='inactive'</condition>
         </obsolescence>
       </properties>
       <fields>
@@ -37,23 +36,19 @@
           <on_target_delete>DEL_AUTO</on_target_delete>
           <tracking_level>all</tracking_level>
         </field>
-        <field id="status" xsi:type="AttributeEnum">
-          <sql>status</sql>
+        <field id="validated" xsi:type="AttributeEnum">
+          <sql>validated</sql>
           <values>
-            <value id="active">
-              <code>active</code>
+            <value id="yes">
+              <code>yes</code>
               <rank>10</rank>
             </value>
-            <value id="inactive">
-              <code>inactive</code>
-              <rank>20</rank>
-            </value>
-            <value id="not_configured">
-              <code>not_configured</code>
+            <value id="no">
+              <code>no</code>
               <rank>20</rank>
             </value>
           </values>
-          <default_value>not_configured</default_value>
+          <default_value>no</default_value>
           <is_null_allowed>false</is_null_allowed>
           <validation_pattern/>
           <dependencies/>
@@ -159,7 +154,7 @@
             <item id="user_id">
               <rank>10</rank>
             </item>
-            <item id="status">
+            <item id="validated">
               <rank>20</rank>
             </item>
             <item id="is_default">
@@ -175,7 +170,7 @@
             <item id="user_id">
               <rank>10</rank>
             </item>
-            <item id="status">
+            <item id="validated">
               <rank>20</rank>
             </item>
             <item id="is_default">

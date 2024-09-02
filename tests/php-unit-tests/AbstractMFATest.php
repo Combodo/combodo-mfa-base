@@ -2,11 +2,7 @@
 
 namespace Combodo\iTop\MFABase\Test;
 
-use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use Config;
-use DateTime;
-use MetaModel;
 use MFAAdminRule;
 use MFAMode;
 use MFAUserSettings;
@@ -28,10 +24,10 @@ class AbstractMFATest extends ItopDataTestCase {
 		}
 	}
 
-	public function CreateSetting($sUserSettingClass, $sUserId, string $sStatus, $aAdditionFields=[], bool $bIsDefault=false) : MFAUserSettings {
+	public function CreateSetting($sUserSettingClass, $sUserId, string $sValidated, $aAdditionFields=[], bool $bIsDefault=false) : MFAUserSettings {
 		/** @var MFAUserSettings $oSettings */
 		$aParams = array_merge($aAdditionFields, [
-			'status' => $sStatus,
+			'validated' => $sValidated,
 			'is_default' => $bIsDefault ? "yes" : "no",
 			'user_id' => $sUserId,
 		]);
