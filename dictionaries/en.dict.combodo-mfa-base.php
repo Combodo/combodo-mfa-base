@@ -18,10 +18,9 @@ Dict::Add('EN US', 'English', 'English', array(
 	'UI:MFA:Modes:Name' => 'Name',
 	'UI:MFA:Modes:Validated' => 'Validated',
 	'UI:MFA:Modes:Action' => 'Action',
-	'UI:MFA:Modes:Action:Configure' => 'Configure',
 	'UI:MFA:Modes:Action:Configure:ButtonTooltip' => 'Configure the MFA Mode',
-	'UI:MFA:Modes:Action:Add' => 'Add',
-	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Add a new MFA Mode',
+	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Add MFA Mode',
+	'UI:MFA:Modes:Action:Delete:ButtonTooltip' => 'Remove MFA Mode',
 
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor authentication warning',
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to to configure this mode.',

@@ -7,33 +7,17 @@
 namespace Combodo\iTop\MFABase\Helper;
 
 use IssueLog;
-use LogAPI;
 
-class MFABaseLog extends LogAPI
+class MFABaseLog extends IssueLog
 {
 	const CHANNEL_DEFAULT = 'MFABaseLog';
 	protected static $m_oFileLog = null;
 
-
 	public static function Enable($sTargetFile = null)
 	{
-		if (empty($sTargetFile))
-		{
-			$sTargetFile = APPROOT.'log/MFABase.log';
+		if (empty($sTargetFile)) {
+			$sTargetFile = APPROOT.'log/error.log';
 		}
 		parent::Enable($sTargetFile);
 	}
-
-	public static function Error($sMessage, $sChannel = null, $aContext = [])
-	{
-		// replicate log in error.log
-		IssueLog::Error($sMessage, self::CHANNEL_DEFAULT, $aContext);
-		parent::Error($sMessage, self::CHANNEL_DEFAULT, $aContext);
-	}
-
-	public static function Info($sMessage, $sChannel = null, $aContext = [])
-	{
-		parent::Info($sMessage, self::CHANNEL_DEFAULT, $aContext);
-	}
-
 }

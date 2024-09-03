@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
+use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
@@ -85,24 +86,45 @@ class MFABaseService
 			/** @var \cmdbAbstractObject $oMFAUserSettings */
 			$sStatus = $oMFAUserSettings->GetEditValue('validated');
 			$aDatum[] = $sStatus;
+			$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
 			if ($oMFAUserSettings->Get('validated') !== 'no') {
-				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Configure');
 				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
 				$sDataAction = 'configure';
+				// Action
+				$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-pen',
+					$sActionTooltip,
+					'Action',
+					"$sDataAction:$sMFAUserSettingsClass",
+					true
+				);
+				$oButton->SetTooltip($sActionTooltip);
+				$oButtonToolbar->AddSubBlock($oButton);
+
+				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip');
+				$sDataAction = 'delete';
+				// Action
+				$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-times',
+					$sActionTooltip,
+					'Action',
+					"$sDataAction:$sMFAUserSettingsClass",
+					true
+				);
+				$oButton->SetTooltip($sActionTooltip);
+				$oButtonToolbar->AddSubBlock($oButton);
 			} else {
-				$sActionLabel = Dict::S('UI:MFA:Modes:Action:Add');
 				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip');
 				$sDataAction = 'add';
+				// Action
+				$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-plus',
+					$sActionTooltip,
+					'Action',
+					"$sDataAction:$sMFAUserSettingsClass",
+					true
+				);
+				$oButtonToolbar->AddSubBlock($oButton);
 			}
-			// Action
-			$oButton = ButtonUIBlockFactory::MakeForSecondaryAction(
-				$sActionLabel,
-				'Action',
-				"$sDataAction:$sMFAUserSettingsClass",
-				true
-			);
-			$oButton->SetTooltip($sActionTooltip);
-			$oRenderer = new BlockRenderer($oButton);
+
+			$oRenderer = new BlockRenderer($oButtonToolbar);
 			$sButton = $oRenderer->RenderHtml();
 			$aDatum[] = $sButton;
 			$aData[] = $aDatum;
