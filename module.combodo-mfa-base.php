@@ -10,14 +10,14 @@ SetupWebPage::AddModule(
 		// Identification
 		//
 		'label' => 'Multi-factor authentication base',
-		'category' => 'business',
+		'category' => 'authentication',
 
 		// Setup
 		//
 		'dependencies' => [
 			'combodo-my-account/3.2.0',
 		],
-		'mandatory' => false,
+		'mandatory' => true,
 		'visible' => true,
 		'installer' => 'MFABaseInstaller',
 
