@@ -65,4 +65,10 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}
+
+	protected function OnConnected(&$iErrorCode)
+	{
+		Session::Unset('selected_mfa_mode');
+		return LoginWebPage::LOGIN_FSM_CONTINUE;
+	}
 }

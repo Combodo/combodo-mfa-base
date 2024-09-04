@@ -151,6 +151,10 @@ class MFABaseService
 	{
 		$oChosenUserSettings = null;
 		$sChosenUserSettings = utils::ReadPostedParam('selected_mfa_mode', null);
+		if (!is_null($sChosenUserSettings)) {
+			Session::Set('selected_mfa_mode', $sChosenUserSettings);
+		}
+		$sChosenUserSettings = Session::Get('selected_mfa_mode');
 		foreach ($aUserSettings as $oUserSettings) {
 			if ((is_null($sChosenUserSettings) && $oUserSettings->Get('is_default') === 'yes')
 				|| (get_class($oUserSettings) === $sChosenUserSettings)) {
