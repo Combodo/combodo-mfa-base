@@ -45,12 +45,12 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 		}
 	}
 
-	public function testNonExistingUser() {
+	public function testNonExistingUserDoNotHaveRules() {
 		$this->CreateRule("rule", "MFAUserSettingsRecoveryCode", "forced");
 		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId(66666));
 	}
 
-	public function testNoExistingRule() {
+	public function testGetRuleWontFailWhenNoRuleDefined() {
 		$oOrgLessUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()));
 
