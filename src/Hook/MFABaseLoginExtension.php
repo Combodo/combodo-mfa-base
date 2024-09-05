@@ -18,7 +18,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 {
 	public function ListSupportedLoginModes()
 	{
-		return ['before'];
+		return ['after'];
 	}
 
 	protected function OnCredentialsOK(&$iErrorCode)
@@ -31,9 +31,6 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 		$sUserId =  UserRights::GetUserId(Session::Get('auth_user'));
 
-		if (is_null($sUserId)){
-			return LoginWebPage::LOGIN_FSM_CONTINUE;
-		}
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 
 		if (count($aUserSettings) !== 0) {
