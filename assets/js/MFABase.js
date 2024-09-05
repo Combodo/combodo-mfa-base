@@ -30,3 +30,17 @@ function SetAsDefaultMode(sAppRootURL, sMFAUserSettingsClass)
 		}
 	});
 }
+
+async function WriteClipboardText(text, messageOk) {
+	let successMessage = $('#success-message');
+	let errorMessage = $("#error-message");
+
+	try {
+		await navigator.clipboard.writeText(text);
+		$('#success-message-content').html(messageOk);
+		successMessage.removeClass('ibo-is-hidden');
+	} catch (error) {
+		$('#error-message-content').html(error.message);
+		errorMessage.removeClass('ibo-is-hidden');
+	}
+}

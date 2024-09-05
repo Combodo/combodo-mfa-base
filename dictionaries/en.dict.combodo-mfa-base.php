@@ -12,6 +12,8 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:MFAAdminRule+' => 'Multi-Factor authentication rules',
 	'Menu:MFAAdminRule' => 'MFA rules',
 	'Menu:MFAAdminRule+' => 'Multi-Factor authentication rules',
+	'UI:CopyValue' => 'Copy value',
+	'UI:CopyValue:Done' => 'Copy value done',
 
 	'UI:MFA' => 'MFA User settings',
 	'UI:MFA:Modes'  => 'MFA Modes',
