@@ -79,7 +79,40 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
-		$oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE,
+			$oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode));
+
+		$this->assertEquals(666, $iErrorCode);
+	}
+
+	public function testOnConnected_UnsetSelectedMFAMode() {
+		$_SESSION=[];
+		Session::Set('selected_mfa_mode', true);
+		$this->assertTrue(Session::IsSet('selected_mfa_mode'));
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE,
+			$oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CONNECTED, $iErrorCode));
+
+		$this->assertEquals(666, $iErrorCode);
+		$this->assertFalse(Session::IsSet('selected_mfa_mode'));
+	}
+
+	public function testOnCredentialsOK_MfaConfigurationValidated() {
+		$_SESSION=[];
+		Session::Set('mfa-configuration-validated', true);
+
+		$this->oMFAUserSettingsService->expects($this->exactly(0))
+			->method("GetValidatedMFASettings");
+		$this->oMFAAdminRuleService->expects($this->exactly(0))
+			->method("GetAdminRuleByUserId");
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE,
+			$oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode));
 
 		$this->assertEquals(666, $iErrorCode);
 	}
