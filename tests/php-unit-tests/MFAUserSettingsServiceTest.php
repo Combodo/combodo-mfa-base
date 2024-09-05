@@ -72,7 +72,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 		if ($bModuleEnabled){
 			$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
@@ -91,9 +91,9 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 		$oActiveSetting1 = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", []);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "yes", []);
-		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode"],
+		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 
 		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
@@ -103,7 +103,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 			->willReturn($this->CreateRule('MFAUserSettingsTOTPMail', 'MFAUserSettingsTOTPMail', 'optional'))
 			->with($sUserId);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCode"],
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCodes"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 	}
 
@@ -117,9 +117,9 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 		$oActiveSetting1 = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", []);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "yes", []);
-		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode"],
+		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 
 		//set default
@@ -131,17 +131,17 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 			->willReturn(null)
 			->with($sUserId);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCode"],
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCodes"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 
 		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
 		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
-			->willReturn($this->CreateRule('MFAUserSettingsRecoveryCode', 'MFAUserSettingsRecoveryCode', 'optional'))
+			->willReturn($this->CreateRule('MFAUserSettingsRecoveryCodes', 'MFAUserSettingsRecoveryCodes', 'optional'))
 			->with($sUserId);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode", "MFAUserSettingsTOTPApp"],
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes", "MFAUserSettingsTOTPApp"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 	}
 
@@ -169,7 +169,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 		$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
@@ -177,7 +177,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 	public function testGetValidatedMFASettings_AdminRuleSetWithDeniedMode() {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=[\MFAUserSettingsRecoveryCode::class];
+		$aDeniedModes=[\MFAUserSettingsRecoveryCodes::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
@@ -191,7 +191,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "yes", ["secret" => "toto"]);
-		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 		$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
@@ -222,7 +222,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		if ($bModuleEnabled){
 			$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
@@ -247,7 +247,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oNotActiveSetting = MetaModel::NewObject("MFAUserSettingsTOTPMail", ['user_id' => $sUserId]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "no", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
@@ -291,7 +291,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "no", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings([$oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
 	}
@@ -339,7 +339,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 	public function testGetMFAUserSettings_DumbCase_DeniedMode() {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=['MFAUserSettingsTOTPApp', 'MFAUserSettingsTOTPMail', 'MFAUserSettingsRecoveryCode'];
+		$aDeniedModes=['MFAUserSettingsTOTPApp', 'MFAUserSettingsTOTPMail', 'MFAUserSettingsRecoveryCodes'];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")

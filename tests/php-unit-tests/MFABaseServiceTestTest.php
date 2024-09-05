@@ -41,10 +41,10 @@ class MFABaseServiceTestTest extends AbstractMFATest {
 
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"], true);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ["MFAUserSettingsTOTPApp" => 'yes', "MFAUserSettingsTOTPMail" => 'no', "MFAUserSettingsRecoveryCode" => 'no' ];
+		$aExpected = ["MFAUserSettingsTOTPApp" => 'yes', "MFAUserSettingsTOTPMail" => 'no', "MFAUserSettingsRecoveryCodes" => 'no' ];
 		foreach ($aUserSettings as $oUserSettings){
 			$expected = $aExpected[get_class($oUserSettings)] ?? "no implementation found";
 			$this->assertEquals($expected, $oUserSettings->Get('is_default'), "class " . get_class($oUserSettings));
@@ -52,7 +52,7 @@ class MFABaseServiceTestTest extends AbstractMFATest {
 		MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, "MFAUserSettingsTOTPMail");
 
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ["MFAUserSettingsTOTPApp" => 'no', "MFAUserSettingsTOTPMail" => 'yes', "MFAUserSettingsRecoveryCode" => 'no' ];
+		$aExpected = ["MFAUserSettingsTOTPApp" => 'no', "MFAUserSettingsTOTPMail" => 'yes', "MFAUserSettingsRecoveryCodes" => 'no' ];
 		foreach ($aUserSettings as $oUserSettings){
 			$expected = $aExpected[get_class($oUserSettings)] ?? "no implementation found";
 			$this->assertEquals($expected, $oUserSettings->Get('is_default'), "class " . get_class($oUserSettings));
