@@ -119,4 +119,44 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
 	}
+
+	public function MfaValidationWithSwitchLinksProvider(){
+		return [
+			'on mfa mode only' => [true],
+			'further mfa modes + switch forms proposed' => [false],
+		]	;
+	}
+
+	/**
+	 * @dataProvider MfaValidationWithSwitchLinksProvider
+	 */
+	public function testLoginPage_MfaValidationWithSwitchLinks($bOneMfaModeConfigured=true) {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+
+		$oActiveSetting1 = $this->CreateSetting("MFAUserSettingsTOTPApp", $oUser->GetKey(), "yes", [], true);
+
+		if ($bOneMfaModeConfigured) {
+			$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $oUser->GetKey(), "yes", []);
+			$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $oUser->GetKey(), "yes", []);
+		}
+
+		$sOutput = $this->CallItopUrl("/pages/UI.php",
+			[ 'auth_user' => $oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+
+		$this->assertNotNull($sOutput);
+		var_dump($sOutput);
+
+		$sMfaSwitchModePattern = '<form id="switch-form';
+		if ($bOneMfaModeConfigured){
+			$sNeedle = $sMfaSwitchModePattern;
+			$this->assertFalse(strpos($sOutput, $sNeedle), "No switch MFA mode form in the login page" . PHP_EOL . PHP_EOL . $sOutput);
+		} else {
+			foreach (["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode"] as $sMode){
+				$sNeedle = "$sMfaSwitchModePattern-$sMode";
+				$this->assertTrue(false !== strpos($sOutput, $sNeedle), "MFA mode switch form must be present ($sNeedle)" . PHP_EOL . PHP_EOL . $sOutput);
+				$sNeedle = \Dict::Format("MFA:login:switch:label:$sMode");
+				$this->assertTrue(false !== strpos($sOutput, $sNeedle), "MFA mode switch label must be present ($sNeedle)" . PHP_EOL . PHP_EOL . $sOutput);
+			}
+		}
+	}
 }
