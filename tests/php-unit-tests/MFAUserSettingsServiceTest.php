@@ -81,6 +81,78 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		}
 	}
 
+	public function testGetValidatedMFASettings_OrderRespectPreferredMode() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn(null)
+			->with($sUserId);
+
+		$oActiveSetting1 = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "yes", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode"],
+			$this->GetUserSettingsClasses($aMFAUserSettings));
+
+		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
+		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn($this->CreateRule('MFAUserSettingsTOTPMail', 'MFAUserSettingsTOTPMail', 'optional'))
+			->with($sUserId);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCode"],
+			$this->GetUserSettingsClasses($aMFAUserSettings));
+	}
+
+	public function testGetValidatedMFASettings_OrderRespectDefault() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn(null)
+			->with($sUserId);
+
+		$oActiveSetting1 = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "yes", []);
+		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCode", $sUserId, "yes", []);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals(["MFAUserSettingsTOTPApp", "MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode"],
+			$this->GetUserSettingsClasses($aMFAUserSettings));
+
+		//set default
+		$this->updateObject('MFAUserSettingsTOTPMail', $oActiveSetting2->GetKey(), ['is_default' => "yes"]);
+		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
+		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn(null)
+			->with($sUserId);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCode"],
+			$this->GetUserSettingsClasses($aMFAUserSettings));
+
+		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
+		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn($this->CreateRule('MFAUserSettingsRecoveryCode', 'MFAUserSettingsRecoveryCode', 'optional'))
+			->with($sUserId);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCode", "MFAUserSettingsTOTPApp"],
+			$this->GetUserSettingsClasses($aMFAUserSettings));
+	}
+
+	private function GetUserSettingsClasses($aMFAUserSettings){
+		$res=[];
+		foreach ($aMFAUserSettings as $obj){
+			$res[]=get_class($obj);
+		}
+		return $res;
+	}
+
 	public function testGetValidatedMFASettings_AdminRuleSetWithoutDeniedMode() {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
