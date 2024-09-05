@@ -66,6 +66,10 @@ class MFAUserSettingsService
 	 * The denied modes are filtered.
 	 *
 	 * @return MFAUserSettings[]
+	 * @throws \CoreException
+	 * @throws \CoreUnexpectedValue
+	 * @throws \MySQLException
+	 * @throws \OQLException
 	 */
 	public function GetAllAllowedMFASettings(string $sUserId): array
 	{
@@ -103,6 +107,42 @@ class MFAUserSettingsService
 	/**
 	 * @param string $sUserId
 	 *
+	 * @return MFAUserSettings[]
+	 *
+	 * @throws \CoreException
+	 * @throws \CoreUnexpectedValue
+	 * @throws \MySQLException
+	 * @throws \OQLException
+	 */
+	public function GetMFASettingsObjects(string $sUserId): array
+	{
+		$oSearch = DBObjectSearch::FromOQL('SELECT MFAUserSettings WHERE user_id=:user_id', ['user_id' => $sUserId]);
+		$oSet = new DBObjectSet($oSearch);
+
+		$aSettings = [];
+		while ($oSettings = $oSet->Fetch()) {
+			$aSettings[] = $oSettings;
+		}
+
+		return $aSettings;
+	}
+
+	/**
+	 * @param \MFAUserSettings $oSettings
+	 * @param bool $bIsDefault
+	 *
+	 * @return void
+	 */
+	public function SetMFASettingsAsDefault(MFAUserSettings $oSettings, bool $bIsDefault)
+	{
+		$oSettings->Set('is_default', $bIsDefault ? 'yes' : 'no');
+		$oSettings->AllowWrite();
+		$oSettings->DBUpdate();
+	}
+
+	/**
+	 * @param string $sUserId
+	 *
 	 * Return active user settings by user. By default is first. Otherwise ordered by Admin rules rank.
 	 * When no admin rules found for this user, all rules are optional.
 	 *
@@ -115,10 +155,13 @@ class MFAUserSettingsService
 		}
 
 		$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
+		$sPreferredMFAMode = '';
+		if (!is_null($oAdminRule)) {
+			$sPreferredMFAMode = $oAdminRule->Get('preferred_mfa_mode');
+		}
 		$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
-		$oSearch = DBObjectSearch::FromOQL(
-			'SELECT MFAUserSettings WHERE user_id=:user_id AND validated="yes"', ['user_id' => $sUserId]);
+		$oSearch = DBObjectSearch::FromOQL('SELECT MFAUserSettings WHERE user_id=:user_id AND validated="yes"', ['user_id' => $sUserId]);
 		$oSet = new DBObjectSet($oSearch);
 
 		$aSettings = [];
@@ -129,6 +172,15 @@ class MFAUserSettingsService
 
 			$aSettings[] = $oSettings;
 		}
+
+		usort($aSettings, function ($a, $b) use ($sPreferredMFAMode) {
+			if ($a->Get('is_default') === 'yes') return -1;
+			if ($b->Get('is_default') === 'yes') return 1;
+			if (get_class($a) === $sPreferredMFAMode) return -1;
+			if (get_class($b) === $sPreferredMFAMode) return 1;
+
+			return 0;
+		});
 
 		return $aSettings;
 	}

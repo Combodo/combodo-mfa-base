@@ -17,6 +17,7 @@ Dict::Add('FR FR', 'French', 'French', array(
 	'UI:MFA:Modes'  => 'MFA Modes',
 	'UI:MFA:Modes:Name' => 'Name',
 	'UI:MFA:Modes:Validated' => 'Validated',
+	'UI:MFA:Modes:Default' => 'Is default',
 	'UI:MFA:Modes:Action' => 'Action',
 	'UI:MFA:Modes:Action:Configure:ButtonTooltip' => 'Configure the MFA Mode',
 	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Add MFA Mode',

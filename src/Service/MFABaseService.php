@@ -70,6 +70,7 @@ class MFABaseService
 		$aColumns = [
 			['label' => Dict::S('UI:MFA:Modes:Name')],
 			['label' => Dict::S('UI:MFA:Modes:Validated')],
+			['label' => Dict::S('UI:MFA:Modes:Default')],
 			['label' => Dict::S('UI:MFA:Modes:Action')],
 		];
 
@@ -84,8 +85,8 @@ class MFABaseService
 			$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
 			// Status
 			/** @var \cmdbAbstractObject $oMFAUserSettings */
-			$sStatus = $oMFAUserSettings->GetEditValue('validated');
-			$aDatum[] = $sStatus;
+			$aDatum[] = $oMFAUserSettings->GetEditValue('validated');;
+			$aDatum[] = $oMFAUserSettings->GetEditValue('is_default');
 			$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
 			if ($oMFAUserSettings->Get('validated') !== 'no') {
 				$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
@@ -239,4 +240,12 @@ class MFABaseService
 		exit();
 	}
 
+	public function SetAsDefaultMode($sUserId, string $sMFAUserSettingsClass)
+	{
+		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
+
+		foreach ($aUserSettings as $oUserSettings) {
+			MFAUserSettingsService::GetInstance()->SetMFASettingsAsDefault($oUserSettings, $oUserSettings instanceof $sMFAUserSettingsClass);
+		}
+	}
 }

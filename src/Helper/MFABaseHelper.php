@@ -31,4 +31,9 @@ class MFABaseHelper
 	{
 		return 'env-'.utils::GetCurrentEnvironment().'/'.self::MODULE_NAME.'/assets/css/MFABase.scss';
 	}
+
+	public static function GetJSFile(): string
+	{
+		return utils::GetAbsoluteUrlModulesRoot().self::MODULE_NAME.'/assets/js/MFABase.js';
+	}
 }

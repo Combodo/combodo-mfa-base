@@ -7,6 +7,7 @@
 namespace Combodo\iTop\MFABase\Controller;
 
 use Combodo\iTop\Application\TwigBase\Controller\Controller;
+use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use MetaModel;
 use UserRights;
@@ -36,5 +37,22 @@ class MFABaseController extends Controller
 		}
 
 		$this->DisplayPage($aParams);
+	}
+
+	public function OperationSetAsDefaultMode()
+	{
+		// Ajax
+		$aParams = [];
+
+		$sClass = utils::ReadPostedParam('class', '', utils::ENUM_SANITIZATION_FILTER_CLASS);
+		$sUserId = UserRights::GetUserId();
+
+		MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, $sClass);
+
+		$aParams['code'] = 0;
+		$sClassName = MetaModel::GetName($sClass);
+		$aParams['message'] = \Dict::Format('UI:MFA:Modes:Default:Done', $sClassName);
+
+		$this->DisplayJSONPage($aParams);
 	}
 }
