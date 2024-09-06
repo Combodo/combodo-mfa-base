@@ -207,10 +207,6 @@ class MFABaseService
 
 	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
 	{
-		if (Session::IsSet('mfa-configuration-validated')) {
-			return true;
-		}
-
 		$sPreferredModeClass =  $oMFAAdminRule->Get('preferred_mfa_mode');
 		$oMFAUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sPreferredModeClass);
 
