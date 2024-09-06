@@ -221,4 +221,17 @@ class MFAUserSettingsService
 
 		return $oSettings;
 	}
+
+	public function SetIsValid(MFAUserSettings $oUserSettings, bool $bIsValid = true): void
+	{
+		$oUserSettings->Set('validated', $bIsValid ? 'yes' : 'no');
+		$oUserSettings->AllowWrite();
+		$oUserSettings->DBUpdate();
+	}
+
+
+	public function IsValid(MFAUserSettings $oUserSettings): bool
+	{
+		return $oUserSettings->Get('validated') === 'yes';
+	}
 }
