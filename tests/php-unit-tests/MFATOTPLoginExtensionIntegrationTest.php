@@ -149,6 +149,8 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
+		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
+		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 	}
 
@@ -156,14 +158,17 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 	{
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
+
 		// Ask for configuration and generate UserSettings
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword]);
 
 		// Act
-		$oActiveSetting1 = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
-		$oTOTP = new OTPService($oActiveSetting1);
+		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
+		$this->assertEquals('no', $oActiveSetting->Get('validated'));
+
+		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
 			'totp_code' => $sCode,
@@ -173,9 +178,15 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 		var_export($sOutput);
 
 		// Assert
+		$oActiveSetting->Reload();
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'));
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
-		$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
-		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
-		$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
+
+		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
+		$this->AssertStringContains(sprintf('window.location = "%s";', \utils::GetAbsoluteUrlAppRoot()), $sOutput, 'The page should contain a redirection link');
+		
+		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
+		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
+		//$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
 	}
 }
