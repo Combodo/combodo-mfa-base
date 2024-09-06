@@ -161,7 +161,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$this->assertNotNull($sNeedle, $sMessage);
 		$this->assertNotNull($sHaystack, $sMessage);
 
-		$this->assertTrue(false !== strpos($sHaystack, $sNeedle), $sMessage);
+		$this->assertTrue(false !== strpos($sHaystack, $sNeedle), $sMessage . PHP_EOL . "needle: '$sNeedle' not found in content below:" . PHP_EOL . PHP_EOL . $sHaystack);
 	}
 
 	protected function AssertStringNotContains($sNeedle, $sHaystack, $sMessage): void
@@ -169,6 +169,6 @@ class AbstractMFATest extends ItopDataTestCase
 		$this->assertNotNull($sNeedle, $sMessage);
 		$this->assertNotNull($sHaystack, $sMessage);
 
-		$this->assertFalse(false !== strpos($sHaystack, $sNeedle), $sMessage);
+		$this->assertFalse(false !== strpos($sHaystack, $sNeedle), $sMessage. PHP_EOL . "needle: '$sNeedle' should not be found in content below:" . PHP_EOL . PHP_EOL . $sHaystack);
 	}
 }

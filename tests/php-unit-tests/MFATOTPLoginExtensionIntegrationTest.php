@@ -175,8 +175,6 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword]);
 
-		var_export($sOutput);
-
 		// Assert
 		$oActiveSetting->Reload();
 		$this->assertEquals('yes', $oActiveSetting->Get('validated'));
@@ -184,7 +182,7 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 
 		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
 		$this->AssertStringContains(sprintf('window.location = "%s";', \utils::GetAbsoluteUrlAppRoot()), $sOutput, 'The page should contain a redirection link');
-		
+
 		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
 		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
 		//$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
