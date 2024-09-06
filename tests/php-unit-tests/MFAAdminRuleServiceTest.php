@@ -195,10 +195,10 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 		$sForceActivateDatetimeInTheFuture = $oForceActivateDatetimeInTheFuture->format('Y-m-d');
 
 		return [
-			'forced + action date i the passed' => [ 'forced', $sForceActivateDatetimeExpired, true ],
+			'forced + action date in the past' => [ 'forced', $sForceActivateDatetimeExpired, true ],
 			'forced + action date in the future' => [ 'forced', $sForceActivateDatetimeInTheFuture, false ],
 			'forced + action date today' => [ 'forced', $sToday, true ],
-			'optional + action date i the passed' => [ 'optional', $sForceActivateDatetimeExpired, false ],
+			'optional + action date in the past' => [ 'optional', $sForceActivateDatetimeExpired, false ],
 			'optional + action date in the future' => [ 'optional', $sForceActivateDatetimeInTheFuture, false ],
 			'forced + no action date' => [ 'forced', null, true ],
 			'optional + no action date' => [ 'optional', null, false ],

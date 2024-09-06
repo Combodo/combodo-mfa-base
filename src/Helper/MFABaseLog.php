@@ -10,7 +10,7 @@ use IssueLog;
 
 class MFABaseLog extends IssueLog
 {
-	const CHANNEL_DEFAULT = 'MFABaseLog';
+	const CHANNEL_DEFAULT = 'MFA';
 	protected static $m_oFileLog = null;
 
 	public static function Enable($sTargetFile = null)
