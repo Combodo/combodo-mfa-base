@@ -9,7 +9,6 @@ namespace Combodo\iTop\MFABase\Service;
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
-use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\MFABase\View\MFATwigRenderer;
@@ -122,7 +121,22 @@ class MFABaseService
 					"$sDataAction:$sMFAUserSettingsClass",
 					true
 				);
+				$oButton->SetTooltip($sActionTooltip);
 				$oButtonToolbar->AddSubBlock($oButton);
+
+				if ($oMFAUserSettings->Get('configured') === 'yes') {
+					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip');
+					$sDataAction = 'undo_delete';
+					// Action
+					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-undo',
+						$sActionTooltip,
+						'Action',
+						"$sDataAction:$sMFAUserSettingsClass",
+						true
+					);
+					$oButton->SetTooltip($sActionTooltip);
+					$oButtonToolbar->AddSubBlock($oButton);
+				}
 			}
 
 			$oRenderer = new BlockRenderer($oButtonToolbar);
@@ -174,7 +188,8 @@ class MFABaseService
 		}
 
 		if (is_null($oChosenUserSettings)) {
-			throw new MFABaseException("No default MFA possible for user $sUserId");
+			MFABaseLog::Debug("No default MFA possible", null, ['UserId' => $sUserId]);
+			return true;
 		}
 
 		$oMFATwigRenderer = new MFATwigRenderer();

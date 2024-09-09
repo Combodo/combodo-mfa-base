@@ -38,7 +38,15 @@
 						{% elseif oMFAUserSettings.Get("is_default") == 'yes' %}
 							{{ oMFAUserSettings.GetEditValue("is_default") }}
 						{% else %}
-							{% UIButton ForSecondaryAction { sLabel:'UI:MFA:Modes:Default:Set'|dict_s, OnClickJsCode:'SetAsDefaultMode("'~ get_absolute_url_app_root() ~'", "'~ oMFAUserSettings.Get("finalclass") ~'");' } %}
+							{% UIForm Standard {Action:'exec.php' } %}
+								{% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-base' } %}
+								{% UIInput ForHidden { sName:'exec_page', sValue:'index.php' } %}
+								{% UIInput ForHidden { sName:'operation', sValue:'SetAsDefaultMode' } %}
+								{% UIInput ForHidden { sName:'class', sValue:oMFAUserSettings.Get("finalclass") } %}
+								{% UIInput ForHidden { sName:'verb', sValue:'update' } %}
+
+								{% UIButton ForSecondaryAction { sLabel:'UI:MFA:Modes:Default:Set'|dict_s, bIsSubmit:true, Tooltip:'UI:MFA:Modes:Default:Set+'|dict_s } %}
+							{% EndUIForm %}
 						{% endif %}
 					{% EndUIField %}
 				{% EndUIFieldSet %}
