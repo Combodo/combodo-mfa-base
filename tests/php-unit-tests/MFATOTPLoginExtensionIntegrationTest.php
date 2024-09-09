@@ -118,7 +118,8 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 
 		// Assert
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
-		$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
+		$sWelcomeWithoutIopApplicationName = str_replace(ITOP_APPLICATION, "", Dict::S('UI:WelcomeToITop'));
+		$this->AssertStringContains($sWelcomeWithoutIopApplicationName, $sOutput, 'The page should be the welcome page');
 		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
 		$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
 	}
