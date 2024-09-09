@@ -71,7 +71,7 @@ class MFAAdminRuleService
 			return null;
 		}
 
-		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule");
+		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE status='active'");
 		$oSet = new DBObjectSet($oSearch, ['rank' => true]);
 		/** @var MFAAdminRule $oRule */
 		while ($oRule = $oSet->Fetch()) {

@@ -58,6 +58,19 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oPortalUserInOrg2->GetKey()));
 	}
 
+	public function testGetValidRuleByUserId() {
+		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPMail', 'forced');
+		$oOrgLessUser = $this->CreateContactlessUser('NoOrgUser', ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], 'ABCdefg@12345#');
+		$this->CheckRules($oRule, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()), 'Valid rule should be found');
+	}
+
+	public function testGetInvalidRuleByUserId() {
+		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPMail', 'forced');
+		$this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['status' => 'inactive']);
+		$oOrgLessUser = $this->CreateContactlessUser('NoOrgUser', ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], 'ABCdefg@12345#');
+		$this->CheckRules(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()), 'Invalid rule should NOT be found');
+	}
+
 	public function Rule_ModuleConfig() {
 		return [
 			'module disabled' => [false],
@@ -160,12 +173,12 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 		$this->CheckRules($oRule3, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oAdminUser->GetKey()));
 	}
 
-	public function CheckRules($aExpectedRule, ?MFAAdminRule $oRule) {
+	public function CheckRules($aExpectedRule, ?MFAAdminRule $oRule, $sMessage = '') {
 		if (is_null($aExpectedRule)){
-			$this->assertNull($oRule);
+			$this->assertNull($oRule, $sMessage);
 		} else {
-			$this->assertEquals($aExpectedRule->Get('preferred_mfa_mode'), $oRule->Get('preferred_mfa_mode'));
-			$this->assertEquals($aExpectedRule->Get('name'), $oRule->Get('name'));
+			$this->assertEquals($aExpectedRule->Get('preferred_mfa_mode'), $oRule->Get('preferred_mfa_mode'), $sMessage);
+			$this->assertEquals($aExpectedRule->Get('name'), $oRule->Get('name'), $sMessage);
 		}
 	}
 

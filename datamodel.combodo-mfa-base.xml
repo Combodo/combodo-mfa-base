@@ -213,7 +213,6 @@
           </rule>
         </uniqueness_rules>
         <obsolescence>
-          <condition>status='inactive'</condition>
         </obsolescence>
         <order>
           <columns>
