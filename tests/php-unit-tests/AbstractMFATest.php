@@ -141,7 +141,6 @@ class AbstractMFATest extends ItopDataTestCase
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		$sOutput = curl_exec($ch);
 		//echo "$sUrl error code:".curl_error($ch);
 		curl_close($ch);

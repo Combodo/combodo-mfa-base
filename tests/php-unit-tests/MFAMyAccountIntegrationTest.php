@@ -3,8 +3,6 @@
 namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
-use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
-use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
 use MetaModel;
@@ -73,22 +71,30 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 	}
 
 
-	public function testMyAccountMfaTab_DisplayFurtherUserSettingsConfigured()
+	public function testMyAccountMfaTab_DisplayMFATab()
 	{
-		// Arrange
-		//$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
-		//$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
-		//$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $this->oUser->GetKey(), 'yes', [], true);
-
-		// Act
 		$sOutput = $this->CallItopUrl('/pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
 
 		// Assert
 		$this->AssertStringContains(Dict::S('UI:MyAccount'), $sOutput, 'The page should display my account page title');
 		$this->AssertStringContains(Dict::S('MyAccount:Tab:MFA'), $sOutput, 'The page should display MFA tab title');
-		/*$this->AssertStringContains(Dict::S('UI:MFA:Modes'), $sOutput, 'The page should display MFA tab content');
+	}
+
+	public function testMyAccountMfaTab_DisplayMFATabContent()
+	{
+		// Arrange
+		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
+		$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
+		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $this->oUser->GetKey(), 'yes', [], true);
+
+		// Act
+		$sOutput = $this->CallItopUrl('/pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&operation=MyAccountTab&exec_env=production&tab=MyAccount%3ATab%3AMFA',
+			['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+
+		// Assert
+		$this->AssertStringContains(Dict::S('UI:MFA:Modes'), $sOutput, 'The page should display MFA tab content');
 		$this->AssertStringContains(Dict::S('Class:MFAUserSettingsTOTPApp'), $sOutput, 'The page should display TOTP App line');
 		$this->AssertStringContains(Dict::S('Class:MFAUserSettingsTOTPMail'), $sOutput, 'The page should display TOTP Mail line');
-		$this->AssertStringContains(Dict::S('Class:MFAUserSettingsRecoveryCodes'), $sOutput, 'The page should display Recovery code line');*/
+		$this->AssertStringContains(Dict::S('Class:MFAUserSettingsRecoveryCodes'), $sOutput, 'The page should display Recovery code line');
 	}
 }
