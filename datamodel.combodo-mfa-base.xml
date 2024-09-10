@@ -274,7 +274,7 @@
           <tracking_level>all</tracking_level>
         </field>
         <field id="preferred_mfa_mode" xsi:type="AttributeClass">
-          <class_category>MFAMode</class_category>
+          <class_category>SelectableMFAMode</class_category>
           <sql>preferred_mfa_mode</sql>
           <default_value/>
           <is_null_allowed>false</is_null_allowed>
@@ -760,6 +760,7 @@
           <on_target_delete>DEL_AUTO</on_target_delete>
         </field>
         <field id="mfamode_id" xsi:type="AttributeExternalKey">
+          <category>bizmodel,DeniableMFAMode</category>
           <sql>mfamode_id</sql>
           <filter/>
           <dependencies/>
