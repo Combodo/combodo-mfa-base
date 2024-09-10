@@ -138,10 +138,10 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
-			->willReturn($this->CreateRule('MFAUserSettingsRecoveryCodes', 'MFAUserSettingsRecoveryCodes', 'optional'))
+			->willReturn($this->CreateRule('MFAUserSettingsTOTPApp', 'MFAUserSettingsTOTPApp', 'optional'))
 			->with($sUserId);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes", "MFAUserSettingsTOTPApp"],
+		$this->assertEquals(["MFAUserSettingsTOTPMail", "MFAUserSettingsTOTPApp", "MFAUserSettingsRecoveryCodes"],
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 	}
 
