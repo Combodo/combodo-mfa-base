@@ -178,6 +178,8 @@ class MFAUserSettingsService
 			if ($b->Get('is_default') === 'yes') return 1;
 			if (get_class($a) === $sPreferredMFAMode) return -1;
 			if (get_class($b) === $sPreferredMFAMode) return 1;
+			if (!$a->CanBeDefault()) return 1;
+			if (!$b->CanBeDefault()) return -1;
 
 			return 0;
 		});
