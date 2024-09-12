@@ -7,15 +7,16 @@
  */
 
 Dict::Add('FR FR', 'French', 'French', array(
-	'MyAccount:Tab:MFA' => 'Multi-Factor authentication',
-	'Class:MFAAdminRule' => 'Multi-Factor authentication rules',
-	'Class:MFAAdminRule+' => 'Multi-Factor authentication rules',
+	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
+	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
+	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
 	'Menu:MFAAdminRule' => 'MFA rules',
-	'Menu:MFAAdminRule+' => 'Multi-Factor authentication rules',
+	'Menu:MFAAdminRule+' => 'Multi-Factor Authentication rules',
 	'UI:CopyValue' => 'Copy value',
 	'UI:CopyValue:Done' => 'Copy value done',
 
 	'UI:MFA' => 'MFA user settings',
+	'UI:MFA:Portal:Menu' => 'Multi-Factor Authentication',
 	'UI:MFA:Modes'  => 'MFA modes',
 	'UI:MFA:Modes:Name' => 'Name',
 	'UI:MFA:Modes:Validated' => 'Validated',
@@ -31,8 +32,8 @@ Dict::Add('FR FR', 'French', 'French', array(
 	'UI:MFA:Modes:Deleted' => '%1$s has been deleted',
 	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Reactivate previously deleted mode',
 
-	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor authentication warning',
-	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to to configure this mode.',
+	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor Authentication warning',
+	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to to configure this mode.',
 	'Login:MFA:Continue' => 'Continue',
 
 	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
