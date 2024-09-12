@@ -29,6 +29,8 @@ class ComposerStaticInit82e29b7fbd0d36d303017d22d2ca07ee
         'Combodo\\iTop\\MFABase\\Hook\\MFABaseLoginExtension' => __DIR__ . '/../..' . '/src/Hook/MFABaseLoginExtension.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountSectionExtension.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountTabExtension.php',
+        'Combodo\\iTop\\MFABase\\Hook\\PortalUIExtension' => __DIR__ . '/../..' . '/src/Hook/PortalUIExtension.php',
+        'Combodo\\iTop\\MFABase\\Portal\\Controller\\MfaBrickController' => __DIR__ . '/../..' . '/src/Portal/Controller/MfaBrickController.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => __DIR__ . '/../..' . '/src/Service/MFAAdminRuleService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFABaseService' => __DIR__ . '/../..' . '/src/Service/MFABaseService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAUserSettingsService' => __DIR__ . '/../..' . '/src/Service/MFAUserSettingsService.php',

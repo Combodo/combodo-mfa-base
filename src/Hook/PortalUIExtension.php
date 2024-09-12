@@ -24,7 +24,7 @@ class PortalUIExtension extends AbstractPortalUIExtension
 
 		/** @var \Combodo\iTop\Portal\Routing\UrlGenerator $oUrlGenerator */
 		$oUrlGenerator = $oContainer->get('url_generator');
-		$sURL = $oUrlGenerator->generate('p_user_profile_brick');
+		$sURL = $oUrlGenerator->generate('p_mfa_brick');
 		$oTWIGEnvironment = TwigHelper::GetTwigEnvironment(utils::GetAbsoluteModulePath(MFABaseHelper::MODULE_NAME) . 'templates/portal/');
 		$sHTML = $oTWIGEnvironment->render('MenuLink.html.twig', ['sURL' => $sURL]);
 
