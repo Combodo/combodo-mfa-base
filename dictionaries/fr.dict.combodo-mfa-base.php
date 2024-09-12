@@ -35,6 +35,9 @@ Dict::Add('FR FR', 'French', 'French', array(
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to to configure this mode.',
 	'Login:MFA:Continue' => 'Continue',
 
+	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
+	'UI:MFA:Error:FailedToSetDefaultMode' => 'Failed to set default MFA Modes',
+
 	'Class:MFAUserSettings' => 'MFA user settings',
 	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Yes',
 	'Class:MFAUserSettings/Attribute:validated/Value:no' => 'No',

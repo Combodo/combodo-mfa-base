@@ -8,7 +8,9 @@ use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
 use MetaModel;
 
-class MFABaseServiceTestTest extends AbstractMFATest {
+require_once __DIR__.'/AbstractMFATest.php';
+
+class MFABaseServiceTest extends AbstractMFATest {
 	protected function setUp(): void
 	{
 		parent::setUp();

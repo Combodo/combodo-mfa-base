@@ -102,7 +102,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 	public function testOnCredentialsOK_MfaConfigurationValidated() {
 		$_SESSION=[];
-		Session::Set('mfa-configuration-validated', true);
+		Session::Set('mfa_configuration_validated', true);
 
 		$this->oMFAUserSettingsService->expects($this->exactly(0))
 			->method("GetValidatedMFASettings");

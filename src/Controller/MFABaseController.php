@@ -27,9 +27,9 @@ class MFABaseController extends Controller
 	public function OperationAction()
 	{
 		$aParams = [];
-		$aParams['sURL'] = utils::GetAbsoluteUrlAppRoot().'pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA';
 
 		try {
+			$aParams['sURL'] = utils::GetAbsoluteUrlAppRoot().'pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA';
 			$sAction = utils::ReadPostedParam('Action', '', utils::ENUM_SANITIZATION_FILTER_CONTEXT_PARAM);
 			$aItems = explode(':', $sAction);
 			$sVerb = $aItems[0];
@@ -68,9 +68,8 @@ class MFABaseController extends Controller
 					break;
 			}
 		} catch (Exception $e) {
-			$sError = Dict::S('Failed to configure MFA Modes');
-			MFABaseLog::Error($sError, null, ['Exception' => $e->getMessage(), 'Stack' => $e->getTraceAsString()]);
-			$aParams['sError'] = $sError;
+			MFABaseLog::Error(__METHOD__.' Failed to configure MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');
 		}
 
 		$this->DisplayPage($aParams);
@@ -81,13 +80,18 @@ class MFABaseController extends Controller
 		// Ajax
 		$aParams = [];
 
-		$sClass = utils::ReadPostedParam('class', '', utils::ENUM_SANITIZATION_FILTER_CLASS);
-		$sUserId = UserRights::GetUserId();
+		try {
+			$sClass = utils::ReadPostedParam('class', '', utils::ENUM_SANITIZATION_FILTER_CLASS);
+			$sUserId = UserRights::GetUserId();
 
-		MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, $sClass);
+			MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, $sClass);
 
-		$oUserSettings = MetaModel::NewObject($sClass, ['user_id' => $sUserId]);
-		$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+			$oUserSettings = MetaModel::NewObject($sClass, ['user_id' => $sUserId]);
+			$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+		} catch (Exception $e) {
+			MFABaseLog::Error(__METHOD__.' Failed to set default MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');
+		}
 
 		$this->m_sOperation = 'Action';
 		$this->DisplayPage($aParams);

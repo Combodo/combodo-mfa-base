@@ -7,9 +7,11 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseException;
 use CoreException;
 use DBObjectSearch;
 use DBObjectSet;
+use Exception;
 use MetaModel;
 use MFAAdminRule;
 use ormLinkSet;
@@ -55,6 +57,7 @@ class MFAAdminRuleService
 	 * @param string $sUserId
 	 *
 	 * @return MFAAdminRule|null
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
 	public function GetAdminRuleByUserId(string $sUserId): ?MFAAdminRule
 	{
@@ -71,95 +74,144 @@ class MFAAdminRuleService
 			return null;
 		}
 
-		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE status='active'");
-		$oSet = new DBObjectSet($oSearch, ['rank' => true]);
-		/** @var MFAAdminRule $oRule */
-		while ($oRule = $oSet->Fetch()) {
-			$bProfileOk = false;
+		try {
+			$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE status='active'");
+			$oSet = new DBObjectSet($oSearch, ['rank' => true]);
+			/** @var MFAAdminRule $oRule */
+			while ($oRule = $oSet->Fetch()) {
+				$bProfileOk = false;
 
-			/** @var ormLinkSet $aProfileSet */
-			$aProfileSet = $oRule->Get('profiles_list');
-			if ($aProfileSet->count() == 0) {
-				$bProfileOk = true;
-			} else {
-				while ($oProfile = $aProfileSet->Fetch()) {
-					if (in_array($oProfile->Get('profile_id'), $aUserProfiles)) {
-						$bProfileOk = true;
-						break;
+				/** @var ormLinkSet $aProfileSet */
+				$aProfileSet = $oRule->Get('profiles_list');
+				if ($aProfileSet->count() == 0) {
+					$bProfileOk = true;
+				} else {
+					while ($oProfile = $aProfileSet->Fetch()) {
+						if (in_array($oProfile->Get('profile_id'), $aUserProfiles)) {
+							$bProfileOk = true;
+							break;
+						}
 					}
 				}
-			}
 
-			if ($bProfileOk) {
-				if (count($aUserOrgIds) === 0) {
-					return $oRule;
-				}
-
-				/** @var ormLinkSet $aOrgSet */
-				$aOrgSet = $oRule->Get('orgs_list');
-
-				if ($aOrgSet->count() === 0) {
-					return $oRule;
-				} else {
-					$aRuleOrgIds = $aOrgSet->GetColumnAsArray('org_id');
-					$aIntersection = array_intersect($aUserOrgIds, $aRuleOrgIds);
-					if (count($aIntersection) !== 0) {
+				if ($bProfileOk) {
+					if (count($aUserOrgIds) === 0) {
 						return $oRule;
 					}
 
-					/*while ($oCurrentOrg = $aOrgSet->Fetch()) {
-						if (in_array($oCurrentOrg->Get('organization_id'), $aOrgIds)) {
+					/** @var ormLinkSet $aOrgSet */
+					$aOrgSet = $oRule->Get('orgs_list');
+
+					if ($aOrgSet->count() === 0) {
+						return $oRule;
+					} else {
+						$aRuleOrgIds = $aOrgSet->GetColumnAsArray('org_id');
+						$aIntersection = array_intersect($aUserOrgIds, $aRuleOrgIds);
+						if (count($aIntersection) !== 0) {
 							return $oRule;
 						}
-					}*/
+					}
 				}
 			}
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__METHOD__.' failed', 0, $e);
 		}
 
 		return null;
 	}
 
-	public function GetDeniedModes(?MFAAdminRule $oAdminRule) : array {
-		if (is_null($oAdminRule)){
+	/**
+	 * @param \MFAAdminRule|null $oAdminRule
+	 *
+	 * @return array
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	public function GetDeniedModes(?MFAAdminRule $oAdminRule): array
+	{
+		if (is_null($oAdminRule)) {
 			return [];
 		}
 
-		$oDeniedLinkset = $oAdminRule->Get('denied_mfamodes_list');
-		return $oDeniedLinkset->GetColumnAsArray("mfamode_id_friendlyname");
+		try {
+			$oDeniedLinkset = $oAdminRule->Get('denied_mfamodes_list');
+
+			return $oDeniedLinkset->GetColumnAsArray("mfamode_id_friendlyname");
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+		}
 	}
 
+	/**
+	 * @param \User $oUser
+	 *
+	 * @return array
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
 	private function GetUserProfiles(User $oUser): array
 	{
-		/** @var ormLinkSet $aProfileSet */
-		$aProfileSet = $oUser->Get('profile_list');
-		if ($aProfileSet->count() == 0) {
-			return [];
-		}
+		try {
+			/** @var ormLinkSet $aProfileSet */
+			$aProfileSet = $oUser->Get('profile_list');
+			if ($aProfileSet->count() == 0) {
+				return [];
+			}
 
-		$aRes = [];
-		while ($oProfile = $aProfileSet->Fetch()) {
-			$aRes[] = $oProfile->Get('profileid');
-		}
+			$aRes = [];
+			while ($oProfile = $aProfileSet->Fetch()) {
+				$aRes[] = $oProfile->Get('profileid');
+			}
 
-		return $aRes;
+			return $aRes;
+		} catch (Exception $e) {
+			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+		}
 	}
 
+	/**
+	 * @param \User $oUser
+	 *
+	 * @return array
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
 	private function GetUserOrgs(User $oUser): array
 	{
-		$oAddon = UserRights::GetModuleInstance();
-		return $oAddon->GetUserOrgs($oUser, '');
+		try {
+			$oAddon = UserRights::GetModuleInstance();
+
+			return $oAddon->GetUserOrgs($oUser, '');
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+		}
 	}
 
+	/**
+	 * @param \MFAAdminRule $oMFAAdminRule
+	 *
+	 * @return bool
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
 	public function IsForcedNow(MFAAdminRule $oMFAAdminRule): bool
 	{
 		if (!$oMFAAdminRule->IsForced()) {
 			return false;
 		}
 
-		$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW() OR ISNULL(forced_activation_date)");
-		$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
-		$oForcedAdminRuleSet = new DBObjectSet($oSearch);
+		try {
+			$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW() OR ISNULL(forced_activation_date)");
+			$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
+			$oForcedAdminRuleSet = new DBObjectSet($oSearch);
 
-		return $oForcedAdminRuleSet->CountExceeds(0);
+			return $oForcedAdminRuleSet->CountExceeds(0);
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+		}
 	}
 }

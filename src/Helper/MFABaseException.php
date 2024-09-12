@@ -15,11 +15,12 @@ class MFABaseException extends Exception
 	{
 		if (!is_null($previous)) {
 			$sStack = $previous->getTraceAsString();
+			$sError = $previous->getMessage();
 		} else {
-			$e = new Exception('');
-			$sStack = $e->getTraceAsString();
+			$sStack = $this->getTraceAsString();
+			$sError = '';
 		}
-		MFABaseLog::Error($message, null, ['stack' => $sStack]);
+		MFABaseLog::Error($message, null, ['error' => $sError, 'stack' => $sStack]);
 		parent::__construct($message, $code, $previous);
 	}
 }
