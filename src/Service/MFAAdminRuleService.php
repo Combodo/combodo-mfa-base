@@ -11,6 +11,7 @@ use Combodo\iTop\MFABase\Helper\MFABaseException;
 use CoreException;
 use DBObjectSearch;
 use DBObjectSet;
+use Dict;
 use Exception;
 use MetaModel;
 use MFAAdminRule;
@@ -120,6 +121,15 @@ class MFAAdminRuleService
 		}
 
 		return null;
+	}
+
+	public function OnCheckToWrite(?MFAAdminRule $oAdminRule)
+	{
+		$sPreferredMode = $oAdminRule->Get('preferred_mfa_mode');
+		$aDeniedModes = $this->GetDeniedModes($oAdminRule);
+		if (in_array($sPreferredMode, $aDeniedModes)) {
+			$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeCannotBeDenied'));
+		}
 	}
 
 	/**

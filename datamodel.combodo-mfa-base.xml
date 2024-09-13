@@ -379,7 +379,32 @@
           <edit_when>on_host_edition</edit_when>
         </field>
       </fields>
+      <event_listeners>
+        <event_listener id="EVENT_DB_CHECK_TO_WRITE">
+          <event>EVENT_DB_CHECK_TO_WRITE</event>
+          <callback>EvtCheckToWriteMFAAdminRule</callback>
+          <rank>0</rank>
+        </event_listener>
+      </event_listeners>
       <methods>
+        <method id="EvtCheckToWriteMFAAdminRule" _delta="define">
+          <comment>	/**
+            * Event Listener for EVENT_DB_CHECK_TO_WRITE
+            * Check an object before it is written into the database (no change possible).
+            * Call $this-&gt;AddCheckIssue() to signal an issue.
+            *
+            * @param  Combodo\iTop\Service\Events\EventData $oEventData Event data object
+            *
+            * @author Eric Espie
+            */</comment>
+          <static>false</static>
+          <access>public</access>
+          <type>EventListener</type>
+          <code><![CDATA[	public function EvtCheckToWriteMFAAdminRule(Combodo\iTop\Service\Events\EventData $oEventData)
+	{
+	      Combodo\iTop\MFABase\Service\MFAAdminRuleService::GetInstance()->OnCheckToWrite($this);
+	}]]></code>
+        </method>
         <method id="IsForced">
           <comment>/**
             *

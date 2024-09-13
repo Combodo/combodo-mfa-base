@@ -38,6 +38,7 @@ Dict::Add('EN US', 'English', 'English', array(
 
 	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
 	'UI:MFA:Error:FailedToSetDefaultMode' => 'Failed to set default MFA Modes',
+	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Preferred mode cannot be denied',
 
 	'Class:MFAUserSettings' => 'MFA user settings',
 	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Yes',
