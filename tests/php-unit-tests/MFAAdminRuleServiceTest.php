@@ -193,7 +193,7 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 	}
 
 	public function testGetDeniedModes() {
-		$aDeniedModes=[\MFAUserSettingsTOTPApp::class, \MFAUserSettingsTOTPMail::class];
+		$aDeniedModes=[\MFAUserSettingsRecoveryCodes::class, \MFAUserSettingsTOTPMail::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPApp", "optional", [], [], 70, $aDeniedModes);
 
 		$this->assertEquals($aDeniedModes, array_values(MFAAdminRuleService::GetInstance()->GetDeniedModes($oRule)));
