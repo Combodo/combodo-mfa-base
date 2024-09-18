@@ -239,7 +239,7 @@ class MFABaseService
 			}
 
 			// Validate 2FA user input
-			return $oChosenUserSettings->ValidateLogin($sUserId);
+			return $oChosenUserSettings->ValidateLogin();
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
