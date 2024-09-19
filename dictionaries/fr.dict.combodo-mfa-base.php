@@ -7,6 +7,7 @@
  */
 
 Dict::Add('FR FR', 'French', 'French', array(
+	'combodo-mfa-base/Operation:Action/Title' => '',
 	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
 	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
 	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
