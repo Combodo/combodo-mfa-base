@@ -41,6 +41,14 @@ Dict::Add('EN US', 'English', 'English', array(
 	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Preferred mode cannot be denied',
 
 	'Class:MFAUserSettings' => 'MFA user settings',
+	'Class:MFAUserSettings/Attribute:validated' => 'Validated',
 	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Yes',
 	'Class:MFAUserSettings/Attribute:validated/Value:no' => 'No',
+	'Class:MFAUserSettings/Attribute:configured' => 'Configured',
+	'Class:MFAUserSettings/Attribute:configured/Value:yes' => 'Yes',
+	'Class:MFAUserSettings/Attribute:configured/Value:no' => 'No',
+	'Class:MFAUserSettings/Attribute:is_default' => 'Default',
+	'Class:MFAUserSettings/Attribute:is_default/Value:yes' => 'Yes',
+	'Class:MFAUserSettings/Attribute:is_default/Value:no' => 'No',
+	'Class:MFAUserSettings/Attribute:user_id' => 'User',
 ));
