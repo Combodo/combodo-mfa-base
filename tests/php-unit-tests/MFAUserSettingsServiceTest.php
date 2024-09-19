@@ -144,6 +144,20 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 	}
 
+	public function testGetValidatedMFASettings_AtLeastOneModeCanBeDefaultMustExist()
+	{
+		$oUser = $this->CreateContactlessUser('NoOrgUser', ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], 'ABCdefg@12345#');
+		$sUserId = $oUser->GetKey();
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method('GetAdminRuleByUserId')
+			->willReturn(null)
+			->with($sUserId);
+
+		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
+		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
+		$this->assertEquals([],$aMFAUserSettings);
+	}
+
 	private function GetUserSettingsClasses($aMFAUserSettings){
 		$res=[];
 		foreach ($aMFAUserSettings as $obj){

@@ -194,6 +194,10 @@ class MFAUserSettingsService
 				$aSettings[] = $oSettings;
 			}
 
+			if (count($aSettings) === 0) {
+				return [];
+			}
+
 			usort($aSettings, function ($a, $b) use ($sPreferredMFAMode) {
 				if ($a->Get('is_default') === 'yes') {
 					return -1;
@@ -216,6 +220,13 @@ class MFAUserSettingsService
 
 				return 0;
 			});
+
+			// Allow modes that cannot be default only if a mode that can be default is already validated
+			// for example, having only Recovery Codes validated is not allowed
+			$oSettings = reset($aSettings);
+			if (!$oSettings->CanBeDefault()) {
+				return [];
+			}
 
 			return $aSettings;
 		} catch (MFABaseException $e) {
