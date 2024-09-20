@@ -235,13 +235,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-<<<<<<< Updated upstream
-		$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
-		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'yes', []);
-		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		if ($bModuleEnabled){
-			$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
-=======
+
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$aExpectedSettings = [$oActiveSetting, $oNotActiveSetting, $oActiveSetting2];
 		if (class_exists(\MFAUserSettingsWebAuthn::class)){
@@ -251,7 +245,6 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		if ($bModuleEnabled){
 			$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
->>>>>>> Stashed changes
 		} else {
 			$this->assertEquals([], $MFAUserSettings);
 		}
@@ -274,18 +267,13 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oNotActiveSetting = MetaModel::NewObject("MFAUserSettingsTOTPMail", ['user_id' => $sUserId]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
-<<<<<<< Updated upstream
-		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'no', []);
-		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
-=======
+
 		$aExpectedSettings = [$oActiveSetting, $oNotActiveSetting, $oActiveSetting2];
 		if (class_exists(\MFAUserSettingsWebAuthn::class)){
 			$aExpectedSettings[]= $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
 		}
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
->>>>>>> Stashed changes
 	}
 
 	public function CheckSettings(array $aExpectedSettings, array $Settings) {
@@ -328,11 +316,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
-<<<<<<< Updated upstream
-		$oActiveSetting4 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'no', []);
-		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		$this->CheckSettings([$oActiveSetting2, $oActiveSetting3, $oActiveSetting4], $MFAUserSettings);
-=======
+
 
 		$aExpectedSettings = [$oActiveSetting2, $oActiveSetting3];
 		if (class_exists(\MFAUserSettingsWebAuthn::class)){
@@ -341,7 +325,6 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
->>>>>>> Stashed changes
 	}
 
 	public function testGetMFAUserSettings_ReloadDbObject() {
