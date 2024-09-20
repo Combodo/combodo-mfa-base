@@ -88,7 +88,9 @@ class MFAUserSettingsService
 				if (in_array($sModeClass, $aDeniedMfaModes)) {
 					continue;
 				}
-				$oSet = new DBObjectSet(DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id"), [], ['id' => $sUserId]);
+				$oSearch = DBSearch::FromOQL("SELECT $sModeClass WHERE user_id = :id");
+				$oSearch->AllowAllData();
+				$oSet = new DBObjectSet($oSearch, [], ['id' => $sUserId]);
 				$oMode = $oSet->Fetch() ?? MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
 				$aSettings[] = $oMode;
 			}
@@ -126,6 +128,7 @@ class MFAUserSettingsService
 	{
 		try {
 			$oSearch = DBObjectSearch::FromOQL('SELECT MFAUserSettings WHERE user_id=:user_id', ['user_id' => $sUserId]);
+			$oSearch->AllowAllData();
 			$oSet = new DBObjectSet($oSearch);
 
 			$aSettings = [];
@@ -183,6 +186,7 @@ class MFAUserSettingsService
 			$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
 			$oSearch = DBObjectSearch::FromOQL('SELECT MFAUserSettings WHERE user_id=:user_id AND validated="yes"', ['user_id' => $sUserId]);
+			$oSearch->AllowAllData();
 			$oSet = new DBObjectSet($oSearch);
 
 			$aSettings = [];

@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <itop_design xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.2">
   <classes>
+    <class id="ResourceMFAMenu" _delta="define">
+      <parent>AbstractResource</parent>
+      <properties>
+        <comment>/* MFA menu access control. */</comment>
+        <abstract>true</abstract>
+        <category>grant_by_profile</category>
+      </properties>
+      <presentation/>
+      <methods/>
+    </class>
     <class id="MFAUserSettings" _delta="define">
       <properties>
-        <category>bizmodel,searchable</category>
+        <category>grant_by_profile,searchable</category>
         <abstract>true</abstract>
         <db_table>mfa_user_settings</db_table>
         <style>
@@ -228,7 +238,7 @@
     </class>
     <class id="MFAAdminRule" _delta="define">
       <properties>
-        <category>bizmodel,searchable</category>
+        <category>grant_by_profile,searchable</category>
         <abstract>false</abstract>
         <db_table>mfa_admin_rule</db_table>
         <style>
@@ -509,7 +519,7 @@
     </class>
     <class id="lnkMFAAdminRuleToOrganization" _delta="define">
       <properties>
-        <category>bizmodel</category>
+        <category>grant_by_profile</category>
         <abstract>false</abstract>
         <db_table>lnkmfaadminruletoorganization</db_table>
         <is_link>1</is_link>
@@ -593,7 +603,7 @@
     </class>
     <class id="lnkMFAAdminRuleToProfile" _delta="define">
       <properties>
-        <category>bizmodel</category>
+        <category>grant_by_profile</category>
         <abstract>false</abstract>
         <db_table>lnkmfaadminruletoprofile</db_table>
         <is_link>1</is_link>
@@ -747,7 +757,7 @@
     </class>
     <class id="lnkMFAAdminRuleToMFAMode" _delta="define">
       <properties>
-        <category>bizmodel</category>
+        <category>grant_by_profile</category>
         <abstract>false</abstract>
         <db_table>lnkmfaadminruletomfamode</db_table>
         <is_link>1</is_link>
@@ -855,20 +865,20 @@
   <menus>
     <menu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="MFAAdminRule" xsi:type="OQLMenuNode" _created_in="combodo-mfa-base" _altered_in="combodo-mfa-base" _alteration="added">
       <rank>200</rank>
-      <parent>Integrations</parent>
+      <parent>UserManagement</parent>
       <oql><![CDATA[SELECT MFAAdminRule]]></oql>
       <do_search>1</do_search>
       <enable_admin_only>1</enable_admin_only>
-      <enable_class>MFAAdminRule</enable_class>
+      <enable_class>ResourceMFAMenu</enable_class>
       <enable_action>UR_ACTION_MODIFY</enable_action>
     </menu>
     <menu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="MFAUserSettings" xsi:type="OQLMenuNode" _created_in="combodo-mfa-base" _altered_in="combodo-mfa-base" _alteration="added">
       <rank>201</rank>
-      <parent>Integrations</parent>
+      <parent>UserManagement</parent>
       <oql><![CDATA[SELECT MFAUserSettings]]></oql>
       <do_search>1</do_search>
       <enable_admin_only>1</enable_admin_only>
-      <enable_class>MFAUserSettings</enable_class>
+      <enable_class>ResourceMFAMenu</enable_class>
       <enable_action>UR_ACTION_MODIFY</enable_action>
     </menu>
   </menus>

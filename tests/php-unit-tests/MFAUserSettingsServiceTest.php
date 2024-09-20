@@ -235,10 +235,11 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', $bModuleEnabled);
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
+		$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
+		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'yes', []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		if ($bModuleEnabled){
-			$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
+			$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
 		} else {
 			$this->assertEquals([], $MFAUserSettings);
 		}
@@ -261,8 +262,9 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oNotActiveSetting = MetaModel::NewObject("MFAUserSettingsTOTPMail", ['user_id' => $sUserId]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
+		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'no', []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2], $MFAUserSettings);
+		$this->CheckSettings([$oActiveSetting, $oNotActiveSetting, $oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
 	}
 
 	public function CheckSettings(array $aExpectedSettings, array $Settings) {
@@ -305,8 +307,9 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
+		$oActiveSetting4 = $this->CreateSetting('MFAUserSettingsWebAuthn', $sUserId, 'no', []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		$this->CheckSettings([$oActiveSetting2, $oActiveSetting3], $MFAUserSettings);
+		$this->CheckSettings([$oActiveSetting2, $oActiveSetting3, $oActiveSetting4], $MFAUserSettings);
 	}
 
 	public function testGetMFAUserSettings_ReloadDbObject() {

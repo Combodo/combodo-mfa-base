@@ -77,6 +77,7 @@ class MFAAdminRuleService
 
 		try {
 			$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE status='active'");
+			$oSearch->AllowAllData();
 			$oSet = new DBObjectSet($oSearch, ['rank' => true]);
 			/** @var MFAAdminRule $oRule */
 			while ($oRule = $oSet->Fetch()) {
@@ -214,6 +215,7 @@ class MFAAdminRuleService
 
 		try {
 			$oSearch = DBObjectSearch::FromOQL("SELECT MFAAdminRule WHERE forced_activation_date <= NOW() OR ISNULL(forced_activation_date)");
+			$oSearch->AllowAllData();
 			$oSearch->AddCondition('id', $oMFAAdminRule->GetKey(), '=');
 			$oForcedAdminRuleSet = new DBObjectSet($oSearch);
 
