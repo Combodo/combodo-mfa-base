@@ -25,6 +25,7 @@ use utils;
 
 class MFABaseService
 {
+	const SELECTED_MFA_MODE = 'selected_mfa_mode';
 	private static MFABaseService $oInstance;
 
 	private function __construct()
@@ -186,11 +187,11 @@ class MFABaseService
 	{
 		try {
 			$oChosenUserSettings = null;
-			$sChosenUserSettings = utils::ReadPostedParam('selected_mfa_mode', null);
+			$sChosenUserSettings = utils::ReadPostedParam(self::SELECTED_MFA_MODE, null);
 			if (!is_null($sChosenUserSettings)) {
-				Session::Set('selected_mfa_mode', $sChosenUserSettings);
+				Session::Set(self::SELECTED_MFA_MODE, $sChosenUserSettings);
 			}
-			$sChosenUserSettings = Session::Get('selected_mfa_mode');
+			$sChosenUserSettings = Session::Get(self::SELECTED_MFA_MODE);
 			foreach ($aUserSettings as $oUserSettings) {
 				if ((is_null($sChosenUserSettings) && $oUserSettings->Get('is_default') === 'yes')
 					|| (get_class($oUserSettings) === $sChosenUserSettings)) {

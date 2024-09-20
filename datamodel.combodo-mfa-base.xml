@@ -13,7 +13,7 @@
     </class>
     <class id="MFAUserSettings" _delta="define">
       <properties>
-        <category>grant_by_profile,searchable</category>
+        <category>grant_by_profile</category>
         <abstract>true</abstract>
         <db_table>mfa_user_settings</db_table>
         <style>
@@ -238,7 +238,7 @@
     </class>
     <class id="MFAAdminRule" _delta="define">
       <properties>
-        <category>grant_by_profile,searchable</category>
+        <category>grant_by_profile</category>
         <abstract>false</abstract>
         <db_table>mfa_admin_rule</db_table>
         <style>

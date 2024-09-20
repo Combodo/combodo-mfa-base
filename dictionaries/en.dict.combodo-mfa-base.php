@@ -12,8 +12,10 @@ Dict::Add('EN US', 'English', 'English', array(
 	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
 	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
 	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
-	'Menu:MFAAdminRule' => 'MFA rules',
+	'Menu:MFAAdminRule' => 'MFA admin rules',
 	'Menu:MFAAdminRule+' => 'Multi-Factor Authentication rules',
+	'Menu:MFAUserSettings' => 'MFA user settings',
+	'Menu:MFAUserSettings+' => 'Multi-Factor Authentication user settings',
 	'UI:CopyValue' => 'Copy value',
 	'UI:CopyValue:Done' => 'Copy value done',
 
