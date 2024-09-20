@@ -70,7 +70,7 @@ class MFABaseService
 
 			return $aParams;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -168,7 +168,7 @@ class MFABaseService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -210,11 +210,12 @@ class MFABaseService
 			}
 
 			if (is_null($oChosenUserSettings)) {
-				MFABaseLog::Debug("No default MFA possible", null, ['UserId' => $sUserId]);
+				MFABaseLog::Debug(__FUNCTION__.': No default MFA possible');
 
 				return true;
 			}
 
+			MFABaseLog::Debug(__FUNCTION__, null, ['ChosenUserSettings' => get_class($oChosenUserSettings)]);
 			$oMFATwigRenderer = new MFATwigRenderer();
 			if ($oChosenUserSettings->HasToDisplayValidation()) {
 				// Display validation screen for chosen mode and a link for all other modes
@@ -244,7 +245,7 @@ class MFABaseService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -274,7 +275,7 @@ class MFABaseService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -305,7 +306,7 @@ class MFABaseService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -329,7 +330,7 @@ class MFABaseService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 }

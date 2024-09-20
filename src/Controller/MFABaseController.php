@@ -68,7 +68,7 @@ class MFABaseController extends Controller
 					break;
 			}
 		} catch (Exception $e) {
-			MFABaseLog::Error(__METHOD__.' Failed to configure MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+			MFABaseLog::Error(__FUNCTION__.' Failed to configure MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');
 		}
 
@@ -89,7 +89,7 @@ class MFABaseController extends Controller
 			$oUserSettings = MetaModel::NewObject($sClass, ['user_id' => $sUserId]);
 			$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
 		} catch (Exception $e) {
-			MFABaseLog::Error(__METHOD__.' Failed to set default MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+			MFABaseLog::Error(__FUNCTION__.' Failed to set default MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');
 		}
 

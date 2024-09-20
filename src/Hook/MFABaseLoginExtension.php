@@ -30,7 +30,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 		// Control of mfa_configuration_validated to avoid double code validation
 		if (!MFABaseConfig::GetInstance()->IsEnabled() || Session::IsSet('mfa_configuration_validated')) {
-			MFABaseLog::Debug('MFA not triggered', null, ['IsEnabled' => MFABaseConfig::GetInstance()->IsEnabled(), 'mfa_configuration_validated' => Session::Get('mfa_configuration_validated', 'unset')]);
+			MFABaseLog::Debug(__FUNCTION__.': MFA not triggered', null, ['IsEnabled' => MFABaseConfig::GetInstance()->IsEnabled(), 'mfa_configuration_validated' => Session::Get('mfa_configuration_validated', 'unset')]);
 			Session::Unset('mfa_configuration_validated');
 
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
@@ -40,16 +40,16 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 			$sUserId = UserRights::GetUserId(Session::Get('auth_user'));
 
 			$aUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-			MFABaseLog::Debug('Found UserSettings', null, ['count' => count($aUserSettings)]);
+			MFABaseLog::Debug(__FUNCTION__.': Found UserSettings', null, ['count' => count($aUserSettings)]);
 
 			if (count($aUserSettings) !== 0) {
-				MFABaseLog::Debug('Calling ValidateLogin');
+				MFABaseLog::Debug(__FUNCTION__.': Calling ValidateLogin');
 				if (MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings)) {
-					MFABaseLog::Debug('Validation OK');
+					MFABaseLog::Debug(__FUNCTION__.': Validation OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
 				}
-				MFABaseLog::Debug('Validation Failed');
+				MFABaseLog::Debug(__FUNCTION__.': Validation Failed');
 				$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
 
 				return LoginWebPage::LOGIN_FSM_ERROR;
@@ -58,34 +58,33 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 			$oMFAAdminRuleService = MFAAdminRuleService::GetInstance();
 			$oMFAAdminRule = $oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
 			if (is_null($oMFAAdminRule) || !$oMFAAdminRule->IsForced()) {
-				MFABaseLog::Debug('No admin rule forced');
+				MFABaseLog::Debug(__FUNCTION__.': No admin rule forced');
 
 				return LoginWebPage::LOGIN_FSM_CONTINUE;
 			}
 
 			if ($oMFAAdminRuleService->IsForcedNow($oMFAAdminRule)) {
-				MFABaseLog::Debug('Admin rule forced now');
-				MFABaseLog::Debug('Calling ConfigureMFAModeOnLogin');
+				MFABaseLog::Debug(__FUNCTION__.': Admin rule forced now, Calling ConfigureMFAModeOnLogin');
 				if (MFABaseService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule)) {
-					MFABaseLog::Debug('Configuration OK');
+					MFABaseLog::Debug(__FUNCTION__.': Configuration OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
 				}
-				MFABaseLog::Debug('Configuration Failed');
+				MFABaseLog::Debug(__FUNCTION__.': Configuration Failed');
 				$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
 
 				return LoginWebPage::LOGIN_FSM_ERROR;
 			}
 
 			// MFA will be forced in the future
-			MFABaseLog::Debug('Admin rule forced in the future');
+			MFABaseLog::Debug(__FUNCTION__.': Admin rule forced in the future');
 			MFABaseService::GetInstance()->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
 
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
 		} catch (MFABaseException $e) {
 			// Already logged
 		} catch (Exception $e) {
-			MFABaseLog::Error(__METHOD__.' Failed to check MFA', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
+			MFABaseLog::Error(__FUNCTION__.': Failed to check MFA', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 		}
 		$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
 

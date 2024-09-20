@@ -56,7 +56,7 @@ class MFATwigRenderer
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -79,7 +79,7 @@ class MFATwigRenderer
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -103,7 +103,7 @@ class MFATwigRenderer
 				'sDisplayIcon' => $sDisplayIcon,
 			];
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -151,7 +151,7 @@ class MFATwigRenderer
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Throwable $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 

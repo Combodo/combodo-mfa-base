@@ -113,7 +113,7 @@ class MFAUserSettingsService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -138,7 +138,7 @@ class MFAUserSettingsService
 
 			return $aSettings;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -158,7 +158,7 @@ class MFAUserSettingsService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -236,7 +236,7 @@ class MFAUserSettingsService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -279,7 +279,7 @@ class MFAUserSettingsService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -299,7 +299,7 @@ class MFAUserSettingsService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -314,7 +314,7 @@ class MFAUserSettingsService
 		try {
 			return $oUserSettings->Get('validated') === 'yes';
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 }

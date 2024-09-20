@@ -118,7 +118,7 @@ class MFAAdminRuleService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 
 		return null;
@@ -152,7 +152,7 @@ class MFAAdminRuleService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -178,7 +178,7 @@ class MFAAdminRuleService
 
 			return $aRes;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -197,7 +197,7 @@ class MFAAdminRuleService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 
@@ -223,7 +223,7 @@ class MFAAdminRuleService
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
-			throw new MFABaseException(__METHOD__.' failed', 0, $e);
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
 }
