@@ -11,7 +11,7 @@ use Throwable;
 
 class MFABaseException extends Exception
 {
-	public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+	public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null, array $aContext=[])
 	{
 		if (!is_null($previous)) {
 			$sStack = $previous->getTraceAsString();
@@ -20,7 +20,10 @@ class MFABaseException extends Exception
 			$sStack = $this->getTraceAsString();
 			$sError = '';
 		}
-		MFABaseLog::Error($message, null, ['error' => $sError, 'stack' => $sStack]);
+
+		$aContext['error'] = $sError;
+		$aContext['stack'] = $sStack;
+		MFABaseLog::Error($message, null, $aContext);
 		parent::__construct($message, $code, $previous);
 	}
 }
