@@ -54,6 +54,7 @@ class MFABaseConfig
 
 	public function IsLoginModeApplicable($sLoginMode): bool
 	{
+		MFABaseLog::Error("=========== login_mode " . $sLoginMode);
 		return in_array($sLoginMode, $this->GetMFALoginModes());
 	}
 }

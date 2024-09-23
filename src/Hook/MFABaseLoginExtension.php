@@ -28,9 +28,20 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 	{
 		MFABaseLog::Enable();
 
+		if (!MFABaseConfig::GetInstance()->IsEnabled()){
+			MFABaseLog::Debug(__FUNCTION__.': MFA not enabled');
+			return LoginWebPage::LOGIN_FSM_CONTINUE;
+		}
+
+		$sLoginMode = Session::Get('login_mode');
+		if (!MFABaseConfig::GetInstance()->IsLoginModeApplicable($sLoginMode)){
+			MFABaseLog::Debug(__FUNCTION__.': MFA not applicable', null, ['login_mode' => $sLoginMode]);
+			return LoginWebPage::LOGIN_FSM_CONTINUE;
+		}
+
 		// Control of mfa_configuration_validated to avoid double code validation
-		if (!MFABaseConfig::GetInstance()->IsEnabled() || Session::IsSet('mfa_configuration_validated')) {
-			MFABaseLog::Debug(__FUNCTION__.': MFA not triggered', null, ['IsEnabled' => MFABaseConfig::GetInstance()->IsEnabled(), 'mfa_configuration_validated' => Session::Get('mfa_configuration_validated', 'unset')]);
+		if (Session::IsSet('mfa_configuration_validated')) {
+			MFABaseLog::Debug(__FUNCTION__.': MFA configuration done');
 			Session::Unset('mfa_configuration_validated');
 
 			return LoginWebPage::LOGIN_FSM_CONTINUE;

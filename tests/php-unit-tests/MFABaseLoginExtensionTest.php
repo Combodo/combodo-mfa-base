@@ -136,6 +136,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -166,6 +167,8 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_POST['mfa_restart_login']="true";
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -194,6 +197,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -223,6 +227,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -260,6 +265,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -300,6 +306,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;
@@ -340,6 +347,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$_SESSION=[];
 		$_POST['mfa_restart_login']="true";
 		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
 
 		$oLoginExtension = new MFABaseLoginExtension();
 		$iErrorCode = 666;

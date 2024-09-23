@@ -134,7 +134,9 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		}
 	}
 
-	public function testRestApi_WithMfaEnabled() {
+	public function testRestApiWithCredentialsNotWorkingWithMfaEnabled() {
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
+
 		$this->oiTopConfig->Set('secure_rest_services', true, 'auth-token');
 
 		$this->SaveItopConfFile();
@@ -162,7 +164,7 @@ QUERY;
 				'json_data' => $sJsonRequest,
 				'version' => '1.3']);
 
-		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull", $sOutput);
+		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull" . $sOutput);
 
 	}
 
@@ -171,6 +173,7 @@ QUERY;
 			$this->markTestSkipped("");
 		}
 
+		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
 		$this->oiTopConfig->Set('secure_rest_services', true, 'auth-token');
 		$this->oiTopConfig->Set('allow_rest_services_via_tokens', true, 'auth-token');
 		$this->oiTopConfig->SetModuleSetting(TokenAuthHelper::MODULE_NAME, 'personal_tokens_allowed_profiles', ['Administrator', 'Service Desk Agent']);
