@@ -72,6 +72,13 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 		$_SESSION = [];
 	}
 
+	public function CheckThereIsAReturnToLoginPageLink($sOutput) {
+		$sForceRestartLoginLabelLink = Dict::S('Login:MFA:Restart:Label');
+		$sHtml = <<<HTML
+<a onclick="$('#mfa_restart_login_form').submit();">$sForceRestartLoginLabelLink</a></div>
+HTML;
+		$this->AssertStringContains($sHtml, $sOutput, 'The page should be contain a link to return to login page');
+	}
 
 	public function testTOTPAppValidationScreenDisplay()
 	{
@@ -85,6 +92,9 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 		$sTitle = Dict::S('MFATOTP:App:Validation:Title');
 		$this->AssertStringContains($sTitle, $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringContains('<input type="text" id="totp_code" name="totp_code" value="" size="6"', $sOutput, 'The page should have a code input form');
+
+		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
+
 	}
 
 	public function testTOTPAppValidationCodeFailed()
@@ -101,6 +111,24 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should NOT be the initial login page');
+		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
+	}
+
+	public function testTOTPAppValidation_ForceLoginPageLink()
+	{
+		// Arrange
+		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
+
+		// Act
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'auth_user' => $this->oUser->Get('login'),
+			'auth_pwd' => $this->sPassword,
+			'mfa_restart_login' => 'true',
+			]
+		);
+
+		// Assert
+		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 
 	public function testTOTPAppValidationCodeOK()
@@ -136,6 +164,23 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
+	}
+
+	public function testTOTPAppConfigurationScreenDisplay_ForceReturnToLoginPage()
+	{
+		// Arrange
+		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
+
+		// Act
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'auth_user' => $this->oUser->Get('login'),
+			'auth_pwd' => $this->sPassword,
+			'mfa_restart_login' => 'true']);
+
+		// Assert
+		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
+
 	}
 
 	public function testTOTPAppConfigurationCodeFailed()
@@ -153,6 +198,7 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 
 	public function testTOTPAppConfigurationCodeOK()
