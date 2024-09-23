@@ -180,10 +180,9 @@ class MFABaseService
 	 * @param string $sUserId the user wanting to log in
 	 * @param MFAUserSettings[] $aUserSettings The MFA modes configured by the user
 	 *
-	 * @return bool
 	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
-	public function ValidateLogin(string $sUserId, array $aUserSettings): bool
+	public function ValidateLogin(string $sUserId, array $aUserSettings): void
 	{
 		try {
 			$oChosenUserSettings = null;
@@ -210,38 +209,19 @@ class MFABaseService
 			}
 
 			if (is_null($oChosenUserSettings)) {
-				MFABaseLog::Debug(__FUNCTION__.': No default MFA possible');
-
-				return true;
+				throw new MFABaseException('No default MFA possible');
 			}
 
 			MFABaseLog::Debug(__FUNCTION__, null, ['ChosenUserSettings' => get_class($oChosenUserSettings)]);
 			$oMFATwigRenderer = new MFATwigRenderer();
 			if ($oChosenUserSettings->HasToDisplayValidation()) {
-				// Display validation screen for chosen mode and a link for all other modes
-				// This is to get the 2FA user input
-				$oLoginContext = $oChosenUserSettings->GetTwigContextForLoginValidation();
-				$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
-
-				// Add the contexts for Mode change in the MFA screen
-				$aSwitchData = [];
-				foreach ($aUserSettings as $oUserSettings) {
-					if ($oUserSettings === $oChosenUserSettings) {
-						continue;
-					}
-
-					$aSwitchData[] = get_class($oUserSettings);
-				}
-
-				// Render the MFA validation screen
-				$oPage = new LoginWebPage();
-				$oPage->add_saas(MFABaseHelper::GetSCSSFile());
-				$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', ['aSwitchData' => $aSwitchData]);
-				exit();
+				$this->DisplayValidation($oChosenUserSettings, $oMFATwigRenderer, $aUserSettings);
 			}
 
 			// Validate 2FA user input
-			return $oChosenUserSettings->ValidateLogin();
+			if (! $oChosenUserSettings->ValidateLogin()){
+				$this->DisplayValidation($oChosenUserSettings, $oMFATwigRenderer, $aUserSettings);
+			}
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
@@ -250,15 +230,45 @@ class MFABaseService
 	}
 
 	/**
+	 * @param \MFAUserSettings $oChosenUserSettings
+	 * @param \Combodo\iTop\MFABase\View\MFATwigRenderer $oMFATwigRenderer
+	 * @param array $aUserSettings
+	 *
+	 * @return void
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	private function DisplayValidation(MFAUserSettings $oChosenUserSettings, MFATwigRenderer $oMFATwigRenderer, array $aUserSettings): void {
+		// Display validation screen for chosen mode and a link for all other modes
+		// This is to get the 2FA user input
+		$oLoginContext = $oChosenUserSettings->GetTwigContextForLoginValidation();
+		$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
+
+		// Add the contexts for Mode change in the MFA screen
+		$aSwitchData = [];
+		foreach ($aUserSettings as $oUserSettings) {
+			if ($oUserSettings === $oChosenUserSettings) {
+				continue;
+			}
+
+			$aSwitchData[] = get_class($oUserSettings);
+		}
+
+		// Render the MFA validation screen
+		$oPage = new LoginWebPage();
+		$oPage->add_saas(MFABaseHelper::GetSCSSFile());
+		$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', ['aSwitchData' => $aSwitchData]);
+		exit();
+	}
+
+	/**
 	 * This function normally exit
 	 *
 	 * @param string $sUserId
 	 * @param \MFAAdminRule $oMFAAdminRule
 	 *
-	 * @return bool
 	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
-	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): bool
+	public function ConfigureMFAModeOnLogin(string $sUserId, MFAAdminRule $oMFAAdminRule): void
 	{
 		try {
 			$sPreferredModeClass = $oMFAAdminRule->Get('preferred_mfa_mode');

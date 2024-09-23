@@ -39,6 +39,7 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor Authentication warning',
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to to configure this mode.',
 	'Login:MFA:Continue' => 'Continue',
+	'Login:MFA:Restart:Label' => 'Back to login',
 
 	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
 	'UI:MFA:Error:FailedToSetDefaultMode' => 'Failed to set default MFA Modes',

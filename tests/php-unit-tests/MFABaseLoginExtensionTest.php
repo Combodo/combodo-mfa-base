@@ -117,17 +117,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$this->assertEquals(666, $iErrorCode);
 	}
 
-	public function ValidateLoginProvider() {
-		return [
-			'login validated' => [true],
-			'module NOT validated' => [false],
-		];
-	}
-
-	/**
-	 * @dataProvider ValidateLoginProvider
-	 */
-	public function testOnCredentialsOK_ValidateLogin($bLoginValidated) {
+	public function testOnCredentialsOK_ValidateLogin() {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 
@@ -142,8 +132,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$this->oMFABaseService->expects($this->exactly(1))
 			->method("ValidateLogin")
-			->with($sUserId, [$oActiveSetting])
-			->willReturn($bLoginValidated);
+			->with($sUserId, [$oActiveSetting]);
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
@@ -152,13 +141,40 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$iErrorCode = 666;
 		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
 
-		if ($bLoginValidated){
-			$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
-			$this->assertEquals(666, $iErrorCode);
-		} else {
-			$this->assertEquals(LoginWebPage::LOGIN_FSM_ERROR, $res);
-			$this->assertEquals(LoginWebPage::EXIT_CODE_WRONGCREDENTIALS, $iErrorCode);
-		}
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
+		$this->assertEquals(666, $iErrorCode);
+	}
+
+	public function testOnCredentialsOK_ValidateLogin_RestartLoginForced() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
+		$this->oMFAUserSettingsService->expects($this->exactly(1))
+			->method("GetValidatedMFASettings")
+			->willReturn([$oActiveSetting]);
+
+		$this->oMFAAdminRuleService->expects($this->exactly(0))
+			->method("GetAdminRuleByUserId");
+
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ValidateLogin")
+			->with($sUserId, [$oActiveSetting]);
+
+		$_SESSION=[];
+
+		$_POST['mfa_restart_login']="true";
+		Session::Set("auth_user", $oUser->Get('login'));
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_ERROR, $res);
+		$this->assertEquals(LoginWebPage::EXIT_CODE_OK, $iErrorCode);
+
+		$this->assertFalse(isset($_POST['mfa_restart_login']), "mfa_restart_login should be removed from POST to avoid infinite loop");
 	}
 
 	public function testOnCredentialsOK_NoUserSettingsAndAdminRule() {
@@ -253,17 +269,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$this->assertEquals(666, $iErrorCode);
 	}
 
-	public function ConfigurationForcedNowProvider() {
-		return [
-			'configuration ok' => [true],
-			'configuration NOT ok' => [false],
-		];
-	}
-
-	/**
-	 * @dataProvider ConfigurationForcedNowProvider
-	 */
-	public function testOnCredentialsOK_ConfigurationForcedNow($bConfigureOk) {
+	public function testOnCredentialsOK_ConfigurationForcedNow() {
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 
 		$this->oMFAUserSettingsService->expects($this->exactly(1))
@@ -290,8 +296,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$this->oMFABaseService->expects($this->exactly(1))
 			->method("ConfigureMFAModeOnLogin")
-			->with($oUser->GetKey(), $oRule)
-			->willReturn($bConfigureOk);
+			->with($oUser->GetKey(), $oRule);
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
@@ -300,12 +305,49 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$iErrorCode = 666;
 		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
 
-		if ($bConfigureOk){
-			$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
-			$this->assertEquals(666, $iErrorCode);
-		} else {
-			$this->assertEquals(LoginWebPage::LOGIN_FSM_ERROR, $res);
-			$this->assertEquals(LoginWebPage::EXIT_CODE_WRONGCREDENTIALS, $iErrorCode);
-		}
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
+		$this->assertEquals(666, $iErrorCode);
+	}
+
+	public function testOnCredentialsOK_ConfigurationForcedNow_RestartLoginForced() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+
+		$this->oMFAUserSettingsService->expects($this->exactly(1))
+			->method("GetValidatedMFASettings")
+			->willReturn([]);
+
+		$oNow = new DateTime("now - 1 day");
+		$sForcedActivationDate = $oNow->format('Y-m-d');
+		$oRule = $this->CreateRule("Rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
+		$oRule = $this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sForcedActivationDate]);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn($oRule);
+
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("IsForcedNow")
+			->willReturn(true);
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ValidateLogin");
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("DisplayWarningOnMFAActivation");
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ConfigureMFAModeOnLogin");
+
+		$_SESSION=[];
+		$_POST['mfa_restart_login']="true";
+		Session::Set("auth_user", $oUser->Get('login'));
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_ERROR, $res);
+		$this->assertEquals(LoginWebPage::EXIT_CODE_OK, $iErrorCode);
+
+		$this->assertFalse(isset($_POST['mfa_restart_login']), "mfa_restart_login should be removed from POST to avoid infinite loop");
 	}
 }

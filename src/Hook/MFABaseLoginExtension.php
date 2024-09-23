@@ -43,14 +43,18 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 			MFABaseLog::Debug(__FUNCTION__.': Found UserSettings', null, ['count' => count($aUserSettings)]);
 
 			if (count($aUserSettings) !== 0) {
-				MFABaseLog::Debug(__FUNCTION__.': Calling ValidateLogin');
-				if (MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings)) {
+				if (false === \utils::ReadPostedParam("mfa_restart_login", false)){
+					MFABaseLog::Debug(__FUNCTION__.': Calling ValidateLogin');
+					MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings);
 					MFABaseLog::Debug(__FUNCTION__.': Validation OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
 				}
-				MFABaseLog::Debug(__FUNCTION__.': Validation Failed');
-				$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
+
+				//go to login page
+				unset($_POST['mfa_restart_login']);
+				MFABaseLog::Debug(__FUNCTION__.': Restart Login');
+				$iErrorCode = LoginWebPage::EXIT_CODE_OK;
 
 				return LoginWebPage::LOGIN_FSM_ERROR;
 			}
@@ -65,13 +69,16 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 			if ($oMFAAdminRuleService->IsForcedNow($oMFAAdminRule)) {
 				MFABaseLog::Debug(__FUNCTION__.': Admin rule forced now, Calling ConfigureMFAModeOnLogin');
-				if (MFABaseService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule)) {
+				if (false === \utils::ReadPostedParam("mfa_restart_login", false)){
+					MFABaseService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule);
 					MFABaseLog::Debug(__FUNCTION__.': Configuration OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
 				}
-				MFABaseLog::Debug(__FUNCTION__.': Configuration Failed');
-				$iErrorCode = LoginWebPage::EXIT_CODE_WRONGCREDENTIALS;
+
+				unset($_POST['mfa_restart_login']);
+				MFABaseLog::Debug(__FUNCTION__.': Restart Login');
+				$iErrorCode = LoginWebPage::EXIT_CODE_OK;
 
 				return LoginWebPage::LOGIN_FSM_ERROR;
 			}

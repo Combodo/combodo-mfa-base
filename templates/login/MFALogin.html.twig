@@ -32,6 +32,13 @@
 				</form>
 			{% endfor %}
 		{% endblock %}
+
+		{% block mfa_restart_login %}
+			<form id="mfa_restart_login_form" method="post">
+				<input type="hidden" name="mfa_restart_login" value="true">
+				<div class="v-spacer"><a onclick="$('#mfa_restart_login_form').submit();">{{ 'Login:MFA:Restart:Label'|dict_s }}</a></div>
+			</form>
+		{% endblock %}
 	</div>
 {% endblock %}
 

@@ -99,8 +99,8 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
-		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should be the TOTP App code validation screen');
+		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should NOT be the initial login page');
 	}
 
 	public function testTOTPAppValidationCodeOK()
