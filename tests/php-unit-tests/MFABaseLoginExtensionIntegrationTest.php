@@ -134,31 +134,14 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		}
 	}
 
-	public function testRestApiWithMfa() {
-		/*if (! class_exists(Combodo\iTop\AuthentToken\Helper\TokenAuthHelper::class)){
-			$this->markTestSkipped("");
-		}*/
-
+	public function testRestApi_WithMfaEnabled() {
 		$this->oiTopConfig->Set('secure_rest_services', true, 'auth-token');
-		/*$this->oiTopConfig->Set('allow_rest_services_via_tokens', true, 'auth-token');
-		$this->oiTopConfig->SetModuleSetting(TokenAuthHelper::MODULE_NAME, 'personal_tokens_allowed_profiles', ['Administrator', 'Service Desk Agent']);
-		$this->InitLoginMode(TokenLoginExtension::LOGIN_TYPE);*/
 
 		$this->SaveItopConfFile();
 
 		$sLogin = "NoOrgAdminUser".microtime(true);
 		$oUser = $this->CreateContactlessUser($sLogin, ItopDataTestCase::$aURP_Profiles['Administrator'], $this->sPassword);
 		$this->AddProfileToUser($oUser, ItopDataTestCase::$aURP_Profiles['REST Services User']);
-		/*$oPersonalToken = $this->createObject(\PersonalToken::class, [
-			'user_id' => $oUser->GetKey(),
-			'application' => "token application",
-			'scope' => \ContextTag::TAG_REST
-		]);
-
-		$oReflectionClass = new \ReflectionClass(\AbstractPersonalToken::class);
-		$oProperty = $oReflectionClass->getProperty('sToken');
-		$oProperty->setAccessible(true);
-		$sTokenCredential = $oProperty->getValue($oPersonalToken);*/
 
 		$sJsonRequest = <<<QUERY
 {
@@ -179,7 +162,53 @@ QUERY;
 				'json_data' => $sJsonRequest,
 				'version' => '1.3']);
 
-		var_dump($sOutput);
+		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull", $sOutput);
+
+	}
+
+	public function testRestApiViaToken_WithMfaEnabled() {
+		if (! class_exists(TokenAuthHelper::class)){
+			$this->markTestSkipped("");
+		}
+
+		$this->oiTopConfig->Set('secure_rest_services', true, 'auth-token');
+		$this->oiTopConfig->Set('allow_rest_services_via_tokens', true, 'auth-token');
+		$this->oiTopConfig->SetModuleSetting(TokenAuthHelper::MODULE_NAME, 'personal_tokens_allowed_profiles', ['Administrator', 'Service Desk Agent']);
+		$this->InitLoginMode(TokenLoginExtension::LOGIN_TYPE);
+
+		$this->SaveItopConfFile();
+
+		$sLogin = "NoOrgAdminUser".microtime(true);
+		$oUser = $this->CreateContactlessUser($sLogin, ItopDataTestCase::$aURP_Profiles['Administrator'], $this->sPassword);
+		$this->AddProfileToUser($oUser, ItopDataTestCase::$aURP_Profiles['REST Services User']);
+		$oPersonalToken = $this->createObject(\PersonalToken::class, [
+			'user_id' => $oUser->GetKey(),
+			'application' => "token application",
+			'scope' => \ContextTag::TAG_REST
+		]);
+
+		$oReflectionClass = new \ReflectionClass(\AbstractPersonalToken::class);
+		$oProperty = $oReflectionClass->getProperty('sToken');
+		$oProperty->setAccessible(true);
+		$sTokenCredential = $oProperty->getValue($oPersonalToken);
+
+		$sJsonRequest = <<<QUERY
+{
+    "operation": "core/get",
+    "class": "UserRequest",
+    "key": "SELECT UserRequest",
+    "output_fields": "operational_status,ref,org_id,org_name,caller_id",
+    "limit": "1",
+    "page": "1"
+}
+QUERY;
+
+		$sOutput = $this->CallItopUrl("/webservices/rest.php",
+			[
+				'auth_token' => $sTokenCredential,
+				'json_data' => $sJsonRequest,
+				'version' => '1.3']);
+
 		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull", $sOutput);
 
 	}
