@@ -2,6 +2,8 @@
 
 namespace Combodo\iTop\MFABase\Test;
 
+use Combodo\iTop\AuthentToken\Helper\TokenAuthHelper;
+use Combodo\iTop\AuthentToken\Hook\TokenLoginExtension;
 use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use DateTime;
@@ -129,6 +131,54 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 				$sNeedle = \Dict::Format("MFA:login:switch:label:$sMode");
 				$this->assertTrue(false !== strpos($sOutput, $sNeedle), "MFA mode switch label must be present ($sNeedle)" . PHP_EOL . PHP_EOL . $sOutput);
 			}
+		}
+	}
+
+	public function testRestApiWithMfa() {
+		MetaModel::GetConfig()->Set('secure_rest_services', true, 'auth-token');
+		MetaModel::GetConfig()->Set('allow_rest_services_via_tokens', true, 'auth-token');
+		MetaModel::GetConfig()->SetModuleSetting(TokenAuthHelper::MODULE_NAME, 'personal_tokens_allowed_profiles', ['Administrator', 'Service Desk Agent']);
+		$this->InitLoginMode(TokenLoginExtension::LOGIN_TYPE);
+
+		$oUser = $this->CreateContactlessUser("NoOrgAdminUser", ItopDataTestCase::$aURP_Profiles['Administrator'], $this->sPassword);
+		$oPersonalToken = $this->createObject(\PersonalToken::class, [
+			'user_id' => $oUser->GetKey(),
+			'application' => "token application",
+			'scope' => \ContextTag::TAG_REST
+		]);
+
+		$oReflectionClass = new \ReflectionClass(\AbstractPersonalToken::class);
+		$oProperty = $oReflectionClass->getProperty('sToken');
+		$oProperty->setAccessible(true);
+		$sTokenCredential = $oProperty->getValue($oPersonalToken);
+
+		$sJsonRequest = <<<QUERY
+{
+    "operation": "core/get",
+    "class": "UserRequest",
+    "key": "SELECT UserRequest",
+    "output_fields": "operational_status,ref,org_id,org_name,caller_id",
+    "limit": "1",
+    "page": "1"
+}
+QUERY;
+
+		$sOutput = $this->CallItopUrl("/webservices/rest.php",
+			[ 'auth_token' => $sTokenCredential, 'json_data' => $sJsonRequest, 'version' => '1.3']);
+
+		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull");
+
+	}
+
+	protected function InitLoginMode($sLoginMode)
+	{
+		$aAllowedLoginTypes = MetaModel::GetConfig()->GetAllowedLoginTypes();
+		if (!in_array($sLoginMode, $aAllowedLoginTypes)) {
+			$aAllowedLoginTypes[] = $sLoginMode;
+			MetaModel::GetConfig()->SetAllowedLoginTypes($aAllowedLoginTypes);
+			$sConfigFile = APPROOT.'conf/'.\utils::GetCurrentEnvironment().'/config-itop.php';
+			@chmod($sConfigFile, 0770); // Allow overwriting the file
+			MetaModel::GetConfig()->WriteToFile();
 		}
 	}
 }
