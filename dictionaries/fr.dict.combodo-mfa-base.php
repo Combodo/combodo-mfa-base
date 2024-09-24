@@ -6,7 +6,7 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-Dict::Add('FR FR', 'French', 'French', array(
+Dict::Add('FR FR', 'French', 'Français', array(
 	'combodo-mfa-base/Operation:Action/Title' => '',
 
 	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
