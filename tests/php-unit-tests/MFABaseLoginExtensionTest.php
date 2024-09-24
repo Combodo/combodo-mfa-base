@@ -57,6 +57,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		MFAAdminRuleService::ResetInstance();
 		MFAUserSettingsService::ResetInstance();
 		MFABaseService::ResetInstance();
+		$this->SetNonPublicStaticProperty(LoginWebPage::class, "iOnExit", LoginWebPage::EXIT_PROMPT);
 
 		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
 			//put config back
@@ -144,6 +145,36 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
 		$this->assertEquals(666, $iErrorCode);
+	}
+
+
+	public function testOnCredentialsOK_ValidateLoginNotCalledInCaseOfNonHtmlOutputLikeRest() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+		$sUserId = $oUser->GetKey();
+
+		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"]);
+		$this->oMFAUserSettingsService->expects($this->exactly(1))
+			->method("GetValidatedMFASettings")
+			->willReturn([$oActiveSetting]);
+
+		$this->oMFAAdminRuleService->expects($this->exactly(0))
+			->method("GetAdminRuleByUserId");
+
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ValidateLogin");
+
+		$_SESSION=[];
+		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$this->SetNonPublicStaticProperty(LoginWebPage::class, "iOnExit", LoginWebPage::EXIT_RETURN);
+		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_RETURN, $res);
+		$this->assertEquals(LoginWebPage::EXIT_CODE_WRONGCREDENTIALS, $iErrorCode);
 	}
 
 	public function testOnCredentialsOK_ValidateLogin_RestartLoginForced() {
@@ -314,6 +345,47 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
 		$this->assertEquals(666, $iErrorCode);
+	}
+
+	public function testOnCredentialsOK_ConfigurationForcedNow_ConfigurationNotCalledInCaseOfNonHtmlOutputLikeRest() {
+		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
+
+		$this->oMFAUserSettingsService->expects($this->exactly(1))
+			->method("GetValidatedMFASettings")
+			->willReturn([]);
+
+		$oNow = new DateTime("now - 1 day");
+		$sForcedActivationDate = $oNow->format('Y-m-d');
+		$oRule = $this->CreateRule("Rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
+		$oRule = $this->updateObject(MFAAdminRule::class, $oRule->GetKey(), ['forced_activation_date' => $sForcedActivationDate]);
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("GetAdminRuleByUserId")
+			->willReturn($oRule);
+
+		$this->oMFAAdminRuleService->expects($this->exactly(1))
+			->method("IsForcedNow")
+			->willReturn(true);
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ValidateLogin");
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("DisplayWarningOnMFAActivation");
+
+		$this->oMFABaseService->expects($this->exactly(0))
+			->method("ConfigureMFAModeOnLogin");
+
+		$_SESSION=[];
+		Session::Set("auth_user", $oUser->Get('login'));
+		Session::Set("login_mode", 'form');
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$this->SetNonPublicStaticProperty(LoginWebPage::class, "iOnExit", LoginWebPage::EXIT_RETURN);
+		$res = $oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CREDENTIALS_OK, $iErrorCode);
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_RETURN, $res);
+		$this->assertEquals(LoginWebPage::EXIT_CODE_WRONGCREDENTIALS, $iErrorCode);
 	}
 
 	public function testOnCredentialsOK_ConfigurationForcedNow_RestartLoginForced() {
