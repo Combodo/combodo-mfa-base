@@ -134,12 +134,25 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		}
 	}
 
-	public function testRestApiWithCredentialsNotWorkingWithMfaEnabled() {
+	public function MFAEnableProvider() {
+		return [
+			"mfa enabled" => [true],
+			"mfa disabled" => [false],
+		];
+	}
+
+	/**
+	 * @dataProvider MfaEnableProvider
+	 */
+	public function testRestApiWithCredentialsNotWorkingWithMfaEnabled($bMfaEnabled) {
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPApp", "forced", [], [], 70);
 
 		$this->oiTopConfig->Set('secure_rest_services', true, 'auth-token');
 
-		$this->SaveItopConfFile();
+		if (!$bMfaEnabled){
+			$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', $bMfaEnabled);
+			$this->SaveItopConfFile();
+		}
 
 		$sLogin = "NoOrgAdminUser".microtime(true);
 		$oUser = $this->CreateContactlessUser($sLogin, ItopDataTestCase::$aURP_Profiles['Administrator'], $this->sPassword);
@@ -158,13 +171,16 @@ QUERY;
 
 		$sOutput = $this->CallItopUrl("/webservices/rest.php",
 			[
-				//'auth_token' => $sTokenCredential,
 				'auth_user' => $sLogin,
-				'auth_pwd' => $this->sPassword,
+				'auth_pwd' => $bMfaEnabled ? $this->sPassword : "WRONG PWD",
 				'json_data' => $sJsonRequest,
 				'version' => '1.3']);
 
-		$this->assertTrue(false !== strpos($sOutput, "\"code\":0"), "API Call successfull" . $sOutput);
+
+		$aJsonDecodedResponse = json_decode($sOutput, true);
+		$this->assertTrue(null !== $aJsonDecodedResponse, "API Call response is a JSON" . $sOutput);
+
+		$this->assertEquals('{"code":1,"message":"Error: Invalid login"}', $sOutput, "API Call successfull" . $sOutput);
 
 	}
 
@@ -187,7 +203,7 @@ QUERY;
 		$oPersonalToken = $this->createObject(\PersonalToken::class, [
 			'user_id' => $oUser->GetKey(),
 			'application' => "token application",
-			'scope' => \ContextTag::TAG_REST
+			'scope' => \ContextTag::TAG_REST,
 		]);
 
 		$oReflectionClass = new \ReflectionClass(\AbstractPersonalToken::class);
