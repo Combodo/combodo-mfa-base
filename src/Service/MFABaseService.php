@@ -118,7 +118,7 @@ class MFABaseService
 					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip');
 					$sDataAction = 'delete';
 					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-times',
+					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-trash',
 						$sActionTooltip,
 						'Action',
 						"$sDataAction:$sMFAUserSettingsClass",
