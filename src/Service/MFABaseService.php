@@ -83,7 +83,7 @@ class MFABaseService
 		try {
 			$aColumns = [
 				['label' => Dict::S('UI:MFA:Modes:Name')],
-				['label' => Dict::S('UI:MFA:Modes:Validated')],
+				['label' => Dict::S('UI:MFA:Modes:Activated')],
 				['label' => Dict::S('UI:MFA:Modes:Default')],
 				['label' => Dict::S('UI:MFA:Modes:Action')],
 			];
@@ -124,6 +124,8 @@ class MFABaseService
 						"$sDataAction:$sMFAUserSettingsClass",
 						true
 					);
+					$oButton->AddCSSClass('ibo-is-danger');
+					$oButton->RemoveCSSClass('ibo-is-neutral');
 					$oButton->SetTooltip($sActionTooltip);
 					$oButtonToolbar->AddSubBlock($oButton);
 				} else {
