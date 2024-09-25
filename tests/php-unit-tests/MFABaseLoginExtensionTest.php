@@ -98,7 +98,6 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 			$oLoginExtension->LoginAction(LoginWebPage::LOGIN_STATE_CONNECTED, $iErrorCode));
 
 		$this->assertEquals(666, $iErrorCode);
-		$this->assertFalse(Session::IsSet('selected_mfa_mode'));
 	}
 
 	public function testOnCredentialsOK_MfaConfigurationValidated() {
@@ -130,10 +129,9 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$this->oMFAAdminRuleService->expects($this->exactly(0))
 			->method("GetAdminRuleByUserId");
 
-
 		$this->oMFABaseService->expects($this->exactly(1))
 			->method("ValidateLogin")
-			->with($sUserId, [$oActiveSetting]);
+			->with([$oActiveSetting]);
 
 		$_SESSION=[];
 		Session::Set("auth_user", $oUser->Get('login'));
@@ -429,5 +427,31 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$this->assertEquals(LoginWebPage::EXIT_CODE_OK, $iErrorCode);
 
 		$this->assertFalse(isset($_POST['mfa_restart_login']), "mfa_restart_login should be removed from POST to avoid infinite loop");
+	}
+
+	public function OnStartOrConnectedProvider() {
+		return [
+			'LoginWebPage::LOGIN_STATE_CONNECTED' => ['connected'],
+			'LoginWebPage::LOGIN_STATE_START' => ['start'],
+		];
+	}
+
+	/**
+	 * @dataProvider OnStartOrConnectedProvider
+	 */
+	public function testOnStartOrConnected($sLoginStateStep) {
+		$_SESSION=[  ];
+		Session::Set(MFABaseService::SELECTED_MFA_MODE, \MFAUserSettingsTOTPApp::class);
+
+		$this->oMFABaseService->expects($this->exactly(1))
+			->method("ClearContext")
+			->with(\MFAUserSettingsTOTPApp::class);
+
+		$oLoginExtension = new MFABaseLoginExtension();
+		$iErrorCode = 666;
+		$res = $oLoginExtension->LoginAction($sLoginStateStep, $iErrorCode);
+
+		$this->assertEquals(LoginWebPage::LOGIN_FSM_CONTINUE, $res);
+		$this->assertEquals(666, $iErrorCode);
 	}
 }
