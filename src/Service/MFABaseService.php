@@ -179,17 +179,17 @@ class MFABaseService
 	 * Display the screen to enter the code, and validate the code entered by the user
 	 * Use selected_mfa_mode posted var to choose the mode of MFA to validate
 	 *
-	 * @param string $sUserId the user wanting to log in
 	 * @param MFAUserSettings[] $aUserSettings The MFA modes configured by the user
 	 *
 	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
-	public function ValidateLogin(string $sUserId, array $aUserSettings): void
+	public function ValidateLogin(array $aUserSettings): void
 	{
 		try {
 			$oChosenUserSettings = null;
 			$sChosenUserSettings = utils::ReadPostedParam(self::SELECTED_MFA_MODE, null);
 			if (!is_null($sChosenUserSettings)) {
+				MFABaseService::GetInstance()->ClearContext(Session::Get(self::SELECTED_MFA_MODE));
 				Session::Set(self::SELECTED_MFA_MODE, $sChosenUserSettings);
 			}
 			$sChosenUserSettings = Session::Get(self::SELECTED_MFA_MODE);
@@ -344,5 +344,22 @@ class MFABaseService
 		} catch (Exception $e) {
 			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
+	}
+
+	public function ClearContext(?string $sMFAUserSettingsClass): void
+	{
+		if (is_null($sMFAUserSettingsClass)) {
+			return;
+		}
+
+		if (!MetaModel::IsValidClass($sMFAUserSettingsClass)) {
+			return;
+		}
+
+		if (!is_a($sMFAUserSettingsClass, MFAUserSettings::class)) {
+			return;
+		}
+
+		$sMFAUserSettingsClass::ClearContext();
 	}
 }

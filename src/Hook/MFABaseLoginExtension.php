@@ -24,6 +24,13 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		return ['after'];
 	}
 
+	protected function OnStart(&$iErrorCode)
+	{
+		MFABaseService::GetInstance()->ClearContext(Session::Get(MFABaseService::SELECTED_MFA_MODE));
+
+		return LoginWebPage::LOGIN_FSM_CONTINUE;
+	}
+
 	protected function OnCredentialsOK(&$iErrorCode)
 	{
 		MFABaseLog::Enable();
@@ -63,7 +70,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 					}
 
 					MFABaseLog::Debug(__FUNCTION__.': Calling ValidateLogin');
-					MFABaseService::GetInstance()->ValidateLogin($sUserId, $aUserSettings);
+					MFABaseService::GetInstance()->ValidateLogin($aUserSettings);
 					MFABaseLog::Debug(__FUNCTION__.': Validation OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
@@ -125,7 +132,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnConnected(&$iErrorCode)
 	{
-		Session::Unset('selected_mfa_mode');
+		MFABaseService::GetInstance()->ClearContext(Session::Get(MFABaseService::SELECTED_MFA_MODE));
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}

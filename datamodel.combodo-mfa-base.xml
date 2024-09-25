@@ -144,6 +144,21 @@
           <type>Custom</type>
           <code><![CDATA[	public abstract function GetConfigurationURLForMyAccountRedirection(): string;]]></code>
         </method>
+        <method id="ClearContext">
+          <comment>/**
+            * Clear the session, posted variables...
+            *
+            * @return void
+            */
+          </comment>
+          <static>true</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public static function ClearContext(): void
+	{
+			Session::Unset('selected_mfa_mode');
+	}]]></code>
+        </method>
         <method id="GetTwigContextForConfiguration">
           <comment>/**
             *
