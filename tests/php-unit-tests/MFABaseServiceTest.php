@@ -82,10 +82,26 @@ class MFABaseServiceTest extends AbstractMFATest {
 		];
 	}
 
+	public function testClearContext_MFAUserSettingsWebAuthn() {
+		if (! class_exists(\MFAUserSettingsWebAuthn::class)){
+			$this->markTestSkipped("MFAUserSettingsWebAuthn does not exist");
+		}
+
+		$this->ClearContextValidate(\MFAUserSettingsWebAuthn::class, ['selected_mfa_mode', 'WebAuthnChallenge', 'mfa_webauthn_manual_validation']);
+	}
+
+	public function testClearContext_MFAUserSettingsTOTPApp() {
+		if (! class_exists(\MFAUserSettingsTOTPApp::class)){
+			$this->markTestSkipped("MFAUserSettingsTOTPApp does not exist");
+		}
+
+		$this->ClearContextValidate(\MFAUserSettingsTOTPApp::class, ['selected_mfa_mode']);
+	}
+
 	/**
 	 * @dataProvider ClearContextProvider
 	 */
-	public function testClearContext(string $sClass, array $aKeysToClear)
+	public function ClearContextValidate(string $sClass, array $aKeysToClear)
 	{
 		foreach ($aKeysToClear as $sKey) {
 			Session::Set($sKey, 'Test');
@@ -95,12 +111,4 @@ class MFABaseServiceTest extends AbstractMFATest {
 			$this->assertFalse(Session::IsSet($sKey), "The key $sKey should have been removed from session");
 		}
 	}
-
-	public function ClearContextProvider()
-	{
-		return [
-			'MFAUserSettingsWebAuthn' => [\MFAUserSettingsWebAuthn::class, ['selected_mfa_mode', 'WebAuthnChallenge', 'mfa_webauthn_manual_validation']],
-		];
-	}
-
 }
