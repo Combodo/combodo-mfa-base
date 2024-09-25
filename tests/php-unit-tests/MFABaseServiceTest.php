@@ -2,6 +2,8 @@
 
 namespace Combodo\iTop\MFABase\Test;
 
+use Combodo\iTop\Application\Helper\Session;
+use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
@@ -11,6 +13,7 @@ use MetaModel;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFABaseServiceTest extends AbstractMFATest {
+
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -60,4 +63,44 @@ class MFABaseServiceTest extends AbstractMFATest {
 			$this->assertEquals($expected, $oUserSettings->Get('is_default'), "class " . get_class($oUserSettings));
 		}
 	}
+
+	/**
+	 * @dataProvider ClearContextFailProvider
+	 */
+	public function testClearContextFail(string $sClass)
+	{
+		$this->expectException(MFABaseException::class);
+		MFABaseService::GetInstance()->ClearContext($sClass);
+	}
+
+	public function ClearContextFailProvider()
+	{
+		return [
+			'NotADatamodelClass' => ['NotADatamodelClass'],
+			'UserRequest' => ['UserRequest'],
+			'MFAUserSettings' => [\MFAUserSettings::class],
+		];
+	}
+
+	/**
+	 * @dataProvider ClearContextProvider
+	 */
+	public function testClearContext(string $sClass, array $aKeysToClear)
+	{
+		foreach ($aKeysToClear as $sKey) {
+			Session::Set($sKey, 'Test');
+		}
+		MFABaseService::GetInstance()->ClearContext($sClass);
+		foreach ($aKeysToClear as $sKey) {
+			$this->assertFalse(Session::IsSet($sKey), "The key $sKey should have been removed from session");
+		}
+	}
+
+	public function ClearContextProvider()
+	{
+		return [
+			'MFAUserSettingsWebAuthn' => [\MFAUserSettingsWebAuthn::class, ['selected_mfa_mode', 'WebAuthnChallenge', 'mfa_webauthn_manual_validation']],
+		];
+	}
+
 }

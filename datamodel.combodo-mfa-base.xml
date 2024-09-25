@@ -156,7 +156,7 @@
           <type>Custom</type>
           <code><![CDATA[	public static function ClearContext(): void
 	{
-			Session::Unset('selected_mfa_mode');
+			Combodo\iTop\Application\Helper\Session::Unset('selected_mfa_mode');
 	}]]></code>
         </method>
         <method id="GetTwigContextForConfiguration">

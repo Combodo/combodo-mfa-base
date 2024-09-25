@@ -221,7 +221,7 @@ class MFABaseService
 			}
 
 			// Validate 2FA user input
-			if (! $oChosenUserSettings->ValidateLogin()){
+			if (!$oChosenUserSettings->ValidateLogin()) {
 				$this->DisplayValidation($oChosenUserSettings, $oMFATwigRenderer, $aUserSettings);
 			}
 		} catch (MFABaseException $e) {
@@ -239,7 +239,8 @@ class MFABaseService
 	 * @return void
 	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
-	private function DisplayValidation(MFAUserSettings $oChosenUserSettings, MFATwigRenderer $oMFATwigRenderer, array $aUserSettings): void {
+	private function DisplayValidation(MFAUserSettings $oChosenUserSettings, MFATwigRenderer $oMFATwigRenderer, array $aUserSettings): void
+	{
 		// Display validation screen for chosen mode and a link for all other modes
 		// This is to get the 2FA user input
 		$oLoginContext = $oChosenUserSettings->GetTwigContextForLoginValidation();
@@ -346,6 +347,12 @@ class MFABaseService
 		}
 	}
 
+	/**
+	 * @param string|null $sMFAUserSettingsClass
+	 *
+	 * @return void
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
 	public function ClearContext(?string $sMFAUserSettingsClass): void
 	{
 		if (is_null($sMFAUserSettingsClass)) {
@@ -353,11 +360,12 @@ class MFABaseService
 		}
 
 		if (!MetaModel::IsValidClass($sMFAUserSettingsClass)) {
-			return;
+			throw new MFABaseException(__FUNCTION__." Class not valid: $sMFAUserSettingsClass");
 		}
 
-		if (!is_a($sMFAUserSettingsClass, MFAUserSettings::class)) {
-			return;
+		$oReflectionClass = new \ReflectionClass($sMFAUserSettingsClass);
+		if (!$oReflectionClass->isSubclassOf(\MFAUserSettings::class)) {
+			throw new MFABaseException(__FUNCTION__." Class not a MFAUserSettings: $sMFAUserSettingsClass");
 		}
 
 		$sMFAUserSettingsClass::ClearContext();
