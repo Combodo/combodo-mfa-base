@@ -21,13 +21,13 @@ class MFABaseMenu extends ModuleHandlerAPI
 		if (MFABaseConfig::GetInstance()->IsEnabled() && UserRights::IsActionAllowed(ResourceMFAMenu::class, UR_ACTION_MODIFY)) {
 			new OQLMenuNode(
 				'MFAAdminRule',
-				'SELECT MFAAdminRule',
+				"SELECT MFAAdminRule",
 				ApplicationMenu::GetMenuIndexById('UserManagement'),
 				40,
 				true);
 			new OQLMenuNode(
 				'MFAUserSettings',
-				'SELECT MFAUserSettings',
+				"SELECT MFAUserSettings WHERE validated='yes'",
 				ApplicationMenu::GetMenuIndexById('UserManagement'),
 				50,
 				true);

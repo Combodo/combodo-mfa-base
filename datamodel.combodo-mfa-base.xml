@@ -112,6 +112,11 @@
           <callback>EvtBeforeWriteMFAUserSettings</callback>
           <rank>0</rank>
         </event_listener>
+        <event_listener id="EVENT_DB_SET_ATTRIBUTES_FLAGS">
+          <event>EVENT_DB_SET_ATTRIBUTES_FLAGS</event>
+          <callback>EvtSetAttributeFlagsMFAUserSettings</callback>
+          <rank>0</rank>
+        </event_listener>
       </event_listeners>
       <methods>
         <method id="EvtBeforeWriteMFAUserSettings">
@@ -131,6 +136,26 @@
             if ($this->Get('validated') === 'yes') {
                 $this->Set('configured', 'yes');
             }
+          }]]></code>
+        </method>
+        <method id="EvtSetAttributeFlagsMFAUserSettings">
+          <comment>/**
+            * Event Listener for EVENT_DB_BEFORE_WRITE
+            * An object is about to be written into the database.
+            * The object can be modified.
+            *
+            * @param Combodo\iTop\Service\Events\EventData $oEventData Event data object
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>EventListener</type>
+          <code><![CDATA[	public function EvtSetAttributeFlagsMFAUserSettings(Combodo\iTop\Service\Events\EventData $oEventData)
+          {
+                $this->AddAttributeFlags('user_id', OPT_ATT_READONLY);
+                $this->AddAttributeFlags('configured', OPT_ATT_READONLY);
+                $this->AddAttributeFlags('validated', OPT_ATT_READONLY);
+
           }]]></code>
         </method>
         <method id="GetConfigurationURLForMyAccountRedirection">
@@ -715,9 +740,6 @@
           <attributes>
             <attribute id="name"/>
           </attributes>
-          <complementary_attributes>
-            <attribute id="name"/>
-          </complementary_attributes>
         </naming>
         <reconciliation>
           <attributes>
