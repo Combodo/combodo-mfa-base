@@ -215,6 +215,7 @@ class MFABaseService
 			}
 
 			MFABaseLog::Debug(__FUNCTION__, null, ['ChosenUserSettings' => get_class($oChosenUserSettings)]);
+			Session::Set(self::SELECTED_MFA_MODE, get_class($oChosenUserSettings));
 			$oMFATwigRenderer = new MFATwigRenderer();
 			if ($oChosenUserSettings->HasToDisplayValidation()) {
 				$this->DisplayValidation($oChosenUserSettings, $oMFATwigRenderer, $aUserSettings);
@@ -275,6 +276,7 @@ class MFABaseService
 	{
 		try {
 			$sPreferredModeClass = $oMFAAdminRule->Get('preferred_mfa_mode');
+			Session::Set(self::SELECTED_MFA_MODE, $sPreferredModeClass);
 			$oMFAUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sPreferredModeClass);
 
 			$oMFATwigRenderer = new MFATwigRenderer();

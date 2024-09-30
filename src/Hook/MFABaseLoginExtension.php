@@ -130,7 +130,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 		return LoginWebPage::LOGIN_FSM_ERROR;
 	}
 
-	protected function OnConnected(&$iErrorCode)
+	protected function OnUsersOK(&$iErrorCode)
 	{
 		MFABaseService::GetInstance()->ClearContext(Session::Get(MFABaseService::SELECTED_MFA_MODE));
 
