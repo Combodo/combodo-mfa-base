@@ -431,7 +431,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 	public function OnStartOrConnectedProvider() {
 		return [
-			'LoginWebPage::LOGIN_STATE_CONNECTED' => ['connected'],
+			'LoginWebPage::LOGIN_STATE_USER_OK' => ['user ok'],
 			'LoginWebPage::LOGIN_STATE_START' => ['start'],
 		];
 	}
