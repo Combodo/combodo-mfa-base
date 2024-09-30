@@ -38,7 +38,7 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 	 */
 	public function GetTabCode(): string
 	{
-		return 'MyAccount:Tab:MFA';
+		return 'MyAccount-Tab-MFA';
 	}
 
 	/**
