@@ -1,4 +1,21 @@
 {# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
 {# @license     http://opensource.org/licenses/AGPL-3.0 #}
 
-≤h1>Toto</h1>
+<div class="col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">{{ 'Menu:MFAUserSettings'|dict_s }}</h3>
+		</div>
+		<div class="panel-body">
+			<form id="mfa_form" class="" method="POST" action="{# oContactForm.renderer.GetEndpoint()|raw #}">
+				<input type="hidden" name="transaction_id" value="{# oContactForm.transaction_id #}" />
+				<div class="form_alerts">
+					<div class="alert alert-success" role="alert" style="display: none;"></div>
+					<div class="alert alert-warning" role="alert" style="display: none;"></div>
+					<div class="alert alert-error alert-danger" role="alert" style="display: none;"></div>
+				</div>
+				<div class="text-center">MFA</div>
+			</form>
+		</div>
+	</div>
+</div>
