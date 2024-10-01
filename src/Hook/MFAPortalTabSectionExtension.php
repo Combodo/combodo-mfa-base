@@ -50,29 +50,7 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 		$oPortalTwigContext = new PortalTwigContext();
 		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
 
-		$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
-
-		/*foreach($aMFAParams['aData'] as $iRow =>$aRow) {
-			$aActions = $aRow['action'];
-
-			$sButtonToolbar = '';
-			foreach ($aActions as $aAction) {
-				$sIconClass = $aAction[0];
-				$sTooltip = $aAction[1];
-				$sValue = $aAction[2];
-				$sCSSClass = $aAction[3] ?? null;
-
-				$sButtonToolbar .= <<<HTML
-<a href="">
-	<span class='$sIconClass' data-tooltip-content='$sTooltip'></span>
-</a>
-HTML;
-			}
-
-			$aMFAParams['aData'][$iRow]['action'] = $sButtonToolbar;
-		}*/
-
-		$aData = ['aUserSettings' => $aMFAParams];
+		$aData = ['aUserSettings' => MFABaseService::GetInstance()->GetMFAUserSettingsDataTable()];
 
 		$oPortalTwigContext->AddBlockExtension('html', new PortalBlockExtension($sPath, $aData));
 
