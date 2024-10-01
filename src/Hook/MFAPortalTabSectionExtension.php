@@ -50,11 +50,6 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 		$oPortalTwigContext = new PortalTwigContext();
 		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
 
-//		<a href = '/itop/support/3.2/pages/exec.php/manage/export/excel/start/ongoing-tickets-for-portal-user/opened/UserRequest?exec_module=itop-portal-base&amp;exec_page=index.php&amp;portal_id=itop-portal' id = 'btn_export_excel_for_UserRequest' data - toggle = 'modal' data - target = '#modal-for-all' >
-//                                <span class='fas fa-download fa-lg' style = 'float: right;' data - tooltip - content = 'Excel Export...' data - tooltip - instantiated = 'true' ></span >
-//                            </a >
-
-
 		$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
 
 		foreach($aMFAParams['aData'] as $iRow =>$aRow) {
