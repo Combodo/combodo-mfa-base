@@ -52,7 +52,7 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 
 		$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
 
-		foreach($aMFAParams['aData'] as $iRow =>$aRow) {
+		/*foreach($aMFAParams['aData'] as $iRow =>$aRow) {
 			$aActions = $aRow['action'];
 
 			$sButtonToolbar = '';
@@ -70,7 +70,7 @@ HTML;
 			}
 
 			$aMFAParams['aData'][$iRow]['action'] = $sButtonToolbar;
-		}
+		}*/
 
 		$aData = ['aUserSettings' => $aMFAParams];
 

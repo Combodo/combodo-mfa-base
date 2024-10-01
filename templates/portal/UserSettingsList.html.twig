@@ -26,13 +26,25 @@
 					</tr>
 					</thead>
 					<tbody>
+
 					{% for aRow in aRows %}
 						<tr class="even">
-							{% for sRowField in aRow %}
-								<td>{{ sRowField|raw }}</td>
+							{% for sFieldName, field in aRow %}
+								<td>
+								{% if sFieldName == "action" %}
+									{% for aButtonAction in field %}
+										{% set sIconClass = aButtonAction[0] %}
+										{% set sTooltip = aButtonAction[1] %}
+										{% set sValue = aButtonAction[2] %}
+										<a href="{{ app.url_generator.generate('p_user_profile_brick', {'sBrickId': oBrick.GetId(), 'sDisplayMode': '_self', 'sTab': 'MyAccount-Tab-MFA', 'action' : sValue }) }}">
+											<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
+										</a>
+									{% endfor %}
+								{% else %}
+									{{ field|raw }}
+								{% endif %}
+								</td>
 							{% endfor %}
-{#							<td class="dtr-control"><a data-object-class="UserRequest" data-object-id="30329" data-attribute-code="friendlyname" data-attribute-type="AttributeFriendlyName" data-value-raw="R-030245"#}
-{#							                                        href="/itop/support/3.2/pages/exec.php/object/edit/UserRequest/30329?exec_module=itop-portal-base&amp;exec_page=index.php&amp;portal_id=itop-portal" data-toggle="modal" data-target="#modal-for-all">R-030245</a></td>#}
 						</tr>
 					{% endfor %}
 					</tbody>
