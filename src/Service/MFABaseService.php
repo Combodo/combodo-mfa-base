@@ -7,13 +7,10 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\Helper\Session;
-use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\MFABase\View\MFATwigRenderer;
-use Combodo\iTop\Renderer\BlockRenderer;
 use Dict;
 use Exception;
 use LoginWebPage;
@@ -62,30 +59,14 @@ class MFABaseService
 	 * @return array
 	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
 	 */
-	public function GetConfigMFAParams(): array
-	{
-		try {
-			$aParams = [];
-			$aParams['aMFAUserSettings'] = $this->GetMFAUserSettingsDataTable();
-
-			return $aParams;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
-	/**
-	 * @return array
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
 	public function GetMFAUserSettingsDataTable(): array
 	{
 		try {
 			$aColumns = [
-				['label' => Dict::S('UI:MFA:Modes:Name')],
-				['label' => Dict::S('UI:MFA:Modes:Activated')],
-				['label' => Dict::S('UI:MFA:Modes:Default')],
-				['label' => Dict::S('UI:MFA:Modes:Action')],
+				'name' => ['label' => Dict::S('UI:MFA:Modes:Name')],
+				'validated' => ['label' => Dict::S('UI:MFA:Modes:Activated')],
+				'is_default' => ['label' => Dict::S('UI:MFA:Modes:Default')],
+				'action' => ['label' => Dict::S('UI:MFA:Modes:Action')],
 			];
 
 			$aData = [];
@@ -96,69 +77,46 @@ class MFABaseService
 				$aDatum = [];
 				// Name
 				$sMFAUserSettingsClass = get_class($oMFAUserSettings);
-				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
+				$aDatum['name'] = MetaModel::GetName($sMFAUserSettingsClass);
 				// Status
 				/** @var \cmdbAbstractObject $oMFAUserSettings */
-				$aDatum[] = $oMFAUserSettings->GetEditValue('validated');;
-				$aDatum[] = $oMFAUserSettings->GetEditValue('is_default');
-				$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
+				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;
+				$aDatum['is_default'] = $oMFAUserSettings->GetEditValue('is_default');
+				$aButtonToolbar = [];
 				if ($oMFAUserSettings->Get('validated') !== 'no') {
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
-					$sDataAction = 'configure';
 					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-pen',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
+					$aButton = ['fas fa-pen',
+						Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip'),
+						"configure:$sMFAUserSettingsClass",
+						];
+					$aButtonToolbar[] = $aButton;
 
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip');
-					$sDataAction = 'delete';
 					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-trash',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->AddCSSClass('ibo-is-danger');
-					$oButton->RemoveCSSClass('ibo-is-neutral');
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
+					$aButton = ['fas fa-trash',
+						Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip'),
+						"delete:$sMFAUserSettingsClass",
+						'ibo-is-danger',
+					];
+					$aButtonToolbar[] = $aButton;
 				} else {
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip');
-					$sDataAction = 'add';
 					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-plus',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
+					$aButton = ['fas fa-plus',
+						Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip'),
+						"add:$sMFAUserSettingsClass",
+					];
+					$aButtonToolbar[] = $aButton;
 
 					if ($oMFAUserSettings->Get('configured') === 'yes') {
-						$sActionTooltip = Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip');
-						$sDataAction = 'undo_delete';
 						// Action
-						$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-undo',
-							$sActionTooltip,
-							'Action',
-							"$sDataAction:$sMFAUserSettingsClass",
-							true
-						);
-						$oButton->SetTooltip($sActionTooltip);
-						$oButtonToolbar->AddSubBlock($oButton);
+						$aButton = ['fas fa-undo',
+							Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip'),
+							"undo_delete:$sMFAUserSettingsClass",
+						];
+						$aButtonToolbar[] = $aButton;
 					}
 				}
 
-				$oRenderer = new BlockRenderer($oButtonToolbar);
-				$sButton = $oRenderer->RenderHtml();
-				$aDatum[] = $sButton;
+				$aDatum['action'] = $aButtonToolbar;
 				$aData[] = $aDatum;
 			}
 

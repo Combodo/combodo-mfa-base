@@ -6,10 +6,15 @@
 
 namespace Combodo\iTop\MFABase\Hook;
 
+use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
+use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MyAccount\Hook\iMyAccountSectionExtension;
+use Combodo\iTop\Renderer\BlockRenderer;
+use Exception;
 use utils;
 
 class MyAccountSectionExtension implements iMyAccountSectionExtension
@@ -53,7 +58,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	 */
 	public function GetSectionCallback(): callable
 	{
-		return [MFABaseService::GetInstance(), 'GetConfigMFAParams'];
+		return [$this, 'GetConfigMFAParams'];
 	}
 
 	/**
@@ -62,5 +67,47 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	public function GetSectionRank(): float
 	{
 		return 0;
+	}
+
+	public function GetConfigMFAParams(): array
+	{
+		try {
+			$aParams = [];
+			$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
+
+			foreach($aMFAParams['aData'] as $iRow =>$aRow) {
+				$aActions = $aRow['action'];
+
+				$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
+				foreach ($aActions as $aAction) {
+					$sIconClass = $aAction[0];
+					$sTooltip = $aAction[1];
+					$sValue = $aAction[2];
+					$sCSSClass = $aAction[3] ?? null;
+					$oButton = ButtonUIBlockFactory::MakeIconAction($sIconClass,
+						$sTooltip,
+						'Action',
+						$sValue,
+						true
+					);
+					$oButton->SetTooltip($sTooltip);
+					if (!is_null($sCSSClass)) {
+						$oButton->AddCSSClass($sCSSClass);
+						$oButton->RemoveCSSClass('ibo-is-neutral');
+					}
+					$oButtonToolbar->AddSubBlock($oButton);
+				}
+				$oRenderer = new BlockRenderer($oButtonToolbar);
+				$sButtonToolbar = $oRenderer->RenderHtml();
+
+				$aMFAParams['aData'][$iRow]['action'] = $sButtonToolbar;
+			}
+
+			$aParams['aMFAUserSettings'] = $aMFAParams;
+
+			return $aParams;
+		} catch (Exception $e) {
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
+		}
 	}
 }

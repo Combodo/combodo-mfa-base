@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
+use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\Portal\Hook\iPortalTabSectionExtension;
 use Combodo\iTop\Portal\Twig\PortalBlockExtension;
 use Combodo\iTop\Portal\Twig\PortalTwigContext;
@@ -49,7 +50,36 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 		$oPortalTwigContext = new PortalTwigContext();
 		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
 
-		$oPortalTwigContext->AddBlockExtension('html', new PortalBlockExtension($sPath, []));
+//		<a href = '/itop/support/3.2/pages/exec.php/manage/export/excel/start/ongoing-tickets-for-portal-user/opened/UserRequest?exec_module=itop-portal-base&amp;exec_page=index.php&amp;portal_id=itop-portal' id = 'btn_export_excel_for_UserRequest' data - toggle = 'modal' data - target = '#modal-for-all' >
+//                                <span class='fas fa-download fa-lg' style = 'float: right;' data - tooltip - content = 'Excel Export...' data - tooltip - instantiated = 'true' ></span >
+//                            </a >
+
+
+		$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
+
+		foreach($aMFAParams['aData'] as $iRow =>$aRow) {
+			$aActions = $aRow['action'];
+
+			$sButtonToolbar = '';
+			foreach ($aActions as $aAction) {
+				$sIconClass = $aAction[0];
+				$sTooltip = $aAction[1];
+				$sValue = $aAction[2];
+				$sCSSClass = $aAction[3] ?? null;
+
+				$sButtonToolbar .= <<<HTML
+<a href="">
+	<span class='$sIconClass' data-tooltip-content='$sTooltip'></span>
+</a>
+HTML;
+			}
+
+			$aMFAParams['aData'][$iRow]['action'] = $sButtonToolbar;
+		}
+
+		$aData = ['aUserSettings' => $aMFAParams];
+
+		$oPortalTwigContext->AddBlockExtension('html', new PortalBlockExtension($sPath, $aData));
 
 		return $oPortalTwigContext;
 	}

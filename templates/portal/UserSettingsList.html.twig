@@ -1,6 +1,9 @@
 {# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
 {# @license     http://opensource.org/licenses/AGPL-3.0 #}
 
+{% set aColumns = aData.aUserSettings.aColumns %}
+{% set aRows = aData.aUserSettings.aData %}
+
 <div class="col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -14,7 +17,26 @@
 					<div class="alert alert-warning" role="alert" style="display: none;"></div>
 					<div class="alert alert-error alert-danger" role="alert" style="display: none;"></div>
 				</div>
-				<div class="text-center">MFA</div>
+				<table id="table-user-settings" class="object-list table table-striped table-bordered responsive dataTable no-footer dtr-inline" style="width: 100%;">
+					<thead>
+					<tr>
+						{% for aColumn in aColumns %}
+							<th>{{ aColumn.label }}</th>
+						{% endfor %}
+					</tr>
+					</thead>
+					<tbody>
+					{% for aRow in aRows %}
+						<tr class="even">
+							{% for sRowField in aRow %}
+								<td>{{ sRowField|raw }}</td>
+							{% endfor %}
+{#							<td class="dtr-control"><a data-object-class="UserRequest" data-object-id="30329" data-attribute-code="friendlyname" data-attribute-type="AttributeFriendlyName" data-value-raw="R-030245"#}
+{#							                                        href="/itop/support/3.2/pages/exec.php/object/edit/UserRequest/30329?exec_module=itop-portal-base&amp;exec_page=index.php&amp;portal_id=itop-portal" data-toggle="modal" data-target="#modal-for-all">R-030245</a></td>#}
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
 			</form>
 		</div>
 	</div>
