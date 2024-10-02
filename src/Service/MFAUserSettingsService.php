@@ -317,4 +317,39 @@ class MFAUserSettingsService
 			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
+
+	public function HandleAction(string $sUserId, string $sModeClass, string $sVerb, array &$aParams=[]) : void
+	{
+		switch ($sVerb) {
+			case 'undo_delete':
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$oUserSettings->Set('validated', 'yes');
+				$oUserSettings->AllowWrite();
+				$oUserSettings->DBUpdate();
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+
+			case 'delete':
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$oUserSettings->Set('validated', 'no');
+				$oUserSettings->Set('is_default', 'no');
+				$oUserSettings->AllowWrite();
+				$oUserSettings->DBUpdate();
+				$aParams['sURL'] = \utils::GetAbsoluteUrlAppRoot().'pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA';
+				break;
+
+			case 'add':
+				// Delete previously added mode
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				$oUserSettings->AllowDelete();
+				$oUserSettings->DBDelete();
+				break;
+
+			default:
+				$oUserSettings = MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+		}
+	}
 }

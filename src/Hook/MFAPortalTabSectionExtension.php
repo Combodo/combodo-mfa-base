@@ -9,9 +9,12 @@ namespace Combodo\iTop\MFABase\Hook;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Service\MFABaseService;
+use Combodo\iTop\MFABase\Service\MFAPortalService;
+use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Portal\Hook\iPortalTabSectionExtension;
 use Combodo\iTop\Portal\Twig\PortalBlockExtension;
 use Combodo\iTop\Portal\Twig\PortalTwigContext;
+use UserRights;
 
 class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 {
@@ -49,6 +52,13 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 	{
 		$oPortalTwigContext = new PortalTwigContext();
 		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
+
+		$sVerb = MFAPortalService::GetInstance()->GetSelectedAction();
+		$sUserSettingsClass = MFAPortalService::GetInstance()->GetClass();
+		if (strlen($sUserSettingsClass) != 0){
+			$sUserId = UserRights::GetUserId();
+			MFAUserSettingsService::GetInstance()->HandleAction($sUserId, $sUserSettingsClass, $sVerb);
+		}
 
 		$aData = ['aUserSettings' => MFABaseService::GetInstance()->GetMFAUserSettingsDataTable()];
 

@@ -36,37 +36,7 @@ class MFABaseController extends Controller
 			$sModeClass = $aItems[1];
 			$sUserId = UserRights::GetUserId();
 
-			switch ($sVerb) {
-				case 'undo_delete':
-					$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
-					$oUserSettings->Set('validated', 'yes');
-					$oUserSettings->AllowWrite();
-					$oUserSettings->DBUpdate();
-					$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
-					break;
-
-				case 'delete':
-					$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
-					$oUserSettings->Set('validated', 'no');
-					$oUserSettings->Set('is_default', 'no');
-					$oUserSettings->AllowWrite();
-					$oUserSettings->DBUpdate();
-					$aParams['sURL'] = utils::GetAbsoluteUrlAppRoot().'pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA';
-					break;
-
-				case 'add':
-					// Delete previously added mode
-					$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
-					$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
-					$oUserSettings->AllowDelete();
-					$oUserSettings->DBDelete();
-					break;
-
-				default:
-					$oUserSettings = MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
-					$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
-					break;
-			}
+			MFAUserSettingsService::GetInstance()->HandleAction($sUserId, $sModeClass, $sVerb, $aParams);
 		} catch (Exception $e) {
 			MFABaseLog::Error(__FUNCTION__.' Failed to configure MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');

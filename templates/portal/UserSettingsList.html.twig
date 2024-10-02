@@ -36,7 +36,7 @@
 									{% set sTooltip = aButtonAction[1] %}
 									{% set sAction = aButtonAction[2] %}
 									{% set sClass = aButtonAction[3] %}
-									{% set sFormId = "form_mfa_"~sAction~"_"~sClass %}
+									{% set sFormId = "form_mfa_action_"~sAction~"_"~sClass %}
 								<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
 									<input type="hidden" name="action" value="{{ sAction }}">
 									<input type="hidden" name="class" value="{{ sClass }}">

@@ -36,7 +36,7 @@ class MFAPortalService
 		}
 		$sAction = $this->GetSelectedAction();
 
-		return in_array($sAction, ['add', 'configure']);
+		return in_array($sAction, ['add', 'configure', 'undo_delete']);
 	}
 
 	public function GetSelectedAction(): string
@@ -44,7 +44,7 @@ class MFAPortalService
 		return utils::ReadPostedParam('action', '', utils::ENUM_SANITIZATION_FILTER_CONTEXT_PARAM);
 	}
 
-	private function GetClass(): string
+	public function GetClass(): string
 	{
 		return utils::ReadPostedParam('class', '', utils::ENUM_SANITIZATION_FILTER_CONTEXT_PARAM);
 	}
