@@ -87,14 +87,16 @@ class MFABaseService
 					// Action
 					$aButton = ['fas fa-pen',
 						Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip'),
-						"configure:$sMFAUserSettingsClass",
+						'configure',
+						$sMFAUserSettingsClass,
 						];
 					$aButtonToolbar[] = $aButton;
 
 					// Action
 					$aButton = ['fas fa-trash',
 						Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip'),
-						"delete:$sMFAUserSettingsClass",
+						'delete',
+						$sMFAUserSettingsClass,
 						'ibo-is-danger',
 					];
 					$aButtonToolbar[] = $aButton;
@@ -102,7 +104,8 @@ class MFABaseService
 					// Action
 					$aButton = ['fas fa-plus',
 						Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip'),
-						"add:$sMFAUserSettingsClass",
+						'add',
+						$sMFAUserSettingsClass,
 					];
 					$aButtonToolbar[] = $aButton;
 
@@ -110,7 +113,8 @@ class MFABaseService
 						// Action
 						$aButton = ['fas fa-undo',
 							Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip'),
-							"undo_delete:$sMFAUserSettingsClass",
+							'undo_delete',
+							$sMFAUserSettingsClass,
 						];
 						$aButtonToolbar[] = $aButton;
 					}

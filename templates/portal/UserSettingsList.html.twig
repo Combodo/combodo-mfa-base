@@ -10,46 +10,50 @@
 			<h3 class="panel-title">{{ 'Menu:MFAUserSettings'|dict_s }}</h3>
 		</div>
 		<div class="panel-body">
-			<form id="mfa_form" class="" method="POST" action="{# oContactForm.renderer.GetEndpoint()|raw #}">
-				<input type="hidden" name="transaction_id" value="{# oContactForm.transaction_id #}" />
-				<div class="form_alerts">
-					<div class="alert alert-success" role="alert" style="display: none;"></div>
-					<div class="alert alert-warning" role="alert" style="display: none;"></div>
-					<div class="alert alert-error alert-danger" role="alert" style="display: none;"></div>
-				</div>
-				<table id="table-user-settings" class="object-list table table-striped table-bordered responsive dataTable no-footer dtr-inline" style="width: 100%;">
-					<thead>
-					<tr>
-						{% for aColumn in aColumns %}
-							<th>{{ aColumn.label }}</th>
+			<input type="hidden" name="transaction_id" value="{# oContactForm.transaction_id #}" />
+			<div class="form_alerts">
+				<div class="alert alert-success" role="alert" style="display: none;"></div>
+				<div class="alert alert-warning" role="alert" style="display: none;"></div>
+				<div class="alert alert-error alert-danger" role="alert" style="display: none;"></div>
+			</div>
+			<table id="table-user-settings" class="object-list table table-striped table-bordered responsive dataTable no-footer dtr-inline" style="width: 100%;">
+				<thead>
+				<tr>
+					{% for aColumn in aColumns %}
+						<th>{{ aColumn.label }}</th>
+					{% endfor %}
+				</tr>
+				</thead>
+				<tbody>
+
+				{% for aRow in aRows %}
+					<tr class="even">
+						{% for sFieldName, field in aRow %}
+							<td>
+							{% if sFieldName == "action" %}
+								{% for aButtonAction in field %}
+									{% set sIconClass = aButtonAction[0] %}
+									{% set sTooltip = aButtonAction[1] %}
+									{% set sAction = aButtonAction[2] %}
+									{% set sClass = aButtonAction[3] %}
+									{% set sFormId = "form_mfa_"~sAction~"_"~sClass %}
+								<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
+									<input type="hidden" name="action" value="{{ sAction }}">
+									<input type="hidden" name="class" value="{{ sClass }}">
+									<a onclick="$('#{{ sFormId }}').submit();">
+										<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
+									</a>
+								</form>
+								{% endfor %}
+							{% else %}
+								{{ field|raw }}
+							{% endif %}
+							</td>
 						{% endfor %}
 					</tr>
-					</thead>
-					<tbody>
-
-					{% for aRow in aRows %}
-						<tr class="even">
-							{% for sFieldName, field in aRow %}
-								<td>
-								{% if sFieldName == "action" %}
-									{% for aButtonAction in field %}
-										{% set sIconClass = aButtonAction[0] %}
-										{% set sTooltip = aButtonAction[1] %}
-										{% set sValue = aButtonAction[2] %}
-										<a href="{{ app.url_generator.generate('p_user_profile_brick', {'sBrickId': oBrick.GetId(), 'sDisplayMode': '_self', 'sTab': 'MyAccount-Tab-MFA', 'action' : sValue }) }}">
-											<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
-										</a>
-									{% endfor %}
-								{% else %}
-									{{ field|raw }}
-								{% endif %}
-								</td>
-							{% endfor %}
-						</tr>
-					{% endfor %}
-					</tbody>
-				</table>
-			</form>
+				{% endfor %}
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

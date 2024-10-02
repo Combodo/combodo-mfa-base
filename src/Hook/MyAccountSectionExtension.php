@@ -82,12 +82,13 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 				foreach ($aActions as $aAction) {
 					$sIconClass = $aAction[0];
 					$sTooltip = $aAction[1];
-					$sValue = $aAction[2];
-					$sCSSClass = $aAction[3] ?? null;
+					$sAction = $aAction[2];
+					$sClass = $aAction[3];
+					$sCSSClass = $aAction[4] ?? null;
 					$oButton = ButtonUIBlockFactory::MakeIconAction($sIconClass,
 						$sTooltip,
 						'Action',
-						$sValue,
+						"$sAction:$sClass",
 						true
 					);
 					$oButton->SetTooltip($sTooltip);
