@@ -41,6 +41,7 @@
 									{% set sClass = aButtonAction[3] %}
 									{% set sFormId = "form_mfa_action_"~sAction~"_"~sClass %}
 								<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
+									<input type="hidden" name="transaction_id" value="{{ aData.sTransactionId }}">
 									<input type="hidden" name="action" value="{{ sAction }}">
 									<input type="hidden" name="class" value="{{ sClass }}">
 									<a onclick="$('#{{ sFormId }}').submit();">
