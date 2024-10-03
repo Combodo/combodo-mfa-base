@@ -12,9 +12,12 @@
 		<div class="panel-body">
 			<input type="hidden" name="transaction_id" value="{# oContactForm.transaction_id #}" />
 			<div class="form_alerts">
-				<div class="alert alert-success" role="alert" style="display: none;"></div>
-				<div class="alert alert-warning" role="alert" style="display: none;"></div>
-				<div class="alert alert-error alert-danger" role="alert" style="display: none;"></div>
+				{% if aData.sMessage is defined %}
+					<div class="alert alert-success" role="alert">{{ aData.sMessage }}</div>
+				{% endif %}
+				{% if aData.sError is defined %}
+					<div class="alert alert-error alert-danger" role="alert">{{ aData.sError }}</div>
+				{% endif %}
 			</div>
 			<table id="table-user-settings" class="object-list table table-striped table-bordered responsive dataTable no-footer dtr-inline" style="width: 100%;">
 				<thead>

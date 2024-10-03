@@ -11,12 +11,12 @@ use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAPortalService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
-use Combodo\iTop\Portal\Hook\iPortalTabSectionExtension;
+use Combodo\iTop\Portal\Hook\iPortalTabContentExtension;
 use Combodo\iTop\Portal\Twig\PortalBlockExtension;
 use Combodo\iTop\Portal\Twig\PortalTwigContext;
 use UserRights;
 
-class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
+class MFAPortalTabContentExtension implements iPortalTabContentExtension
 {
 
 	/**
@@ -48,17 +48,28 @@ class MFAPortalTabSectionExtension implements iPortalTabSectionExtension
 		return 'p_user_profile_brick';
 	}
 
-	public function GetPortalTwigContext(): PortalTwigContext
+	/**
+	 * Handle actions based on posted vars
+	 */
+	public function HandlePortalForm(array &$aData): void
 	{
-		$oPortalTwigContext = new PortalTwigContext();
-		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
-
 		$sVerb = MFAPortalService::GetInstance()->GetSelectedAction();
 		$sUserSettingsClass = MFAPortalService::GetInstance()->GetClass();
 		if (strlen($sUserSettingsClass) != 0){
 			$sUserId = UserRights::GetUserId();
 			MFAUserSettingsService::GetInstance()->HandleAction($sUserId, $sUserSettingsClass, $sVerb);
 		}
+	}
+
+	/**
+	 * List twigs and variables for the tab content per block
+	 *
+	 * @return PortalTwigContext
+	 */
+	public function GetPortalTabContentTwigs(): PortalTwigContext
+	{
+		$oPortalTwigContext = new PortalTwigContext();
+		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
 
 		$aData = ['aUserSettings' => MFABaseService::GetInstance()->GetMFAUserSettingsDataTable()];
 
