@@ -83,40 +83,41 @@ class MFABaseService
 				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;
 				$aDatum['is_default'] = $oMFAUserSettings->GetEditValue('is_default');
 				$aButtonToolbar = [];
+
 				if ($oMFAUserSettings->Get('validated') !== 'no') {
-					// Action
-					$aButton = ['fas fa-pen',
+					$aButtonToolbar[] = ['fas fa-pen',
 						Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip'),
 						'configure',
 						$sMFAUserSettingsClass,
 						];
-					$aButtonToolbar[] = $aButton;
 
-					// Action
-					$aButton = ['fas fa-trash',
+					if ($oMFAUserSettings->CanBeDefault()){
+						$aButtonToolbar[] = ['fas fa-check-square',
+							Dict::S('UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip'),
+							'set_as_default',
+							$sMFAUserSettingsClass,
+						];
+					}
+
+					$aButtonToolbar[] = ['fas fa-trash',
 						Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip'),
 						'delete',
 						$sMFAUserSettingsClass,
 						'ibo-is-danger',
 					];
-					$aButtonToolbar[] = $aButton;
 				} else {
-					// Action
-					$aButton = ['fas fa-plus',
+					$aButtonToolbar[] = ['fas fa-plus',
 						Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip'),
 						'add',
 						$sMFAUserSettingsClass,
 					];
-					$aButtonToolbar[] = $aButton;
 
 					if ($oMFAUserSettings->Get('configured') === 'yes') {
-						// Action
-						$aButton = ['fas fa-undo',
+						$aButtonToolbar[] = ['fas fa-undo',
 							Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip'),
 							'undo_delete',
 							$sMFAUserSettingsClass,
 						];
-						$aButtonToolbar[] = $aButton;
 					}
 				}
 

@@ -346,6 +346,13 @@ class MFAUserSettingsService
 				$oUserSettings->DBDelete();
 				break;
 
+			case 'set_as_default':
+				// Set current mode as default
+				MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, $sModeClass);
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				//$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+
 			default:
 				$oUserSettings = MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
 				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();

@@ -44,26 +44,4 @@ class MFABaseController extends Controller
 
 		$this->DisplayPage($aParams);
 	}
-
-	public function OperationSetAsDefaultMode()
-	{
-		// Ajax
-		$aParams = [];
-
-		try {
-			$sClass = utils::ReadPostedParam('class', '', utils::ENUM_SANITIZATION_FILTER_CLASS);
-			$sUserId = UserRights::GetUserId();
-
-			MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, $sClass);
-
-			$oUserSettings = MetaModel::NewObject($sClass, ['user_id' => $sUserId]);
-			$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
-		} catch (Exception $e) {
-			MFABaseLog::Error(__FUNCTION__.' Failed to set default MFA Modes', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
-			$aParams['sError'] = Dict::S('UI:MFA:Error:FailedToConfigure');
-		}
-
-		$this->m_sOperation = 'Action';
-		$this->DisplayPage($aParams);
-	}
 }

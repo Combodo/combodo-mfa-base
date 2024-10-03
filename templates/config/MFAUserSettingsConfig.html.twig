@@ -25,31 +25,7 @@
 
 	{% UIMultiColumn Standard { } %}
 		{% UIColumn Standard { } %}
-
 			{% block configuration %}
-
-			{% endblock %}
-
-			{% block default_selection %}
-				{% UIFieldSet Standard { sLegend:'UI:MFA:Modes:Default:Title'|dict_s } %}
-					{% UIField Small { sLabel:'UI:MFA:Modes:Default'|dict_s } %}
-						{% if oMFAUserSettings.Get("validated") == 'no' %}
-							{% UIButton ForSecondaryAction { sLabel:'UI:MFA:Modes:Default:Set'|dict_s, IsDisabled:true } %}
-						{% elseif oMFAUserSettings.Get("is_default") == 'yes' %}
-							{{ oMFAUserSettings.GetEditValue("is_default") }}
-						{% else %}
-							{% UIForm Standard {Action:'exec.php' } %}
-								{% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-base' } %}
-								{% UIInput ForHidden { sName:'exec_page', sValue:'index.php' } %}
-								{% UIInput ForHidden { sName:'operation', sValue:'SetAsDefaultMode' } %}
-								{% UIInput ForHidden { sName:'class', sValue:oMFAUserSettings.Get("finalclass") } %}
-								{% UIInput ForHidden { sName:'verb', sValue:'update' } %}
-
-								{% UIButton ForSecondaryAction { sLabel:'UI:MFA:Modes:Default:Set'|dict_s, bIsSubmit:true, Tooltip:'UI:MFA:Modes:Default:Set+'|dict_s } %}
-							{% EndUIForm %}
-						{% endif %}
-					{% EndUIField %}
-				{% EndUIFieldSet %}
 			{% endblock %}
 
 		{% EndUIColumn %}
