@@ -33,7 +33,7 @@ class MyAccountTabContentExtension implements iMyAccountTabContentExtension
 	 */
 	public function GetTemplatePath(): string
 	{
-		return utils::GetAbsoluteModulePath(MFABaseHelper::MODULE_NAME).'templates';
+		return utils::GetAbsoluteModulePath(MFABaseHelper::MODULE_NAME).'templates/my_account';
 
 	}
 
