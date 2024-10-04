@@ -11,7 +11,8 @@ use MFAUserSettings;
 
 require_once __DIR__.'/AbstractMFATest.php';
 
-class MFAUserSettingsServiceTest extends AbstractMFATest {
+class MFAUserSettingsServiceTest extends AbstractMFATest
+{
 	private $sConfigTmpBackupFile;
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
 	private $oMFAAdminRuleService;
@@ -45,7 +46,8 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		}
 	}
 
-	public function Rule_ModuleConfig() {
+	public function Rule_ModuleConfig()
+	{
 		return [
 			'module disabled' => [false],
 			'module enabled' => [true],
@@ -55,7 +57,8 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 	/**
 	 * @dataProvider Rule_ModuleConfig
 	 */
-	public function testGetValidatedMFASettings(bool $bModuleEnabled) {
+	public function testGetValidatedMFASettings(bool $bModuleEnabled)
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		if ($bModuleEnabled) {
@@ -73,14 +76,15 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		if ($bModuleEnabled){
+		if ($bModuleEnabled) {
 			$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 		} else {
 			$this->assertEquals([], $MFAUserSettings);
 		}
 	}
 
-	public function testGetValidatedMFASettings_OrderRespectPreferredMode() {
+	public function testGetValidatedMFASettings_OrderRespectPreferredMode()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
@@ -106,7 +110,8 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 			$this->GetUserSettingsClasses($aMFAUserSettings));
 	}
 
-	public function testGetValidatedMFASettings_OrderRespectDefault() {
+	public function testGetValidatedMFASettings_OrderRespectDefault()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
@@ -155,18 +160,21 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
-		$this->assertEquals([],$aMFAUserSettings);
+		$this->assertEquals([], $aMFAUserSettings);
 	}
 
-	private function GetUserSettingsClasses($aMFAUserSettings){
-		$res=[];
-		foreach ($aMFAUserSettings as $obj){
-			$res[]=get_class($obj);
+	private function GetUserSettingsClasses($aMFAUserSettings)
+	{
+		$res = [];
+		foreach ($aMFAUserSettings as $obj) {
+			$res[] = get_class($obj);
 		}
+
 		return $res;
 	}
 
-	public function testGetValidatedMFASettings_AdminRuleSetWithoutDeniedMode() {
+	public function testGetValidatedMFASettings_AdminRuleSetWithoutDeniedMode()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced");
@@ -187,10 +195,11 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
 
-	public function testGetValidatedMFASettings_AdminRuleSetWithDeniedMode() {
+	public function testGetValidatedMFASettings_AdminRuleSetWithDeniedMode()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=[\MFAUserSettingsRecoveryCodes::class];
+		$aDeniedModes = [\MFAUserSettingsRecoveryCodes::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
@@ -209,7 +218,8 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->CheckSettings([$oActiveSetting, $oActiveSetting2], $MFAUserSettings);
 	}
 
-	public function GetAllAllowedMFASettings_ModuleConfig() {
+	public function GetAllAllowedMFASettings_ModuleConfig()
+	{
 		return [
 			'module disabled' => [false],
 			'module enabled' => [true],
@@ -219,7 +229,8 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 	/**
 	 * @dataProvider Rule_ModuleConfig
 	 */
-	public function testGetAllAllowedMFASettings(bool $bModuleEnabled) {
+	public function testGetAllAllowedMFASettings(bool $bModuleEnabled)
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		if ($bModuleEnabled) {
@@ -238,19 +249,20 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
 		$aExpectedSettings = [$oActiveSetting, $oNotActiveSetting, $oActiveSetting2];
-		if (class_exists(\MFAUserSettingsWebAuthn::class)){
-			$aExpectedSettings[]= $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
+		if (class_exists(\MFAUserSettingsWebAuthn::class)) {
+			$aExpectedSettings[] = $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
 		}
 
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-		if ($bModuleEnabled){
+		if ($bModuleEnabled) {
 			$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
 		} else {
 			$this->assertEquals([], $MFAUserSettings);
 		}
 	}
 
-	public function testGetAllAllowedMFASettings_AdminRuleSetWithoutDeniedMode() {
+	public function testGetAllAllowedMFASettings_AdminRuleSetWithoutDeniedMode()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced");
@@ -269,28 +281,29 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "no", []);
 
 		$aExpectedSettings = [$oActiveSetting, $oNotActiveSetting, $oActiveSetting2];
-		if (class_exists(\MFAUserSettingsWebAuthn::class)){
-			$aExpectedSettings[]= $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
+		if (class_exists(\MFAUserSettingsWebAuthn::class)) {
+			$aExpectedSettings[] = $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
 		}
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
 	}
 
-	public function CheckSettings(array $aExpectedSettings, array $Settings) {
+	public function CheckSettings(array $aExpectedSettings, array $Settings)
+	{
 		$RuleNames = [];
-		foreach ($Settings as $sMode => $oRule){
+		foreach ($Settings as $sMode => $oRule) {
 			/** @var MFAUserSettings $oRule */
-			$RuleNames[get_class($oRule)]=$oRule->GetKey();
+			$RuleNames[get_class($oRule)] = $oRule->GetKey();
 		}
 
 		$aExpectedRuleNames = [];
-		foreach ($aExpectedSettings as $oRule){
+		foreach ($aExpectedSettings as $oRule) {
 			/** @var MFAUserSettings $oRule */
-			if ($oRule->GetKey()<0){
+			if ($oRule->GetKey() < 0) {
 				//no need to compare GetKey()
-				$aExpectedRuleNames[get_class($oRule)]=$RuleNames[get_class($oRule)]??-1;
+				$aExpectedRuleNames[get_class($oRule)] = $RuleNames[get_class($oRule)] ?? -1;
 			} else {
-				$aExpectedRuleNames[get_class($oRule)]=$oRule->GetKey();
+				$aExpectedRuleNames[get_class($oRule)] = $oRule->GetKey();
 			}
 		}
 
@@ -298,10 +311,11 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->assertEquals($aExpectedRuleNames, $RuleNames);
 	}
 
-	public function testGetAllAllowedMFASettings_AdminRuleSetWithDeniedMode() {
+	public function testGetAllAllowedMFASettings_AdminRuleSetWithDeniedMode()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=[\MFAUserSettingsTOTPApp::class];
+		$aDeniedModes = [\MFAUserSettingsTOTPApp::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
@@ -319,18 +333,19 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 
 
 		$aExpectedSettings = [$oActiveSetting2, $oActiveSetting3];
-		if (class_exists(\MFAUserSettingsWebAuthn::class)){
-			$aExpectedSettings[]= $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
+		if (class_exists(\MFAUserSettingsWebAuthn::class)) {
+			$aExpectedSettings[] = $this->CreateSetting("MFAUserSettingsWebAuthn", $sUserId, "no");
 		}
 
 		$MFAUserSettings = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
 		$this->CheckSettings($aExpectedSettings, $MFAUserSettings);
 	}
 
-	public function testGetMFAUserSettings_ReloadDbObject() {
+	public function testGetMFAUserSettings_ReloadDbObject()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=[\MFAUserSettingsTOTPApp::class];
+		$aDeniedModes = [\MFAUserSettingsTOTPApp::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
@@ -347,10 +362,11 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->CheckSettings([$oActiveSetting], [$MFAUserSettings]);
 	}
 
-	public function testGetMFAUserSettings_CreateObject() {
+	public function testGetMFAUserSettings_CreateObject()
+	{
 		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
 		$sUserId = $oUser->GetKey();
-		$aDeniedModes=[\MFAUserSettingsTOTPApp::class];
+		$aDeniedModes = [\MFAUserSettingsTOTPApp::class];
 		$oRule = $this->CreateRule("rule", "MFAUserSettingsTOTPMail", "forced", [], [], 1, $aDeniedModes);
 		$this->oMFAAdminRuleService->expects($this->exactly(1))
 			->method("GetAdminRuleByUserId")
@@ -367,4 +383,28 @@ class MFAUserSettingsServiceTest extends AbstractMFATest {
 		$this->assertEquals('MFAUserSettingsTOTPMail', get_class($MFAUserSettings));
 	}
 
+	public function testSetAsDefaultMode()
+	{
+		$oUser = $this->CreateContactlessUser('NoOrgUser', ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], 'ABCdefg@12345#');
+		$sUserId = $oUser->GetKey();
+
+		$oActiveSetting = $this->CreateSetting('MFAUserSettingsTOTPApp', $sUserId, 'yes', ['secret' => 'toto'], true);
+		$oNotActiveSetting = $this->CreateSetting('MFAUserSettingsTOTPMail', $sUserId, 'no', ['secret' => 'toto']);
+		$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
+
+		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
+		$aExpected = ['MFAUserSettingsTOTPApp' => 'yes', 'MFAUserSettingsTOTPMail' => 'no', 'MFAUserSettingsRecoveryCodes' => 'no'];
+		foreach ($aUserSettings as $oUserSettings) {
+			$expected = $aExpected[get_class($oUserSettings)] ?? 'no implementation found';
+			$this->assertEquals($expected, $oUserSettings->Get('is_default'), 'class '.get_class($oUserSettings));
+		}
+		MFAUserSettingsService::GetInstance()->SetAsDefaultMode($sUserId, 'MFAUserSettingsTOTPMail');
+
+		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
+		$aExpected = ['MFAUserSettingsTOTPApp' => 'no', 'MFAUserSettingsTOTPMail' => 'yes', 'MFAUserSettingsRecoveryCodes' => 'no'];
+		foreach ($aUserSettings as $oUserSettings) {
+			$expected = $aExpected[get_class($oUserSettings)] ?? 'no implementation found';
+			$this->assertEquals($expected, $oUserSettings->Get('is_default'), 'class '.get_class($oUserSettings));
+		}
+	}
 }

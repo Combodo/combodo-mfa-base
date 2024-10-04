@@ -8,7 +8,6 @@ namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
-use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAPortalService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Portal\Hook\iPortalTabContentExtension;
@@ -71,7 +70,7 @@ class MFAPortalTabContentExtension implements iPortalTabContentExtension
 		$oPortalTwigContext = new PortalTwigContext();
 		$sPath = MFABaseHelper::MODULE_NAME.'/templates/portal/UserSettingsList.html.twig';
 
-		$aData = ['aUserSettings' => MFABaseService::GetInstance()->GetMFAUserSettingsDataTable()];
+		$aData = ['aUserSettings' => MFAUserSettingsService::GetInstance()->GetMFAUserSettingsTableWithActions()];
 
 		$oPortalTwigContext->AddBlockExtension('html', new PortalBlockExtension($sPath, $aData));
 

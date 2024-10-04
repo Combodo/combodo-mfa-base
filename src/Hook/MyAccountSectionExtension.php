@@ -11,7 +11,7 @@ use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
-use Combodo\iTop\MFABase\Service\MFABaseService;
+use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\MyAccount\Hook\iMyAccountSectionExtension;
 use Combodo\iTop\Renderer\BlockRenderer;
 use Exception;
@@ -73,7 +73,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 	{
 		try {
 			$aParams = [];
-			$aMFAParams = MFABaseService::GetInstance()->GetMFAUserSettingsDataTable();
+			$aMFAParams = MFAUserSettingsService::GetInstance()->GetMFAUserSettingsTableWithActions();
 
 			foreach($aMFAParams['aData'] as $iRow =>$aRow) {
 				$aActions = $aRow['action'];

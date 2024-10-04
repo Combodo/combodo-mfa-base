@@ -11,7 +11,7 @@ use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
-use Combodo\iTop\MFABase\Service\MFABaseService;
+use Combodo\iTop\MFABase\Service\MFABaseLoginService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Exception;
 use LoginWebPage;
@@ -26,7 +26,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnStart(&$iErrorCode)
 	{
-		MFABaseService::GetInstance()->ClearContext(Session::Get(MFABaseService::SELECTED_MFA_MODE));
+		MFABaseLoginService::GetInstance()->ClearContext(Session::Get(MFABaseLoginService::SELECTED_MFA_MODE));
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}
@@ -70,7 +70,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 					}
 
 					MFABaseLog::Debug(__FUNCTION__.': Calling ValidateLogin');
-					MFABaseService::GetInstance()->ValidateLogin($aUserSettings);
+					MFABaseLoginService::GetInstance()->ValidateLogin($aUserSettings);
 					MFABaseLog::Debug(__FUNCTION__.': Validation OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
@@ -102,7 +102,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 						return LoginWebPage::LOGIN_FSM_RETURN; // Error, exit FSM
 					}
 
-					MFABaseService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule);
+					MFABaseLoginService::GetInstance()->ConfigureMFAModeOnLogin($sUserId, $oMFAAdminRule);
 					MFABaseLog::Debug(__FUNCTION__.': Configuration OK');
 
 					return LoginWebPage::LOGIN_FSM_CONTINUE;
@@ -117,7 +117,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 			// MFA will be forced in the future
 			MFABaseLog::Debug(__FUNCTION__.': Admin rule forced in the future');
-			MFABaseService::GetInstance()->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
+			MFABaseLoginService::GetInstance()->DisplayWarningOnMFAActivation($sUserId, $oMFAAdminRule);
 
 			return LoginWebPage::LOGIN_FSM_CONTINUE;
 		} catch (MFABaseException $e) {
@@ -132,7 +132,7 @@ class MFABaseLoginExtension extends \AbstractLoginFSMExtension
 
 	protected function OnUsersOK(&$iErrorCode)
 	{
-		MFABaseService::GetInstance()->ClearContext(Session::Get(MFABaseService::SELECTED_MFA_MODE));
+		MFABaseLoginService::GetInstance()->ClearContext(Session::Get(MFABaseLoginService::SELECTED_MFA_MODE));
 
 		return LoginWebPage::LOGIN_FSM_CONTINUE;
 	}

@@ -33,7 +33,7 @@ class ComposerStaticInit82e29b7fbd0d36d303017d22d2ca07ee
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountSectionExtension.php',
         'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => __DIR__ . '/../..' . '/src/Hook/MyAccountTabExtension.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => __DIR__ . '/../..' . '/src/Service/MFAAdminRuleService.php',
-        'Combodo\\iTop\\MFABase\\Service\\MFABaseService' => __DIR__ . '/../..' . '/src/Service/MFABaseService.php',
+        'Combodo\\iTop\\MFABase\\Service\\MFABaseLoginService' => __DIR__ . '/../..' . '/src/Service/MFABaseLoginService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAPortalService' => __DIR__ . '/../..' . '/src/Service/MFAPortalService.php',
         'Combodo\\iTop\\MFABase\\Service\\MFAUserSettingsService' => __DIR__ . '/../..' . '/src/Service/MFAUserSettingsService.php',
         'Combodo\\iTop\\MFABase\\View\\MFATwigRenderer' => __DIR__ . '/../..' . '/src/View/MFATwigRenderer.php',

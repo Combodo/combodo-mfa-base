@@ -18,7 +18,7 @@ return array(
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountSectionExtension' => $baseDir . '/src/Hook/MyAccountSectionExtension.php',
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => $baseDir . '/src/Hook/MyAccountTabExtension.php',
     'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => $baseDir . '/src/Service/MFAAdminRuleService.php',
-    'Combodo\\iTop\\MFABase\\Service\\MFABaseService' => $baseDir . '/src/Service/MFABaseService.php',
+    'Combodo\\iTop\\MFABase\\Service\\MFABaseLoginService' => $baseDir . '/src/Service/MFABaseLoginService.php',
     'Combodo\\iTop\\MFABase\\Service\\MFAPortalService' => $baseDir . '/src/Service/MFAPortalService.php',
     'Combodo\\iTop\\MFABase\\Service\\MFAUserSettingsService' => $baseDir . '/src/Service/MFAUserSettingsService.php',
     'Combodo\\iTop\\MFABase\\View\\MFATwigRenderer' => $baseDir . '/src/View/MFATwigRenderer.php',
