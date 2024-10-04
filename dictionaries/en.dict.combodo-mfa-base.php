@@ -29,6 +29,7 @@ Dict::Add('EN US', 'English', 'English', array(
 	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Create new MFA mode',
 	'UI:MFA:Modes:Action:Delete:ButtonTooltip' => 'Remove MFA mode',
 	'UI:MFA:Modes:Default:Title' => 'Default MFA Mode',
+	'UI:MFA:Modes:Default' => 'Is default',
 	'UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip' => 'Set as default. This mode will be presented first during login',
 	'UI:MFA:Modes:Default:Done' => '%1$s is set as default',
 	'UI:MFA:Modes:Deleted' => '%1$s has been deleted',

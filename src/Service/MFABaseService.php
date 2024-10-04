@@ -79,7 +79,7 @@ class MFABaseService
 				$sMFAUserSettingsClass = get_class($oMFAUserSettings);
 				$aDatum['name'] = MetaModel::GetName($sMFAUserSettingsClass);
 				// Status
-				/** @var \cmdbAbstractObject $oMFAUserSettings */
+				/** @var \MFAUserSettings $oMFAUserSettings */
 				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;
 				$aDatum['is_default'] = $oMFAUserSettings->GetEditValue('is_default');
 				$aButtonToolbar = [];
@@ -91,7 +91,7 @@ class MFABaseService
 						$sMFAUserSettingsClass,
 						];
 
-					if ($oMFAUserSettings->CanBeDefault()){
+					if ($oMFAUserSettings->CanBeDefault() && $oMFAUserSettings->Get('is_default') === 'no'){
 						$aButtonToolbar[] = ['fas fa-check-square',
 							Dict::S('UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip'),
 							'set_as_default',
@@ -333,6 +333,6 @@ class MFABaseService
 			throw new MFABaseException(__FUNCTION__." Class not a MFAUserSettings: $sMFAUserSettingsClass");
 		}
 
-		$sMFAUserSettingsClass::ClearContext();
+		call_user_func([$sMFAUserSettingsClass, 'ClearContext']);
 	}
 }
