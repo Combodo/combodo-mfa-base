@@ -6,6 +6,7 @@
 
 namespace Combodo\iTop\MFABase\Helper;
 
+use Dict;
 use utils;
 
 class MFABaseHelper
@@ -35,5 +36,20 @@ class MFABaseHelper
 	public static function GetJSFile(): string
 	{
 		return utils::GetAbsoluteUrlModulesRoot().self::MODULE_NAME.'/assets/js/MFABase.js';
+	}
+
+	/**
+	 * @return void
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	public function ValidateTransactionId(): void {
+		if (empty($_POST)){
+			return;
+		}
+
+		$sTransactionId = utils::ReadPostedParam('transaction_id', null, utils::ENUM_SANITIZATION_FILTER_TRANSACTION_ID);
+		if (empty($sTransactionId) || !utils::IsTransactionValid($sTransactionId)) {
+			throw new MFABaseException(Dict::S('iTopUpdate:Error:InvalidToken'));
+		}
 	}
 }
