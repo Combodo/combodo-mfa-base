@@ -12,12 +12,12 @@ use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
-use Combodo\iTop\MyAccount\Hook\iMyAccountSectionExtension;
+use Combodo\iTop\MyAccount\Hook\iMyAccountTabContentExtension;
 use Combodo\iTop\Renderer\BlockRenderer;
 use Exception;
 use utils;
 
-class MyAccountSectionExtension implements iMyAccountSectionExtension
+class MyAccountTabContentExtension implements iMyAccountTabContentExtension
 {
 
 	/**
