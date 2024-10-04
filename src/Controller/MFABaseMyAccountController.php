@@ -8,15 +8,13 @@ namespace Combodo\iTop\MFABase\Controller;
 
 use Combodo\iTop\Application\TwigBase\Controller\Controller;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
-use Combodo\iTop\MFABase\Service\MFABaseService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Dict;
 use Exception;
-use MetaModel;
 use UserRights;
 use utils;
 
-class MFABaseController extends Controller
+class MFABaseMyAccountController extends Controller
 {
 	public function __construct($sViewPath = '', $sModuleName = 'core', $aAdditionalPaths = [])
 	{

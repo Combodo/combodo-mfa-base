@@ -105,6 +105,7 @@ class MyAccountSectionExtension implements iMyAccountSectionExtension
 			}
 
 			$aParams['aMFAUserSettings'] = $aMFAParams;
+			$aParams['sTransactionId'] = utils::GetNewTransactionId();
 
 			return $aParams;
 		} catch (Exception $e) {

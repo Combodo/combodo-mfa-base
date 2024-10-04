@@ -21,7 +21,7 @@ class ComposerStaticInit82e29b7fbd0d36d303017d22d2ca07ee
     );
 
     public static $classMap = array (
-        'Combodo\\iTop\\MFABase\\Controller\\MFABaseController' => __DIR__ . '/../..' . '/src/Controller/MFABaseController.php',
+        'Combodo\\iTop\\MFABase\\Controller\\MFABaseMyAccountController' => __DIR__ . '/../..' . '/src/Controller/MFABaseMyAccountController.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseConfig' => __DIR__ . '/../..' . '/src/Helper/MFABaseConfig.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseException' => __DIR__ . '/../..' . '/src/Helper/MFABaseException.php',
         'Combodo\\iTop\\MFABase\\Helper\\MFABaseHelper' => __DIR__ . '/../..' . '/src/Helper/MFABaseHelper.php',

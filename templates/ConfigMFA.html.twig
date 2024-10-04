@@ -23,12 +23,13 @@
     {% EndUIAlert %}
 {% endblock %}
 
-{%  if Section.aMFAUserSettings.aColumns %}
+{% if Section.aMFAUserSettings.aColumns %}
 
     {% UIForm Standard {Action:'exec.php', sId:'mfa-modes-form' } %}
         {% UIInput ForHidden { sName:'exec_module', sValue:'combodo-mfa-base' } %}
         {% UIInput ForHidden { sName:'exec_page', sValue:'index.php' } %}
         {% UIInput ForHidden { sName:'operation', sValue:'Action' } %}
+        {% UIInput ForHidden { sName:'transaction_id', sValue:Section.sTransactionId } %}
 
         {% UIPanel ForInformation { sTitle:'UI:MFA:Modes'|dict_s, sSubTitle:'', AddCSSClass:"ibo-datatable-panel" } %}
             {% UIDataTable ForForm { sRef:'MFAModes', aColumns:Section.aMFAUserSettings.aColumns, aData:Section.aMFAUserSettings.aData } %}{% EndUIDataTable %}
