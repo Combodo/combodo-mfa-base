@@ -10,33 +10,37 @@ use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\Portal\Hook\iPortalTabExtension;
 use Dict;
 
-class MFAPortalTabExtension implements iPortalTabExtension
-{
-	/**
-	 * @inheritDoc
-	 */
-	public function GetTarget(): string
+if (interface_exists('Combodo\iTop\Portal\Hook\iPortalTabExtension')) {
+
+	class MFAPortalTabExtension implements iPortalTabExtension
 	{
-		return 'p_user_profile_brick';
+		/**
+		 * @inheritDoc
+		 */
+		public function GetTarget(): string
+		{
+			return 'p_user_profile_brick';
+		}
+
+		public function IsTabPresent(): bool
+		{
+			return MFABaseConfig::GetInstance()->IsEnabled();
+		}
+
+		public function GetTabCode(): string
+		{
+			return 'MyAccount-Tab-MFA';
+		}
+
+		public function GetTabLabel(): string
+		{
+			return Dict::S('MyAccount:Tab:MFA');
+		}
+
+		public function GetTabRank(): float
+		{
+			return 20;
+		}
 	}
 
-	public function IsTabPresent(): bool
-	{
-		return MFABaseConfig::GetInstance()->IsEnabled();
-	}
-
-	public function GetTabCode(): string
-	{
-		return 'MyAccount-Tab-MFA';
-	}
-
-	public function GetTabLabel(): string
-	{
-		return Dict::S('MyAccount:Tab:MFA');
-	}
-
-	public function GetTabRank(): float
-	{
-		return 20;
-	}
 }
