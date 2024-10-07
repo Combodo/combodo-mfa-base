@@ -8,6 +8,7 @@
 
 Dict::Add('FR FR', 'French', 'Français', array(
 	'combodo-mfa-base/Operation:Action/Title' => '',
+	'MFA:MFAUserSettings:Description' => 'Multi-factor authentication adds an additional layer of security to your account by requiring more than just a password to sign in.',
 
 	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
 	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
