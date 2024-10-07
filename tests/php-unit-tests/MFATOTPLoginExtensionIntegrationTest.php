@@ -54,6 +54,8 @@ class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
 
 		$this->oiTopConfig = new \Config($sConfigPath);
 		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		//$this->oiTopConfig->Set('transactions_enabled', false);
+		//$this->oiTopConfig->Set('log_transactions', true);
 		$this->SaveItopConfFile();
 	}
 
@@ -103,9 +105,11 @@ HTML;
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
+		$sLogin = $this->oUser->Get('login');
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'WrongCode',
-			'auth_user' => $this->oUser->Get('login'),
+			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
@@ -139,16 +143,18 @@ HTML;
 		// Act
 		$oTOTP = new OTPService($oActiveSetting1);
 		$sCode = $oTOTP->GetCode();
+		$sLogin = $this->oUser->Get('login');
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $sCode,
-			'auth_user' => $this->oUser->Get('login'),
+			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
 		$sWelcomeWithoutIopApplicationName = str_replace(ITOP_APPLICATION, "", Dict::S('UI:WelcomeToITop'));
 		$this->AssertStringContains($sWelcomeWithoutIopApplicationName, $sOutput, 'The page should be the welcome page');
-		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
+		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $sLogin);
 		$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
 	}
 
@@ -189,9 +195,11 @@ HTML;
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
 
 		// Act
+		$sLogin = $this->oUser->Get('login');
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'Wrong Code',
-			'auth_user' => $this->oUser->Get('login'),
+			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
@@ -207,8 +215,9 @@ HTML;
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
 
 		// Ask for configuration and generate UserSettings
+		$sLogin = $this->oUser->Get('login');
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
-			'auth_user' => $this->oUser->Get('login'),
+			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword]);
 
 		// Act
@@ -218,8 +227,9 @@ HTML;
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $sCode,
-			'auth_user' => $this->oUser->Get('login'),
+			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
@@ -233,5 +243,16 @@ HTML;
 		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
 		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
 		//$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
+	}
+
+	private function GetNewGeneratedTransId(string $sLogin) {
+		\UserRights::Login($sLogin);
+		$sTransId = \utils::GetNewTransactionId();
+		\UserRights::_ResetSessionCache();
+
+		/*$sPath = APPROOT."data/transactions/$sTransId";
+		chmod($sPath, "555");
+		var_dump(file_get_contents($sPath));*/
+		return $sTransId;
 	}
 }
