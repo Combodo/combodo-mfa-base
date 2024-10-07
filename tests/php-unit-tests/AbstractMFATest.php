@@ -80,7 +80,7 @@ class AbstractMFATest extends ItopDataTestCase
 	{
 		/** @var MFAAdminRule $oRule */
 		$oRule = $this->createObject(MFAAdminRule::class, [
-			'name' => $sName,
+			'name' => $sName . uniqid(),
 			'preferred_mfa_mode' => $sMfaClass,
 			'operational_state' => $sState,
 			'rank' => $iRank,
