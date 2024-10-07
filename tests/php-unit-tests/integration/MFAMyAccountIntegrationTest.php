@@ -1,15 +1,15 @@
 <?php
 
-namespace Combodo\iTop\MFABase\Test;
+namespace Combodo\iTop\MFABase\Test\Integration;
 
-use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
+use Combodo\iTop\MFABase\Test\AbstractMFATest;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
 use MetaModel;
 use MFAAdminRule;
 use User;
 
-require_once __DIR__ . "/AbstractMFATest.php";
+require_once dirname(__DIR__) . "/AbstractMFATest.php";
 
 /**
  *

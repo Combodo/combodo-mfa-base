@@ -1,9 +1,11 @@
 <?php
 
-namespace Combodo\iTop\MFABase\Test;
+namespace Combodo\iTop\MFABase\Test\Integration;
 
-use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
+use Combodo\iTop\MFABase\Test\AbstractMFATest;
+use Combodo\iTop\MFABase\Test\MFAAbstractConfigurationTestInterface;
+use Combodo\iTop\MFABase\Test\MFAAbstractValidationTestInterface;
 use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
@@ -11,7 +13,9 @@ use MetaModel;
 use MFAAdminRule;
 use User;
 
-require_once __DIR__ . "/AbstractMFATest.php";
+require_once dirname(__DIR__) . "/AbstractMFATest.php";
+require_once __DIR__ . "/MFAAbstractValidationTestInterface.php";
+require_once __DIR__ . "/MFAAbstractConfigurationTestInterface.php";
 
 /**
  *
@@ -20,7 +24,7 @@ require_once __DIR__ . "/AbstractMFATest.php";
  * @backupGlobals disabled
  *
  */
-class MFATOTPLoginExtensionIntegrationTest extends AbstractMFATest {
+class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstractValidationTestInterface, MFAAbstractConfigurationTestInterface {
 	//iTop called from outside
 	//users need to be persisted in DB
 	const USE_TRANSACTION = false;
@@ -82,7 +86,7 @@ HTML;
 		$this->AssertStringContains($sHtml, $sOutput, 'The page should be contain a link to return to login page');
 	}
 
-	public function testTOTPAppValidationScreenDisplay()
+	public function testValidationFirstScreenDisplay()
 	{
 		// Arrange
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
@@ -99,7 +103,7 @@ HTML;
 
 	}
 
-	public function testTOTPAppValidationCodeFailed()
+	public function testValidationFailed()
 	{
 		// Arrange
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
@@ -118,7 +122,7 @@ HTML;
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 
-	public function testTOTPAppValidation_ForceLoginPageLink()
+	public function testValidationForceReturnToLoginPage()
 	{
 		// Arrange
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
@@ -135,7 +139,7 @@ HTML;
 		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 
-	public function testTOTPAppValidationCodeOK()
+	public function testValidationOK()
 	{
 		// Arrange
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
@@ -158,7 +162,27 @@ HTML;
 		$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
 	}
 
-	public function testTOTPAppConfigurationScreenDisplay()
+	public function testValidationFailDueToInvalidTransactionId()
+	{
+		// Arrange
+		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
+
+		// Act
+		$oTOTP = new OTPService($oActiveSetting1);
+		$sCode = $oTOTP->GetCode();
+		$sLogin = $this->oUser->Get('login');
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => "WrongID",
+			'totp_code' => $sCode,
+			'auth_user' => $sLogin,
+			'auth_pwd' => $this->sPassword]);
+
+		// Assert
+		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
+		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
+	}
+
+	public function testConfigurationFirstScreenDisplay()
 	{
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
@@ -173,7 +197,7 @@ HTML;
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 
-	public function testTOTPAppConfigurationScreenDisplay_ForceReturnToLoginPage()
+	public function testConfigurationForceReturnToLoginPage()
 	{
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
@@ -189,7 +213,31 @@ HTML;
 
 	}
 
-	public function testTOTPAppConfigurationCodeFailed()
+	public function testConfigurationFailDueToInvalidTransactionId()
+	{
+		// Arrange
+		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
+
+		// Act
+		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
+		$this->assertEquals('no', $oActiveSetting->Get('validated'));
+		$oTOTP = new OTPService($oActiveSetting);
+		$sCode = $oTOTP->GetCode();
+		$sLogin = $this->oUser->Get('login');
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => '753951',
+			'totp_code' => $sCode,
+			'auth_user' => $sLogin,
+			'auth_pwd' => $this->sPassword]);
+
+		// Assert
+		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
+		$this->assertEquals('no', $oActiveSetting->Get('validated'));
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Configuration:Error'), $sOutput, 'The page should be the welcome page');
+		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
+	}
+
+	public function testConfigurationFailed()
 	{
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
@@ -209,7 +257,7 @@ HTML;
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 
-	public function testTOTPAppConfigurationCodeOK()
+	public function testConfigurationOK()
 	{
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);

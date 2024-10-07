@@ -127,16 +127,13 @@ class AbstractMFATest extends ItopDataTestCase
 		return $oRule;
 	}
 
-	protected function CallItopUrl($sUri, ?array $aPostFields = null, $bXDebugEnabled = false)
+	protected function CallItopUrl($sUri, ?array $aPostFields = null, $bIsPost=true)
 	{
 		$ch = curl_init();
-		if ($bXDebugEnabled) {
-			curl_setopt($ch, CURLOPT_COOKIE, 'XDEBUG_SESSION=phpstorm');
-		}
 
 		$sUrl = $this->oiTopConfig->Get('app_root_url')."/$sUri";
 		curl_setopt($ch, CURLOPT_URL, $sUrl);
-		curl_setopt($ch, CURLOPT_POST, 1);// set post data to true
+		curl_setopt($ch, CURLOPT_POST, $bIsPost ? 1 : 0);// set post data to true
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $aPostFields);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);

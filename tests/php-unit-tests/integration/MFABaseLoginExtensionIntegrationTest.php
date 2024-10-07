@@ -11,7 +11,7 @@ use MetaModel;
 use MFAAdminRule;
 use User;
 
-require_once __DIR__ . "/AbstractMFATest.php";
+require_once dirname(__DIR__) . "/AbstractMFATest.php";
 
 /**
  *
