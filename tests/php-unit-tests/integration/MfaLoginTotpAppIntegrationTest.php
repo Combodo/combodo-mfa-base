@@ -179,7 +179,7 @@ HTML;
 
 		// Assert
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
-		$this->AssertStringContains( Dict::S('MFATOTP:App:Validation:Error'), $sOutput, 'Validation failure due to invalid transaction_id');
+		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 
 	public function testConfigurationFirstScreenDisplay()
