@@ -24,7 +24,7 @@ require_once __DIR__ . "/MFAAbstractConfigurationTestInterface.php";
  * @backupGlobals disabled
  *
  */
-class MfaLoginTotpIntegrationTest extends AbstractMFATest implements MFAAbstractValidationTestInterface, MFAAbstractConfigurationTestInterface {
+class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstractValidationTestInterface, MFAAbstractConfigurationTestInterface {
 	//iTop called from outside
 	//users need to be persisted in DB
 	const USE_TRANSACTION = false;
