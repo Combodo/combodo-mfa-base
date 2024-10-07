@@ -407,7 +407,10 @@ class MFAUserSettingsService
 				$aDatum = [];
 				// Name
 				$sMFAUserSettingsClass = get_class($oMFAUserSettings);
-				$aDatum['name'] = MetaModel::GetName($sMFAUserSettingsClass);
+				$aDatum['name'] = [
+					'tooltip' => Dict::S("MFA:$sMFAUserSettingsClass:Description"),
+					'label' => MetaModel::GetName($sMFAUserSettingsClass),
+				];
 				// Status
 				/** @var \MFAUserSettings $oMFAUserSettings */
 				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;

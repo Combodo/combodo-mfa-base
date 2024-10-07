@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
+use Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
@@ -77,6 +78,12 @@ class MyAccountTabContentExtension implements iMyAccountTabContentExtension
 
 			foreach($aMFAParams['aData'] as $iRow =>$aRow) {
 				$aActions = $aRow['action'];
+				$sTooltip = $aRow['name']['tooltip'];
+				$sName = $aRow['name']['label'];
+				$oUIBlock = UIContentBlockUIBlockFactory::MakeStandard();
+				$oUIBlock->AddHtml('<span data-tooltip-content="'.$sTooltip.'" data-tooltip-placement="right">'.$sName.'</span>');
+				$oRenderer = new BlockRenderer($oUIBlock);
+				$aMFAParams['aData'][$iRow]['name'] = $oRenderer->RenderHtml();
 
 				$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
 				foreach ($aActions as $aAction) {

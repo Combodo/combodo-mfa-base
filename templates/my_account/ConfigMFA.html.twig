@@ -23,6 +23,11 @@
     {% EndUIAlert %}
 {% endblock %}
 
+{% UIContentBlock Standard {} %}
+    {{ 'MFA:MFAUserSettings:Description'|dict_s }}
+    <div class="ibo-v-spacer"></div>
+{% EndUIContentBlock %}
+
 {% if Section.aMFAUserSettings.aColumns %}
 
     {% UIForm Standard {Action:'exec.php', sId:'mfa-modes-form' } %}

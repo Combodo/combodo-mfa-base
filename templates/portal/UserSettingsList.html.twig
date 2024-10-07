@@ -29,29 +29,35 @@
 				</thead>
 				<tbody>
 
+				<div class="form_field_control">
+					<div class="form-control-static">{{ 'MFA:MFAUserSettings:Description'|dict_s }}</div>
+				</div>
+
 				{% for aRow in aRows %}
 					<tr class="even">
 						{% for sFieldName, field in aRow %}
 							<td>
-							{% if sFieldName == "action" %}
-								{% for aButtonAction in field %}
-									{% set sIconClass = aButtonAction[0] %}
-									{% set sTooltip = aButtonAction[1] %}
-									{% set sAction = aButtonAction[2] %}
-									{% set sClass = aButtonAction[3] %}
-									{% set sFormId = "form_mfa_action_"~sAction~"_"~sClass %}
-								<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
-									<input type="hidden" name="transaction_id" value="{{ aData.sTransactionId }}">
-									<input type="hidden" name="action" value="{{ sAction }}">
-									<input type="hidden" name="class" value="{{ sClass }}">
-									<a onclick="$('#{{ sFormId }}').submit();">
-										<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
-									</a>
-								</form>
-								{% endfor %}
-							{% else %}
-								{{ field|raw }}
-							{% endif %}
+								{% if sFieldName == "name" %}
+									<span data-tooltip-content="{{ field.tooltip }}" data-tooltip-placement="right">{{ field.label|raw }}</span>
+								{% elseif sFieldName == "action" %}
+									{% for aButtonAction in field %}
+										{% set sIconClass = aButtonAction[0] %}
+										{% set sTooltip = aButtonAction[1] %}
+										{% set sAction = aButtonAction[2] %}
+										{% set sClass = aButtonAction[3] %}
+										{% set sFormId = "form_mfa_action_"~sAction~"_"~sClass %}
+									<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
+										<input type="hidden" name="transaction_id" value="{{ aData.sTransactionId }}">
+										<input type="hidden" name="action" value="{{ sAction }}">
+										<input type="hidden" name="class" value="{{ sClass }}">
+										<a onclick="$('#{{ sFormId }}').submit();">
+											<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
+										</a>
+									</form>
+									{% endfor %}
+								{% else %}
+									{{ field|raw }}
+								{% endif %}
 							</td>
 						{% endfor %}
 					</tr>
