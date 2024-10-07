@@ -1,0 +1,39 @@
+{# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
+{# @license     http://opensource.org/licenses/AGPL-3.0 #}
+
+{% UIPanel ForInformation { sTitle:sTitle } %}
+
+	{% block alert %}
+		{% set message_class = 'ibo-is-hidden' %}
+		{% if sMessage %}
+			{% set message_class = '' %}
+		{% endif %}
+
+		{% UIAlert ForSuccess { sTitle:'', sId:'success-message', AddCSSClass:message_class } %}
+		<div id="success-message-content">{{ sMessage }}</div>
+		{% EndUIAlert %}
+
+		{% set error_class = 'ibo-is-hidden' %}
+		{% if sError %}
+			{% set error_class = '' %}
+		{% endif %}
+
+		{% UIAlert ForFailure { sTitle:'', sId:'error-message', AddCSSClass:error_class } %}
+		<div id="error-message-content">{{ sError }}</div>
+		{% EndUIAlert %}
+	{% endblock %}
+
+	{% UIMultiColumn Standard { } %}
+		{% UIColumn Standard { } %}
+			{% block configuration %}
+			{% endblock %}
+
+		{% EndUIColumn %}
+		{% UIColumn Standard { } %}
+			{% block validation %}
+
+			{% endblock %}
+		{% EndUIColumn %}
+	{% EndUIMultiColumn %}
+
+{% EndUIPanel %}

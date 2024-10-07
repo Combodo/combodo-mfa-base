@@ -7,36 +7,31 @@
 namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\Application\Helper\Session;
-use Combodo\iTop\Application\UI\Base\Component\Button\ButtonUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Component\Toolbar\ToolbarUIBlockFactory;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
 use Combodo\iTop\MFABase\Helper\MFABaseHelper;
 use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use Combodo\iTop\MFABase\View\MFATwigRenderer;
-use Combodo\iTop\Renderer\BlockRenderer;
-use Dict;
 use Exception;
 use LoginWebPage;
 use MetaModel;
 use MFAAdminRule;
 use MFAUserSettings;
-use UserRights;
 use utils;
 
-class MFABaseService
+class MFABaseLoginService
 {
 	const SELECTED_MFA_MODE = 'selected_mfa_mode';
-	private static MFABaseService $oInstance;
+	private static MFABaseLoginService $oInstance;
 
 	private function __construct()
 	{
 		MFABaseLog::Enable();
 	}
 
-	final public static function GetInstance(): MFABaseService
+	final public static function GetInstance(): MFABaseLoginService
 	{
 		if (!isset(static::$oInstance)) {
-			static::$oInstance = new MFABaseService();
+			static::$oInstance = new MFABaseLoginService();
 		}
 
 		return static::$oInstance;
@@ -45,7 +40,7 @@ class MFABaseService
 	/**
 	 * Test purpose only
 	 */
-	final public static function SetInstance(MFABaseService $oInstance): void
+	final public static function SetInstance(MFABaseLoginService $oInstance): void
 	{
 		self::$oInstance = $oInstance;
 	}
@@ -57,123 +52,6 @@ class MFABaseService
 	{
 		self::$oInstance = new static();
 	}
-
-	/**
-	 * @return array
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
-	public function GetConfigMFAParams(): array
-	{
-		try {
-			$aParams = [];
-			$aParams['aMFAUserSettings'] = $this->GetMFAUserSettingsDataTable();
-
-			return $aParams;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
-	/**
-	 * @return array
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
-	public function GetMFAUserSettingsDataTable(): array
-	{
-		try {
-			$aColumns = [
-				['label' => Dict::S('UI:MFA:Modes:Name')],
-				['label' => Dict::S('UI:MFA:Modes:Activated')],
-				['label' => Dict::S('UI:MFA:Modes:Default')],
-				['label' => Dict::S('UI:MFA:Modes:Action')],
-			];
-
-			$aData = [];
-			$sUserId = UserRights::GetUserId();
-			$aMFAUserSettingsModes = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
-
-			foreach ($aMFAUserSettingsModes as $oMFAUserSettings) {
-				$aDatum = [];
-				// Name
-				$sMFAUserSettingsClass = get_class($oMFAUserSettings);
-				$aDatum[] = MetaModel::GetName($sMFAUserSettingsClass);
-				// Status
-				/** @var \cmdbAbstractObject $oMFAUserSettings */
-				$aDatum[] = $oMFAUserSettings->GetEditValue('validated');;
-				$aDatum[] = $oMFAUserSettings->GetEditValue('is_default');
-				$oButtonToolbar = ToolbarUIBlockFactory::MakeStandard();
-				if ($oMFAUserSettings->Get('validated') !== 'no') {
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip');
-					$sDataAction = 'configure';
-					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-pen',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
-
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip');
-					$sDataAction = 'delete';
-					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-trash',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->AddCSSClass('ibo-is-danger');
-					$oButton->RemoveCSSClass('ibo-is-neutral');
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
-				} else {
-					$sActionTooltip = Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip');
-					$sDataAction = 'add';
-					// Action
-					$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-plus',
-						$sActionTooltip,
-						'Action',
-						"$sDataAction:$sMFAUserSettingsClass",
-						true
-					);
-					$oButton->SetTooltip($sActionTooltip);
-					$oButtonToolbar->AddSubBlock($oButton);
-
-					if ($oMFAUserSettings->Get('configured') === 'yes') {
-						$sActionTooltip = Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip');
-						$sDataAction = 'undo_delete';
-						// Action
-						$oButton = ButtonUIBlockFactory::MakeIconAction('fas fa-undo',
-							$sActionTooltip,
-							'Action',
-							"$sDataAction:$sMFAUserSettingsClass",
-							true
-						);
-						$oButton->SetTooltip($sActionTooltip);
-						$oButtonToolbar->AddSubBlock($oButton);
-					}
-				}
-
-				$oRenderer = new BlockRenderer($oButtonToolbar);
-				$sButton = $oRenderer->RenderHtml();
-				$aDatum[] = $sButton;
-				$aData[] = $aDatum;
-			}
-
-			if (empty($aData)) {
-				return [];
-			}
-
-			return ['aColumns' => $aColumns, 'aData' => $aData];
-		} catch (MFABaseException $e) {
-			throw $e;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
 
 	/**
 	 * Display the screen to enter the code, and validate the code entered by the user
@@ -189,7 +67,7 @@ class MFABaseService
 			$oChosenUserSettings = null;
 			$sChosenUserSettings = utils::ReadPostedParam(self::SELECTED_MFA_MODE, null);
 			if (!is_null($sChosenUserSettings)) {
-				MFABaseService::GetInstance()->ClearContext(Session::Get(self::SELECTED_MFA_MODE));
+				MFABaseLoginService::GetInstance()->ClearContext(Session::Get(self::SELECTED_MFA_MODE));
 				Session::Set(self::SELECTED_MFA_MODE, $sChosenUserSettings);
 			}
 			$sChosenUserSettings = Session::Get(self::SELECTED_MFA_MODE);
@@ -326,30 +204,8 @@ class MFABaseService
 	}
 
 	/**
-	 * This function normally exit
+	 * Clear the session and other variables when exiting login FSM
 	 *
-	 * @param $sUserId
-	 * @param string $sMFAUserSettingsClass
-	 *
-	 * @return void
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
-	public function SetAsDefaultMode($sUserId, string $sMFAUserSettingsClass): void
-	{
-		try {
-			$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-
-			foreach ($aUserSettings as $oUserSettings) {
-				MFAUserSettingsService::GetInstance()->SetMFASettingsAsDefault($oUserSettings, $oUserSettings instanceof $sMFAUserSettingsClass);
-			}
-		} catch (MFABaseException $e) {
-			throw $e;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
-	/**
 	 * @param string|null $sMFAUserSettingsClass
 	 *
 	 * @return void
@@ -370,6 +226,6 @@ class MFABaseService
 			throw new MFABaseException(__FUNCTION__." Class not a MFAUserSettings: $sMFAUserSettingsClass");
 		}
 
-		$sMFAUserSettingsClass::ClearContext();
+		call_user_func([$sMFAUserSettingsClass, 'ClearContext']);
 	}
 }

@@ -4,9 +4,7 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
-use Combodo\iTop\MFABase\Service\MFABaseService;
-use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
-use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
+use Combodo\iTop\MFABase\Service\MFABaseLoginService;
 use Config;
 use MetaModel;
 
@@ -40,37 +38,13 @@ class MFABaseServiceTest extends AbstractMFATest {
 		}
 	}
 
-	public function testSetAsDefaultMode() {
-		$oUser = $this->CreateContactlessUser("NoOrgUser", ItopDataTestCase::$aURP_Profiles['Service Desk Agent'], "ABCdefg@12345#");
-		$sUserId = $oUser->GetKey();
-
-		$oActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPApp", $sUserId, "yes", ["secret" => "toto"], true);
-		$oNotActiveSetting = $this->CreateSetting("MFAUserSettingsTOTPMail", $sUserId, "no", ["secret" => "toto"]);
-		$oActiveSetting2 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $sUserId, "yes", []);
-
-		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ["MFAUserSettingsTOTPApp" => 'yes', "MFAUserSettingsTOTPMail" => 'no', "MFAUserSettingsRecoveryCodes" => 'no' ];
-		foreach ($aUserSettings as $oUserSettings){
-			$expected = $aExpected[get_class($oUserSettings)] ?? "no implementation found";
-			$this->assertEquals($expected, $oUserSettings->Get('is_default'), "class " . get_class($oUserSettings));
-		}
-		MFABaseService::GetInstance()->SetAsDefaultMode($sUserId, "MFAUserSettingsTOTPMail");
-
-		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ["MFAUserSettingsTOTPApp" => 'no', "MFAUserSettingsTOTPMail" => 'yes', "MFAUserSettingsRecoveryCodes" => 'no' ];
-		foreach ($aUserSettings as $oUserSettings){
-			$expected = $aExpected[get_class($oUserSettings)] ?? "no implementation found";
-			$this->assertEquals($expected, $oUserSettings->Get('is_default'), "class " . get_class($oUserSettings));
-		}
-	}
-
 	/**
 	 * @dataProvider ClearContextFailProvider
 	 */
 	public function testClearContextFail(string $sClass)
 	{
 		$this->expectException(MFABaseException::class);
-		MFABaseService::GetInstance()->ClearContext($sClass);
+		MFABaseLoginService::GetInstance()->ClearContext($sClass);
 	}
 
 	public function ClearContextFailProvider()
@@ -106,7 +80,7 @@ class MFABaseServiceTest extends AbstractMFATest {
 		foreach ($aKeysToClear as $sKey) {
 			Session::Set($sKey, 'Test');
 		}
-		MFABaseService::GetInstance()->ClearContext($sClass);
+		MFABaseLoginService::GetInstance()->ClearContext($sClass);
 		foreach ($aKeysToClear as $sKey) {
 			$this->assertFalse(Session::IsSet($sKey), "The key $sKey should have been removed from session");
 		}

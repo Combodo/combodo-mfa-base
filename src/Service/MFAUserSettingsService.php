@@ -11,10 +11,11 @@ use Combodo\iTop\MFABase\Helper\MFABaseException;
 use DBObjectSearch;
 use DBObjectSet;
 use DBSearch;
+use Dict;
 use Exception;
 use MetaModel;
-use MFAAdminRule;
 use MFAUserSettings;
+use UserRights;
 
 class MFAUserSettingsService
 {
@@ -317,4 +318,153 @@ class MFAUserSettingsService
 			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
 	}
+
+	public function HandleAction(string $sUserId, string $sModeClass, string $sVerb, array &$aParams=[]) : void
+	{
+		switch ($sVerb) {
+			case 'undo_delete':
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$oUserSettings->Set('validated', 'yes');
+				$oUserSettings->AllowWrite();
+				$oUserSettings->DBUpdate();
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+
+			case 'delete':
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$oUserSettings->Set('validated', 'no');
+				$oUserSettings->Set('is_default', 'no');
+				$oUserSettings->AllowWrite();
+				$oUserSettings->DBUpdate();
+				$aParams['sURL'] = \utils::GetAbsoluteUrlAppRoot().'pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA';
+				break;
+
+			case 'add':
+				// Delete previously added mode
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				$oUserSettings->AllowDelete();
+				$oUserSettings->DBDelete();
+				break;
+
+			case 'set_as_default':
+				// Set current mode as default
+				$this->SetAsDefaultMode($sUserId, $sModeClass);
+				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
+				//$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+
+			default:
+				$oUserSettings = MetaModel::NewObject($sModeClass, ['user_id' => $sUserId]);
+				$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				break;
+		}
+	}
+
+	/**
+	 * This function normally exit
+	 *
+	 * @param $sUserId
+	 * @param string $sMFAUserSettingsClass
+	 *
+	 * @return void
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	public function SetAsDefaultMode($sUserId, string $sMFAUserSettingsClass): void
+	{
+		try {
+			$aUserSettings = $this->GetMFASettingsObjects($sUserId);
+
+			foreach ($aUserSettings as $oUserSettings) {
+				$this->SetMFASettingsAsDefault($oUserSettings, $oUserSettings instanceof $sMFAUserSettingsClass);
+			}
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
+		}
+	}
+
+	/**
+	 * @return array
+	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
+	 */
+	public function GetMFAUserSettingsTableWithActions(): array
+	{
+		try {
+			$aColumns = [
+				'name' => ['label' => Dict::S('UI:MFA:Modes:Name')],
+				'validated' => ['label' => Dict::S('UI:MFA:Modes:Activated')],
+				'is_default' => ['label' => Dict::S('UI:MFA:Modes:Default')],
+				'action' => ['label' => Dict::S('UI:MFA:Modes:Action')],
+			];
+
+			$aData = [];
+			$sUserId = UserRights::GetUserId();
+			$aMFAUserSettingsModes = MFAUserSettingsService::GetInstance()->GetAllAllowedMFASettings($sUserId);
+
+			foreach ($aMFAUserSettingsModes as $oMFAUserSettings) {
+				$aDatum = [];
+				// Name
+				$sMFAUserSettingsClass = get_class($oMFAUserSettings);
+				$aDatum['name'] = MetaModel::GetName($sMFAUserSettingsClass);
+				// Status
+				/** @var \MFAUserSettings $oMFAUserSettings */
+				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;
+				$aDatum['is_default'] = $oMFAUserSettings->GetEditValue('is_default');
+				$aButtonToolbar = [];
+
+				if ($oMFAUserSettings->Get('validated') !== 'no') {
+					$aButtonToolbar[] = ['fas fa-pen',
+						Dict::S('UI:MFA:Modes:Action:Configure:ButtonTooltip'),
+						'configure',
+						$sMFAUserSettingsClass,
+					];
+
+					if ($oMFAUserSettings->CanBeDefault() && $oMFAUserSettings->Get('is_default') === 'no'){
+						$aButtonToolbar[] = ['fas fa-check-square',
+							Dict::S('UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip'),
+							'set_as_default',
+							$sMFAUserSettingsClass,
+						];
+					}
+
+					$aButtonToolbar[] = ['fas fa-trash',
+						Dict::S('UI:MFA:Modes:Action:Delete:ButtonTooltip'),
+						'delete',
+						$sMFAUserSettingsClass,
+						'ibo-is-danger',
+					];
+				} else {
+					$aButtonToolbar[] = ['fas fa-plus',
+						Dict::S('UI:MFA:Modes:Action:Add:ButtonTooltip'),
+						'add',
+						$sMFAUserSettingsClass,
+					];
+
+					if ($oMFAUserSettings->Get('configured') === 'yes') {
+						$aButtonToolbar[] = ['fas fa-undo',
+							Dict::S('UI:MFA:Modes:Action:UndoDelete:ButtonTooltip'),
+							'undo_delete',
+							$sMFAUserSettingsClass,
+						];
+					}
+				}
+
+				$aDatum['action'] = $aButtonToolbar;
+				$aData[] = $aDatum;
+			}
+
+			if (empty($aData)) {
+				return [];
+			}
+
+			return ['aColumns' => $aColumns, 'aData' => $aData];
+		} catch (MFABaseException $e) {
+			throw $e;
+		} catch (Exception $e) {
+			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
+		}
+	}
+
 }

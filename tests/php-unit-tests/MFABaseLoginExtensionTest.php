@@ -5,7 +5,7 @@ namespace Combodo\iTop\MFABase\Test;
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\MFABase\Hook\MFABaseLoginExtension;
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
-use Combodo\iTop\MFABase\Service\MFABaseService;
+use Combodo\iTop\MFABase\Service\MFABaseLoginService;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
@@ -22,7 +22,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
 	private $oMFAAdminRuleService;
 
-	/** @var MFABaseService $oMFABaseService */
+	/** @var MFABaseLoginService $oMFABaseService */
 	private $oMFABaseService;
 
 	/** @var MFAUserSettingsService $oMFAUserSettingsService */
@@ -42,8 +42,8 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		$this->oMFAUserSettingsService = $this->createMock(MFAUserSettingsService::class);
 		MFAUserSettingsService::SetInstance($this->oMFAUserSettingsService);
 
-		$this->oMFABaseService = $this->createMock(MFABaseService::class);
-		MFABaseService::SetInstance($this->oMFABaseService);
+		$this->oMFABaseService = $this->createMock(MFABaseLoginService::class);
+		MFABaseLoginService::SetInstance($this->oMFABaseService);
 
 		$this->CleanupAdminRules();
 
@@ -56,7 +56,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 
 		MFAAdminRuleService::ResetInstance();
 		MFAUserSettingsService::ResetInstance();
-		MFABaseService::ResetInstance();
+		MFABaseLoginService::ResetInstance();
 		$this->SetNonPublicStaticProperty(LoginWebPage::class, "iOnExit", LoginWebPage::EXIT_PROMPT);
 
 		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
@@ -441,7 +441,7 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 	 */
 	public function testOnStartOrConnected($sLoginStateStep) {
 		$_SESSION=[  ];
-		Session::Set(MFABaseService::SELECTED_MFA_MODE, \MFAUserSettingsTOTPApp::class);
+		Session::Set(MFABaseLoginService::SELECTED_MFA_MODE, \MFAUserSettingsTOTPApp::class);
 
 		$this->oMFABaseService->expects($this->exactly(1))
 			->method("ClearContext")

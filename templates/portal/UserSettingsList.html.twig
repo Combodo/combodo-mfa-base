@@ -1,4 +1,63 @@
 {# @copyright   Copyright (C) 2010-2024 Combodo SARL #}
 {# @license     http://opensource.org/licenses/AGPL-3.0 #}
 
-≤h1>Toto</h1>
+{% set aColumns = aData.aUserSettings.aColumns %}
+{% set aRows = aData.aUserSettings.aData %}
+
+<div class="col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">{{ 'Menu:MFAUserSettings'|dict_s }}</h3>
+		</div>
+		<div class="panel-body">
+			<input type="hidden" name="transaction_id" value="{# oContactForm.transaction_id #}" />
+			<div class="form_alerts">
+				{% if aData.sMessage is defined %}
+					<div class="alert alert-success" role="alert">{{ aData.sMessage }}</div>
+				{% endif %}
+				{% if aData.sError is defined %}
+					<div class="alert alert-error alert-danger" role="alert">{{ aData.sError }}</div>
+				{% endif %}
+			</div>
+			<table id="table-user-settings" class="object-list table table-striped table-bordered responsive dataTable no-footer dtr-inline" style="width: 100%;">
+				<thead>
+				<tr>
+					{% for aColumn in aColumns %}
+						<th>{{ aColumn.label }}</th>
+					{% endfor %}
+				</tr>
+				</thead>
+				<tbody>
+
+				{% for aRow in aRows %}
+					<tr class="even">
+						{% for sFieldName, field in aRow %}
+							<td>
+							{% if sFieldName == "action" %}
+								{% for aButtonAction in field %}
+									{% set sIconClass = aButtonAction[0] %}
+									{% set sTooltip = aButtonAction[1] %}
+									{% set sAction = aButtonAction[2] %}
+									{% set sClass = aButtonAction[3] %}
+									{% set sFormId = "form_mfa_action_"~sAction~"_"~sClass %}
+								<form id="{{ sFormId }}" class="" style="display:inline-block;" method="POST">
+									<input type="hidden" name="transaction_id" value="{{ aData.sTransactionId }}">
+									<input type="hidden" name="action" value="{{ sAction }}">
+									<input type="hidden" name="class" value="{{ sClass }}">
+									<a onclick="$('#{{ sFormId }}').submit();">
+										<span class='{{ sIconClass }}' data-tooltip-content='{{ sTooltip }}'></span>
+									</a>
+								</form>
+								{% endfor %}
+							{% else %}
+								{{ field|raw }}
+							{% endif %}
+							</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
