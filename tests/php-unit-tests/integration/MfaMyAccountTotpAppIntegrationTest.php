@@ -24,7 +24,7 @@ require_once __DIR__ . "/MFAAbstractConfigurationTestInterface.php";
  * @backupGlobals disabled
  *
  */
-class MfaMyAccountTotpIntegrationTest extends AbstractMFATest implements MFAAbstractConfigurationTestInterface {
+class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstractConfigurationTestInterface {
 	//iTop called from outside
 	//users need to be persisted in DB
 	const USE_TRANSACTION = false;
@@ -174,9 +174,6 @@ class MfaMyAccountTotpIntegrationTest extends AbstractMFATest implements MFAAbst
 		$sTransId = \utils::GetNewTransactionId();
 		\UserRights::_ResetSessionCache();
 
-		/*$sPath = APPROOT."data/transactions/$sTransId";
-		chmod($sPath, "555");
-		var_dump(file_get_contents($sPath));*/
 		return $sTransId;
 	}
 }
