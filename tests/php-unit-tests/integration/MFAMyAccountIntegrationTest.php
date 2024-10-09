@@ -85,7 +85,7 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 		// Arrange
 		//$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
 		//$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
-		//$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $this->oUser->GetKey(), 'yes', [], true);
+		//$oActiveSetting3 = $this->CreateSetting(\MFAUserSettingsRecoveryCodes::class, $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
 		$sOutput = $this->CallItopUrl('/pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&operation=MyAccountTab&exec_env=production&tab=MyAccount%3ATab%3AMFA',

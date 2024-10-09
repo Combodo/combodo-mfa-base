@@ -158,7 +158,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest
 			->willReturn(null)
 			->with($sUserId);
 
-		$oActiveSetting3 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
+		$oActiveSetting3 = $this->CreateSetting(\MFAUserSettingsRecoveryCodes::class, $sUserId, 'yes', []);
 		$aMFAUserSettings = MFAUserSettingsService::GetInstance()->GetValidatedMFASettings($sUserId);
 		$this->assertEquals([], $aMFAUserSettings);
 	}
@@ -390,10 +390,10 @@ class MFAUserSettingsServiceTest extends AbstractMFATest
 
 		$oActiveSetting = $this->CreateSetting('MFAUserSettingsTOTPApp', $sUserId, 'yes', ['secret' => 'toto'], true);
 		$oNotActiveSetting = $this->CreateSetting('MFAUserSettingsTOTPMail', $sUserId, 'no', ['secret' => 'toto']);
-		$oActiveSetting2 = $this->CreateSetting('MFAUserSettingsRecoveryCodes', $sUserId, 'yes', []);
+		$oActiveSetting2 = $this->CreateSetting(\MFAUserSettingsRecoveryCodes::class, $sUserId, 'yes', []);
 
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ['MFAUserSettingsTOTPApp' => 'yes', 'MFAUserSettingsTOTPMail' => 'no', 'MFAUserSettingsRecoveryCodes' => 'no'];
+		$aExpected = ['MFAUserSettingsTOTPApp' => 'yes', 'MFAUserSettingsTOTPMail' => 'no', \MFAUserSettingsRecoveryCodes::class => 'no'];
 		foreach ($aUserSettings as $oUserSettings) {
 			$expected = $aExpected[get_class($oUserSettings)] ?? 'no implementation found';
 			$this->assertEquals($expected, $oUserSettings->Get('is_default'), 'class '.get_class($oUserSettings));
@@ -401,7 +401,7 @@ class MFAUserSettingsServiceTest extends AbstractMFATest
 		MFAUserSettingsService::GetInstance()->SetAsDefaultMode($sUserId, 'MFAUserSettingsTOTPMail');
 
 		$aUserSettings = MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($sUserId);
-		$aExpected = ['MFAUserSettingsTOTPApp' => 'no', 'MFAUserSettingsTOTPMail' => 'yes', 'MFAUserSettingsRecoveryCodes' => 'no'];
+		$aExpected = ['MFAUserSettingsTOTPApp' => 'no', 'MFAUserSettingsTOTPMail' => 'yes', \MFAUserSettingsRecoveryCodes::class => 'no'];
 		foreach ($aUserSettings as $oUserSettings) {
 			$expected = $aExpected[get_class($oUserSettings)] ?? 'no implementation found';
 			$this->assertEquals($expected, $oUserSettings->Get('is_default'), 'class '.get_class($oUserSettings));
