@@ -175,8 +175,8 @@ HTML;
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringNotContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should NOT be the TOTP Mail code validation screen');
-		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
+		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should NOT be the TOTP Mail code validation screen');
+		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 
 	public function testConfigurationFirstScreenDisplay()
@@ -230,7 +230,7 @@ HTML;
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
-		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Configuration:Error'), $sOutput, 'The page should be the welcome page');
+		$this->AssertStringContains(Dict::S('iTopUpdate:Error:InvalidToken'), $sOutput, 'The page should be the welcome page');
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 

@@ -50,7 +50,7 @@ class MFABaseHelper
 		$sTransactionId = utils::ReadPostedParam('transaction_id', null, utils::ENUM_SANITIZATION_FILTER_TRANSACTION_ID);
 		MFABaseLog::Debug(__FUNCTION__.": Transaction [$sTransactionId]");
 		if (empty($sTransactionId) || !utils::IsTransactionValid($sTransactionId, false)) {
-			throw new MFABaseException(Dict::S("iTopUpdate:Error:InvalidToken [$sTransactionId]"));
+			throw new MFABaseException(Dict::S("iTopUpdate:Error:InvalidToken"));
 		}
 	}
 }
