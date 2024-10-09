@@ -33,6 +33,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 	protected string $sPassword;
 	protected string $sMfaMyAccountConfigurationUri;
 	protected User $oUser;
+	protected string $sUniqId;
 
 	protected function setUp(): void {
 		parent::setUp();

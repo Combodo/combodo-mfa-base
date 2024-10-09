@@ -26,6 +26,7 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 	protected string $sConfigTmpBackupFile;
 	protected string $sPassword;
 	protected User $oUser;
+	protected string $sUniqId;
 
 	protected function setUp(): void {
 		parent::setUp();
