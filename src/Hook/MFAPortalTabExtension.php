@@ -7,21 +7,13 @@
 namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
-use Combodo\iTop\Portal\Hook\iPortalTabExtension;
+use Combodo\iTop\Portal\Hook\iUserProfileTabExtension;
 use Dict;
 
-if (interface_exists('Combodo\iTop\Portal\Hook\iPortalTabExtension')) {
+if (interface_exists(iUserProfileTabExtension::class)) {
 
-	class MFAPortalTabExtension implements iPortalTabExtension
+	class MFAPortalTabExtension implements iUserProfileTabExtension
 	{
-		/**
-		 * @inheritDoc
-		 */
-		public function GetTarget(): string
-		{
-			return 'p_user_profile_brick';
-		}
-
 		public function IsTabPresent(): bool
 		{
 			return MFABaseConfig::GetInstance()->IsEnabled();

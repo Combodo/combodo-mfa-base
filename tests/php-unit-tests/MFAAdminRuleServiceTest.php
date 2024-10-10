@@ -4,7 +4,6 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use Config;
 use DateTime;
 use MetaModel;
 use MFAAdminRule;
@@ -12,15 +11,11 @@ use MFAAdminRule;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFAAdminRuleServiceTest extends AbstractMFATest {
-	private $sConfigTmpBackupFile;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->RequireOnceItopFile('/env-production/combodo-mfa-base/vendor/autoload.php');
-
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
 
 		$this->org1 = $this->CreateOrganization("org1");
 		$this->org2 = $this->CreateOrganization("org2");
@@ -28,21 +23,6 @@ class MFAAdminRuleServiceTest extends AbstractMFATest {
 		$this->CleanupAdminRules();
 
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-	}
-
-	protected function tearDown(): void
-	{
-		parent::tearDown();
-
-		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
-			//put config back
-			$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-			@unlink($this->sConfigTmpBackupFile);
-		}
 	}
 
 	public function testNonExistingUserDoNotHaveRules() {
