@@ -146,14 +146,10 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 	{
 		// Ask for configuration and generate UserSettings
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
-			'auth_user' => $sLogin,
-			'auth_pwd' => $this->sPassword]);
-
-		// Act
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 
+		// Act
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
