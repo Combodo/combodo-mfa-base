@@ -265,9 +265,6 @@ HTML;
 
 		// Ask for configuration and generate UserSettings
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
-			'auth_user' => $sLogin,
-			'auth_pwd' => $this->sPassword]);
 
 		// Act
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
