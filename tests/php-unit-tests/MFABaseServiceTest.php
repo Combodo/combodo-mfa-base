@@ -11,7 +11,8 @@ use MetaModel;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFABaseServiceTest extends AbstractMFATest {
-
+	protected $sConfigTmpBackupFile;
+	
 	protected function setUp(): void
 	{
 		parent::setUp();

@@ -11,6 +11,9 @@ use MFAAdminRule;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFAAdminRuleServiceTest extends AbstractMFATest {
+	protected $org1;
+	protected $org2;
+	protected $org3;
 
 	protected function setUp(): void
 	{
