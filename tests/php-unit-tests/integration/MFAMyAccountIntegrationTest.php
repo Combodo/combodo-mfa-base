@@ -57,6 +57,7 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 	}
 
 	protected function tearDown(): void {
+		\UserRights::Logoff();
 		parent::tearDown();
 
 		if (! is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)){

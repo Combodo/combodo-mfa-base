@@ -36,6 +36,7 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 
 	protected function setUp(): void {
 		parent::setUp();
+		ItopDataTestCase::$DEBUG_UNIT_TEST =true;
 
 		$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
 
@@ -65,6 +66,8 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 	}
 
 	protected function tearDown(): void {
+		\UserRights::Logoff();
+
 		parent::tearDown();
 
 		if (! is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)){
@@ -122,6 +125,35 @@ HTML;
 		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should NOT be the initial login page');
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
+
+	/*public function testDBDelete()
+	{
+		$this->assertTrue(true);
+		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
+
+
+		$sLogin = $this->oUser->Get('login');
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
+			'totp_code' => 'WrongCode',
+			'auth_user' => $sLogin,
+			'auth_pwd' => $this->sPassword]);
+
+		foreach (MFAUserSettingsService::GetInstance()->GetMFASettingsObjects($this->oUser->GetKey()) as $oObject){
+			//$oObject->AllowWrite();
+			$oObject->AllowDelete();
+			$oObject->DBDelete();
+		}
+
+		$oObject = $this->oUser;
+		$sClass = get_class($oObject);
+		$iKey = $oObject->GetKey();
+		$this->debug("Removing $sClass::$iKey");
+		$oObject->AllowWrite();
+		$oObject->AllowDelete();
+		$oObject->DBDelete();
+	}*/
+
 
 	public function testValidationForceReturnToLoginPage()
 	{
