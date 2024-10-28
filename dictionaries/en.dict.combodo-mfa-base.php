@@ -11,8 +11,6 @@ Dict::Add('EN US', 'English', 'English', array(
 	'MFA:MFAUserSettings:Description' => 'Multi-factor authentication adds an additional layer of security to your account by requiring more than just a password to sign in.',
 
 	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
-	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
-	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
 	'Menu:MFAAdminRule' => 'MFA admin rules',
 	'Menu:MFAAdminRule+' => 'Multi-Factor Authentication rules',
 	'Menu:MFAUserSettings' => 'MFA user settings',
@@ -22,7 +20,7 @@ Dict::Add('EN US', 'English', 'English', array(
 
 	'UI:MFA' => 'MFA user settings',
 	'UI:MFA:Portal:Menu' => 'Multi-Factor Authentication',
-	'UI:MFA:Modes'  => 'MFA modes',
+	'UI:MFA:Modes'  => 'Multi-factor authentication user settings',
 	'UI:MFA:Modes:Name' => 'Name',
 	'UI:MFA:Modes:Activated' => 'Activated',
 	'UI:MFA:Modes:Action' => 'Action',
@@ -56,4 +54,18 @@ Dict::Add('EN US', 'English', 'English', array(
 	'Class:MFAUserSettings/Attribute:is_default/Value:yes' => 'Yes',
 	'Class:MFAUserSettings/Attribute:is_default/Value:no' => 'No',
 	'Class:MFAUserSettings/Attribute:user_id' => 'User',
+
+	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
+	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
+	'Class:MFAAdminRule/Attribute:name' => 'Name',
+	'Class:MFAAdminRule/Attribute:denied_mfamodes_list' => 'Denied modes',
+	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Activation date',
+	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'The activation date will be effective only if the operational state is "forced"',
+	'Class:MFAAdminRule/Attribute:operational_state' => 'Operational state',
+	'Class:MFAAdminRule/Attribute:orgs_list' => 'Organisations list',
+	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Default mode',
+	'Class:MFAAdminRule/Attribute:profiles_list' => 'Profiles list',
+	'Class:MFAAdminRule/Attribute:rank' => 'Rank',
+	'Class:MFAAdminRule/Attribute:status' => 'Status',
+
 ));

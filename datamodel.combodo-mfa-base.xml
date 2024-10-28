@@ -506,11 +506,14 @@
                 <item id="preferred_mfa_mode">
                   <rank>30</rank>
                 </item>
-                <item id="operational_state">
+                <item id="denied_mfamodes_list">
                   <rank>40</rank>
                 </item>
-                <item id="forced_activation_date">
+                <item id="operational_state">
                   <rank>50</rank>
+                </item>
+                <item id="forced_activation_date">
+                  <rank>60</rank>
                 </item>
               </items>
               <rank>10</rank>
@@ -529,9 +532,6 @@
             <item id="orgs_list">
               <rank>30</rank>
             </item>
-            <item id="denied_mfamodes_list">
-              <rank>40</rank>
-            </item>
           </items>
         </details>
         <summary>
@@ -548,9 +548,6 @@
           <items>
             <item id="name">
               <rank>10</rank>
-            </item>
-            <item id="preferred_mfa_mode">
-              <rank>20</rank>
             </item>
           </items>
         </default_search>
