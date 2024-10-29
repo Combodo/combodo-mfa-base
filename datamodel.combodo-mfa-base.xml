@@ -50,10 +50,20 @@
           <values>
             <value id="yes">
               <code>yes</code>
+              <style>
+                <main_color>$ibo-lifecycle-active-state-primary-color</main_color>
+                <complementary_color>$ibo-lifecycle-active-state-secondary-color</complementary_color>
+                <decoration_classes/>
+              </style>
               <rank>10</rank>
             </value>
             <value id="no">
               <code>no</code>
+              <style>
+                <main_color>$ibo-lifecycle-inactive-state-primary-color</main_color>
+                <complementary_color>$ibo-lifecycle-inactive-state-secondary-color</complementary_color>
+                <decoration_classes/>
+              </style>
               <rank>20</rank>
             </value>
           </values>
@@ -90,10 +100,20 @@
           <values>
             <value id="yes">
               <code>yes</code>
+              <style>
+                <main_color>$ibo-lifecycle-active-state-primary-color</main_color>
+                <complementary_color>$ibo-lifecycle-active-state-secondary-color</complementary_color>
+                <decoration_classes/>
+              </style>
               <rank>10</rank>
             </value>
             <value id="no">
               <code>no</code>
+              <style>
+                <main_color>$ibo-lifecycle-inactive-state-primary-color</main_color>
+                <complementary_color>$ibo-lifecycle-inactive-state-secondary-color</complementary_color>
+                <decoration_classes/>
+              </style>
               <rank>20</rank>
             </value>
           </values>
@@ -115,6 +135,11 @@
         <event_listener id="EVENT_DB_SET_ATTRIBUTES_FLAGS">
           <event>EVENT_DB_SET_ATTRIBUTES_FLAGS</event>
           <callback>EvtSetAttributeFlagsMFAUserSettings</callback>
+          <rank>0</rank>
+        </event_listener>
+        <event_listener id="EVENT_DB_AFTER_WRITE">
+          <event>EVENT_DB_AFTER_WRITE</event>
+          <callback>EvtAfterWriteMFAUserSettings</callback>
           <rank>0</rank>
         </event_listener>
       </event_listeners>
@@ -156,6 +181,34 @@
                 $this->AddAttributeFlags('configured', OPT_ATT_READONLY);
                 $this->AddAttributeFlags('validated', OPT_ATT_READONLY);
 
+          }]]></code>
+        </method>
+        <method id="EvtAfterWriteMFAUserSettings">
+          <comment>/**
+            * Event Listener for EVENT_DB_AFTER_WRITE
+            *
+            * @param Combodo\iTop\Service\Events\EventData $oEventData Event data object
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>EventListener</type>
+          <code><![CDATA[	public function EvtAfterWriteMFAUserSettings(Combodo\iTop\Service\Events\EventData $oEventData)
+          {
+                if ($this->Get('is_default') === 'yes') {
+                    $sId = $this->GetKey();
+                    $sUserId = $this->Get('user_id');
+                    $sOQL = "SELECT MFAUserSettings WHERE user_id=:user_id AND id!=:id AND is_default='yes'";
+                    $oSet = new DBObjectSet(DBObjectSearch::FromOQL($sOQL), [], [
+                        'user_id' => $sUserId,
+                        'id' => $sId,
+                    ]);
+                    while ($oUserSettings = $oSet->Fetch()) {
+                        $oUserSettings->Set('is_default', 'no');
+                        $oUserSettings->AllowWrite();
+                        $oUserSettings->DBUpdate();
+                    }
+                }
           }]]></code>
         </method>
         <method id="GetConfigurationURLForMyAccountRedirection">

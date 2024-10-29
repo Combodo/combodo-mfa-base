@@ -144,26 +144,6 @@ class MFAUserSettingsService
 	}
 
 	/**
-	 * @param \MFAUserSettings $oSettings
-	 * @param bool $bIsDefault
-	 *
-	 * @return void
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
-	public function SetMFASettingsAsDefault(MFAUserSettings $oSettings, bool $bIsDefault): void
-	{
-		try {
-			$oSettings->Set('is_default', $bIsDefault ? 'yes' : 'no');
-			$oSettings->AllowWrite();
-			$oSettings->DBUpdate();
-		} catch (MFABaseException $e) {
-			throw $e;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
-	/**
 	 * @param string $sUserId
 	 *
 	 * Return active user settings by user. By default is first. Otherwise ordered by Admin rules rank.
@@ -373,11 +353,10 @@ class MFAUserSettingsService
 	public function SetAsDefaultMode($sUserId, string $sMFAUserSettingsClass): void
 	{
 		try {
-			$aUserSettings = $this->GetMFASettingsObjects($sUserId);
-
-			foreach ($aUserSettings as $oUserSettings) {
-				$this->SetMFASettingsAsDefault($oUserSettings, $oUserSettings instanceof $sMFAUserSettingsClass);
-			}
+			$oUserSettings = $this->GetMFAUserSettings($sUserId, $sMFAUserSettingsClass);
+			$oUserSettings->Set('is_default', 'yes');
+			$oUserSettings->AllowWrite();
+			$oUserSettings->DBUpdate();
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {
@@ -413,8 +392,8 @@ class MFAUserSettingsService
 				];
 				// Status
 				/** @var \MFAUserSettings $oMFAUserSettings */
-				$aDatum['validated'] = $oMFAUserSettings->GetEditValue('validated');;
-				$aDatum['is_default'] = $oMFAUserSettings->GetEditValue('is_default');
+				$aDatum['validated'] = $oMFAUserSettings->GetAsHTML('validated');;
+				$aDatum['is_default'] = $oMFAUserSettings->GetAsHTML('is_default');
 				$aButtonToolbar = [];
 
 				if ($oMFAUserSettings->Get('validated') !== 'no') {
