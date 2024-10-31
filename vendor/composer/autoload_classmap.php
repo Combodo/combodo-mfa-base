@@ -15,6 +15,7 @@ return array(
     'Combodo\\iTop\\MFABase\\Hook\\MFABaseMenu' => $baseDir . '/src/Hook/MFABaseMenu.php',
     'Combodo\\iTop\\MFABase\\Hook\\MFAPortalTabContentExtension' => $baseDir . '/src/Hook/MFAPortalTabContentExtension.php',
     'Combodo\\iTop\\MFABase\\Hook\\MFAPortalTabExtension' => $baseDir . '/src/Hook/MFAPortalTabExtension.php',
+    'Combodo\\iTop\\MFABase\\Hook\\MFAWelcomePopupExtension' => $baseDir . '/src/Hook/MFAWelcomePopupExtension.php',
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabContentExtension' => $baseDir . '/src/Hook/MyAccountTabContentExtension.php',
     'Combodo\\iTop\\MFABase\\Hook\\MyAccountTabExtension' => $baseDir . '/src/Hook/MyAccountTabExtension.php',
     'Combodo\\iTop\\MFABase\\Service\\MFAAdminRuleService' => $baseDir . '/src/Service/MFAAdminRuleService.php',

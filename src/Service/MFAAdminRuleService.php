@@ -8,7 +8,7 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
-use CoreException;
+use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use DBObjectSearch;
 use DBObjectSet;
 use Dict;
@@ -69,9 +69,10 @@ class MFAAdminRuleService
 		try {
 			/** @var User $oUser */
 			$oUser = MetaModel::GetObject(User::class, $sUserId, true, true);
-			$aUserOrgIds = $this->GetUserOrgs($oUser);
+			$sUserOrgId = $oUser->Get('org_id');
 			$aUserProfiles = $this->GetUserProfiles($oUser);
-		} catch (CoreException $e) {
+		} catch (Exception $e) {
+			MFABaseLog::Error(__FUNCTION__.' Failed to get MFA rule', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 			return null;
 		}
 
@@ -82,6 +83,7 @@ class MFAAdminRuleService
 			/** @var MFAAdminRule $oRule */
 			while ($oRule = $oSet->Fetch()) {
 				$bProfileOk = false;
+				$bOrgOk = false;
 
 				/** @var ormLinkSet $aProfileSet */
 				$aProfileSet = $oRule->Get('profiles_list');
@@ -97,22 +99,20 @@ class MFAAdminRuleService
 				}
 
 				if ($bProfileOk) {
-					if (count($aUserOrgIds) === 0) {
-						return $oRule;
-					}
-
 					/** @var ormLinkSet $aOrgSet */
 					$aOrgSet = $oRule->Get('orgs_list');
-
 					if ($aOrgSet->count() === 0) {
-						return $oRule;
+						$bOrgOk = true;
 					} else {
 						$aRuleOrgIds = $aOrgSet->GetColumnAsArray('org_id');
-						$aIntersection = array_intersect($aUserOrgIds, $aRuleOrgIds);
-						if (count($aIntersection) !== 0) {
-							return $oRule;
+						if (in_array($sUserOrgId, $aRuleOrgIds)) {
+							$bOrgOk = true;
 						}
 					}
+				}
+
+				if ($bProfileOk && $bOrgOk) {
+					return $oRule;
 				}
 			}
 		} catch (MFABaseException $e) {

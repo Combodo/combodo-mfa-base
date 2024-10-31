@@ -7,6 +7,7 @@ use Config;
 use MFAAdminRule;
 use MFAMode;
 use MFAUserSettings;
+use Organization;
 
 class AbstractMFATest extends ItopDataTestCase
 {
@@ -58,19 +59,12 @@ class AbstractMFATest extends ItopDataTestCase
 			}
 		}
 
-		$oAllowedOrgSet = new \ormLinkSet(\User::class, 'allowed_org_list', \DBObjectSet::FromScratch(\URP_UserOrg::class));
-		foreach ($aOrgIds as $iOrgId) {
-			$oObject = new \URP_UserOrg();
-			$oObject->Set("allowed_org_id", $iOrgId);
-			$oAllowedOrgSet->AddItem($oObject);
-		}
 		$oUser = $this->createObject('UserLocal', [
 			'login' => $sLogin,
 			'password' => "ABCdefg@12345#",
 			'language' => 'EN US',
 			'profile_list' => $oProfileLinkSet,
 			'contactid' => $oPerson->GetKey(),
-			'allowed_org_list' => $oAllowedOrgSet,
 		]);
 
 		return $oUser;
@@ -167,4 +161,53 @@ class AbstractMFATest extends ItopDataTestCase
 
 		$this->assertFalse(false !== strpos($sHaystack, $sNeedle), $sMessage. PHP_EOL . "needle: '$sNeedle' should not be found in content below:" . PHP_EOL . PHP_EOL . $sHaystack);
 	}
+
+	/**
+	 * @param string $sLogin
+	 * @param array $aProfiles array of profile names
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
+	protected function GivenContactlessUserInDB(array $aProfiles): string
+	{
+		$sLogin = 'demo_test_'.uniqid(__CLASS__, true);
+		$sPassword = 'ABCdefg@12345#';
+
+		$aProfileList = array_map(function($sProfileId) {
+			return 'profileid:'.self::$aURP_Profiles[$sProfileId];
+		}, $aProfiles);
+
+		$iUser = $this->GivenObjectInDB('UserLocal', [
+			'login' => $sLogin,
+			'password' => $sPassword,
+			'language' => 'EN US',
+			'profile_list' => $aProfileList,
+		]);
+		return $iUser;
+	}
+
+	protected function GivenUserWithContactInDB($sOrgId, array $aProfiles)
+	{
+		static $i = 0;
+
+		$iPersonId = $this->GivenPersonInDB($i++, $sOrgId);
+		$sLogin = 'demo_test_'.uniqid(__CLASS__, true);
+		$sPassword = 'ABCdefg@12345#';
+
+		$aProfileList = array_map(function($sProfileId) {
+			return 'profileid:'.self::$aURP_Profiles[$sProfileId];
+		}, $aProfiles);
+
+		$iUser = $this->GivenObjectInDB('UserLocal', [
+			'login' => $sLogin,
+			'password' => $sPassword,
+			'language' => 'EN US',
+			'profile_list' => $aProfileList,
+			'contactid' => $iPersonId,
+		]);
+
+		return $iUser;
+	}
+
 }
