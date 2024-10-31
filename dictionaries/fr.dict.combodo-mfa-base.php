@@ -15,6 +15,16 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Menu:MFAAdminRule+' => 'Multi-Factor Authentication rules',
 	'Menu:MFAUserSettings' => 'MFA user settings',
 	'Menu:MFAUserSettings+' => 'Multi-Factor Authentication user settings',
+
+	'UI:WelcomePopup:Message:320_06_MFA:Title' => 'Enhance users\' security with iTop Multi-factor authentication!',
+	'UI:WelcomePopup:Message:320_06_MFA:Description' => '<div>
+Empower your team with enhanced security, offering an additional layer of protection for your users. Selectively enforce 2FA for specific profiles while granting flexibility to others. Choose from a range of authentication methods from TOTP by app or email to Web authentication and recovery codes, and maintain control over your iTop instance\'s security posture.<br>
+To configure MFA, simply navigate to your Account settings and click on "Multi-Factor Authentication." <br>
+To create rules for your customers, have a look to the "MFA admin rules" menu under "Administration".
+</div>
+<div>Start securing your iTop experience today! 🔐🌟</div>
+<div><a href="%1$s" target="_blank">Read more</a></div>',
+
 	'UI:CopyValue' => 'Copy value',
 	'UI:CopyValue:Done' => 'Copy value done',
 
