@@ -286,7 +286,7 @@ HTML;
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
-		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page. ' . var_export($this->PrintQRStuff($oActiveSetting), true));
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 

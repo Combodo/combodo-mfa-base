@@ -122,7 +122,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
-		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page. ' . var_export($this->PrintQRStuff($oActiveSetting), true));
 	}
 
 	public function testConfigurationFailed()
@@ -140,7 +140,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
-		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page. ' . var_export($this->PrintQRStuff($oActiveSetting), true));
 	}
 
 	public function testConfigurationOK()
@@ -163,7 +163,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 
 		// Assert
 		$oActiveSetting->Reload();
-		$this->assertEquals('yes', $oActiveSetting->Get('validated'));
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 	}
 

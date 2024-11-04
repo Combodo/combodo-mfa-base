@@ -2,6 +2,7 @@
 
 namespace Combodo\iTop\MFABase\Test;
 
+use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
 use MFAAdminRule;
@@ -208,6 +209,16 @@ class AbstractMFATest extends ItopDataTestCase
 		]);
 
 		return $iUser;
+	}
+
+	protected function PrintQRStuff(\MFAUserSettingsTOTP $oMFAUserSettings) : array {
+		$oOTPService = new OTPService($oMFAUserSettings);
+		$aData = [
+			'GetProvisioningUri' => $oOTPService->GetProvisioningUri(),
+			'GetQRCodeData' => urldecode($oOTPService->GetProvisioningUri()),
+		];
+		\IssueLog::Info('PrintQRStuff', null, $aData);
+		return $aData;
 	}
 
 }

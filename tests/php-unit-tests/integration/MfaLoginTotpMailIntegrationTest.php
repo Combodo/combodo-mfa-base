@@ -230,7 +230,7 @@ HTML;
 
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
-		$this->assertEquals('no', $oActiveSetting->Get('validated'));
+		$this->assertEquals('no', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
 		$this->AssertStringContains(Dict::S('iTopUpdate:Error:InvalidToken'), $sOutput, 'The page should be the welcome page');
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
@@ -250,7 +250,7 @@ HTML;
 
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
-		$this->assertEquals('no', $oActiveSetting->Get('validated'));
+		$this->assertEquals('no', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
 		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should be the welcome page');
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
@@ -277,7 +277,7 @@ HTML;
 
 		// Assert
 		$oActiveSetting->Reload();
-		$this->assertEquals('yes', $oActiveSetting->Get('validated'));
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
 		$this->AssertStringNotContains(Dict::S('MFATOTP:Mail:Config:Title'), $sOutput, 'The page should be the welcome page');
 
 		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
