@@ -10,7 +10,6 @@ use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
 use MetaModel;
-use MFAAdminRule;
 use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
@@ -99,7 +98,7 @@ HTML;
 		$sOutput = $this->CallItopUrl('/pages/UI.php', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$sTitle = Dict::S('MFATOTP:App:Validation:Title');
+		$sTitle = Dict::S('MFATOTP:App:CodeValidation:Title');
 		$this->AssertStringContains($sTitle, $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringContains('<input type="text" id="totp_code" name="totp_code" value="" size="6"', $sOutput, 'The page should have a code input form');
 
@@ -121,7 +120,7 @@ HTML;
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should be the TOTP App code validation screen');
+		$this->AssertStringContains(Dict::S('MFATOTP:App:CodeValidation:Title'), $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should NOT be the initial login page');
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
@@ -188,7 +187,7 @@ HTML;
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
+		$this->AssertStringNotContains(Dict::S('MFATOTP:App:CodeValidation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
 		$sWelcomeWithoutIopApplicationName = str_replace(ITOP_APPLICATION, "", Dict::S('UI:WelcomeToITop'));
 		$this->AssertStringContains($sWelcomeWithoutIopApplicationName, $sOutput, 'The page should be the welcome page');
 		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $sLogin);
@@ -211,7 +210,7 @@ HTML;
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Validation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
+		$this->AssertStringNotContains(Dict::S('MFATOTP:App:CodeValidation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
 		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 

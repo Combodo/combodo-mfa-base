@@ -7,7 +7,8 @@
 	<div id="login-content">
 		{% block mfa_title %}
 			<div id="login-title">
-			{% import "macros.twig" as Macro %}
+				<h1>{{ 'Login:MFA:Validation:Title'|dict_s }}</h1>
+				{% import "macros.twig" as Macro %}
 				{{ Macro.BlockExtension(aPluginFormData, 'mfa_title') }}
 			</div>
 		{% endblock %}
