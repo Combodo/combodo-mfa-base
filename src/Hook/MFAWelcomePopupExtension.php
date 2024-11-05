@@ -25,7 +25,7 @@ class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 			$aMessages[] = MessageFactory::MakeForLeftIllustrationAsSVGMarkupRightTexts(
 				'320_06_MFA',
 				Dict::S('UI:WelcomePopup:Message:320_06_MFA:Title'),
-				Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page'),
+				Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page?id=extensions:combodo-mfa-light'),
 				utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/icons8-cyber-security.svg'
 			);
 		}
