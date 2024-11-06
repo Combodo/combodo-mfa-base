@@ -15,6 +15,15 @@ use utils;
 
 class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 {
+
+	/**
+	 * @inheritDoc
+	 */
+	public function GetIconRelPath(): string
+	{
+		return 'env-'.utils::GetCurrentEnvironment().'/'.MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/thumbnail_square.jpg';
+	}
+	
 	/**
 	 * @inheritDoc
 	 */
@@ -26,7 +35,7 @@ class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 				'320_06_MFA',
 				Dict::S('UI:WelcomePopup:Message:320_06_MFA:Title'),
 				Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page?id=extensions:combodo-mfa-light'),
-				utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/icons8-cyber-security.svg'
+				utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/undraw_two_factor_authentication.svg'
 			);
 		}
 		return $aMessages;
