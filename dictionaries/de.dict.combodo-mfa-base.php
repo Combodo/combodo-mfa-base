@@ -2,83 +2,83 @@
 /**
  * Localized data
  *
- * @copyright   Copyright (C) 2013 XXXXX
+ * @copyright   Copyright (C) 2024 Combodo SAS
  * @license     http://opensource.org/licenses/AGPL-3.0
+ * @author      Lars Kaltefleiter <lars.kaltefleiter@itomig.de>
  */
 
-Dict::Add('EN US', 'English', 'English', array(
+Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'combodo-mfa-base/Operation:Action/Title' => '',
-	'MFA:MFAUserSettings:Description' => 'Multi-factor authentication adds an additional layer of security to your account by requiring more than just a password to sign in.',
+	'MFA:MFAUserSettings:Description' => 'Multi-Faktor-Authentifizierung führt eine zusätzliche Sicherheitschicht für Ihr Benutzerkonto ein, indem sie mehr als nur ein Passwort erfordert, um sich anzumelden.',
+	'MyAccount:Tab:MFA' => 'Multi-Faktor-Authentifizierung',
+	'Menu:MFAAdminRule' => 'MFA Adminregeln',
+	'Menu:MFAAdminRule+' => 'Multi-Faktor-Authentifizierungsregeln',
+	'Menu:MFAUserSettings' => 'MFA Benutzereinstellungen',
+	'Menu:MFAUserSettings+' => 'Einstellungen für Multi-Faktor-Authentifizierung des Benutzers',
 
-	'MyAccount:Tab:MFA' => 'Multi-Factor Authentication',
-	'Menu:MFAAdminRule' => 'MFA admin rules',
-	'Menu:MFAAdminRule+' => 'Multi-Factor Authentication rules',
-	'Menu:MFAUserSettings' => 'MFA user settings',
-	'Menu:MFAUserSettings+' => 'Multi-Factor Authentication user settings',
-
-	'UI:WelcomePopup:Message:320_06_MFA:Title' => 'Enhance users\' security with iTop Multi-factor authentication!',
+	'UI:WelcomePopup:Message:320_06_MFA:Title' => 'Verbessern Sie die Sicherheit Ihrer Benutzer mit iTop Multi-Faktor-Authentifizierung!',
 	'UI:WelcomePopup:Message:320_06_MFA:Description' => '<div>
-Empower your team with enhanced security, offering an additional layer of protection for your users. Selectively enforce 2FA for specific profiles while granting flexibility to others. Choose from a range of authentication methods from TOTP by app or email to Web authentication and recovery codes, and maintain control over your iTop instance\'s security posture.<br>
-To configure MFA, simply navigate to your Account settings and click on "Multi-Factor Authentication." <br>
-To create rules for your customers, have a look to the "MFA admin rules" menu under "Administration".
+Bereichern Sie Ihre Teammitglieder mit erweitertem Sicherheitsmaßnahmen, indem Sie mehr als nur ein Passwort benötigen, um sich anzumelden. Wählen Sie aus, 2FA für bestimmte Profile zu erzwingen, während anderen Benutzern Flexibilität gewährt wird. Wählen Sie aus einer Vielzahl von Authentifizierungsmethoden wie TOTP über App oder E-Mail, Web-Authentifizierung und Recovery-Codes und behalten Sie die Kontrolle über die Sicherheit Ihrer iTop-Instanz.<br>
+Um MFA zu konfigurieren, navigieren Sie einfach zu Ihren Account-Einstellungen und klicken auf "Multi-Faktor-Authentifizierung." <br>
+Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminregeln" unter "Administration" an. 
 </div>
-<div>Start securing your iTop experience today! 🔐🌟</div>
-<div><a href="%1$s" target="_blank">Read more</a></div>',
+<div>Beginnen Sie heute, Ihre iTop-Erfahrung sicherer zu machen! 🔐🌟</div>
+<div><a href="%1$s" target="_blank">Weitere Informationen lesen</a></div>',
 
 
-	'UI:MFA' => 'MFA user settings',
-	'UI:MFA:Portal:Menu' => 'Multi-Factor Authentication',
-	'UI:MFA:Modes'  => 'Multi-factor authentication user settings',
+	'UI:MFA' => 'MFA Benutzereinstellungen',
+	'UI:MFA:Portal:Menu' => 'Multi-Faktor-Authentifizierung',
+	'UI:MFA:Modes'  => 'Einstellungen für Multi-Faktor-Authentifizierung des Benutzers',
 	'UI:MFA:Modes:Name' => 'Name',
-	'UI:MFA:Modes:Activated' => 'Activated',
-	'UI:MFA:Modes:Action' => 'Action',
-	'UI:MFA:Modes:Action:Configure:ButtonTooltip' => 'Edit MFA mode',
-	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Create new MFA mode',
-	'UI:MFA:Modes:Action:Delete:ButtonTooltip' => 'Remove MFA mode',
-	'UI:MFA:Modes:Default:Title' => 'Default MFA Mode',
-	'UI:MFA:Modes:Default' => 'Is default',
-	'UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip' => 'Set as default. This mode will be presented first on login screen',
-	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Reactivate previously deleted mode',
+	'UI:MFA:Modes:Activated' => 'Aktiviert',
+	'UI:MFA:Modes:Action' => 'Aktion',
+	'UI:MFA:Modes:Action:Configure:ButtonTooltip' => 'MFA-Methode bearbeiten',
+	'UI:MFA:Modes:Action:Add:ButtonTooltip' => 'Neue MFA-Methode erstellen',
+	'UI:MFA:Modes:Action:Delete:ButtonTooltip' => 'MFA-Methode entfernen',
+	'UI:MFA:Modes:Default:Title' => 'Standard-MFA-Methode',
+	'UI:MFA:Modes:Default' => 'Standard',
+	'UI:MFA:Modes:Action:SetAsDefault:ButtonTooltip' => 'Als Standard festlegen. Diese Methode wird auf der Anmeldeseite zuerst angezeigt',
+	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Vorher entfernte MFA-Methode wiederherstellen',
 
-	'Login:MFA:Validation:Title' => 'Multi-Factor Authentication',
-	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor Authentication warning',
-	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to configure this mode.',
-	'Login:MFA:Continue' => 'Continue',
-	'Login:MFA:Restart:Label' => 'Back to login',
+	'Login:MFA:Validation:Title' => 'Multi-Faktor-Authentifizierung',
+	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Achtung zur Multi-Faktor-Authentifizierung',
+	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'Die Multi-Faktor-Authentifizierungsmethode %1$s muss vor dem %2$s aktiviert sein. Danach wird es erforderlich sein, diese Methode zu konfigurieren.',
+	'Login:MFA:Continue' => 'Fortsetzen',
+	'Login:MFA:Restart:Label' => 'Zurück zur Anmeldung',
 
-	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
-	'UI:MFA:Error:FailedToSetDefaultMode' => 'Failed to set default MFA Modes',
-	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Default mode cannot be included in denied modes',
+	'UI:MFA:Error:FailedToConfigure' => 'Konfiguration der MFA-Methode fehlgeschlagen',
+	'UI:MFA:Error:FailedToSetDefaultMode' => 'Setzen der Standard-MFA-Methode fehlgeschlagen',
+	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Standardmethode kann nicht in verbotenen Methoden enthalten sein',
 
-	'Class:MFAUserSettings' => 'MFA user settings',
-	'Class:MFAUserSettings/Attribute:validated' => 'Validated',
-	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Yes',
-	'Class:MFAUserSettings/Attribute:validated/Value:no' => 'No',
-	'Class:MFAUserSettings/Attribute:configured' => 'Configured',
-	'Class:MFAUserSettings/Attribute:configured/Value:yes' => 'Yes',
-	'Class:MFAUserSettings/Attribute:configured/Value:no' => 'No',
-	'Class:MFAUserSettings/Attribute:is_default' => 'Default',
-	'Class:MFAUserSettings/Attribute:is_default/Value:yes' => 'Yes',
-	'Class:MFAUserSettings/Attribute:is_default/Value:no' => 'No',
-	'Class:MFAUserSettings/Attribute:user_id' => 'User',
+	'Class:MFAUserSettings' => 'MFA Benutzereinstellungen',
+	'Class:MFAUserSettings/Attribute:validated' => 'Validiert',
+	'Class:MFAUserSettings/Attribute:validated/Value:yes' => 'Ja',
+	'Class:MFAUserSettings/Attribute:validated/Value:no' => 'Nein',
+	'Class:MFAUserSettings/Attribute:configured' => 'Konfiguriert',
+	'Class:MFAUserSettings/Attribute:configured/Value:yes' => 'Ja',
+	'Class:MFAUserSettings/Attribute:configured/Value:no' => 'Nein',
+	'Class:MFAUserSettings/Attribute:is_default' => 'Standard',
+	'Class:MFAUserSettings/Attribute:is_default/Value:yes' => 'Ja',
+	'Class:MFAUserSettings/Attribute:is_default/Value:no' => 'Nein',
+	'Class:MFAUserSettings/Attribute:user_id' => 'Benutzer',
 
-	'Class:MFAAdminRule' => 'Multi-Factor Authentication rules',
-	'Class:MFAAdminRule+' => 'Multi-Factor Authentication rules',
+	'Class:MFAAdminRule' => 'Multi-Faktor-Authentifizierungsregeln',
+	'Class:MFAAdminRule+' => 'Multi-Faktor-Authentifizierungsregeln',
 	'Class:MFAAdminRule/Attribute:name' => 'Name',
-	'Class:MFAAdminRule/Attribute:denied_mfamodes_list' => 'Denied modes',
-	'Class:MFAAdminRule/Attribute:denied_mfamodes_list+' => 'The list of MFA modes that are denied to the users',
-	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Activation date',
-	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'The activation date will be effective only if the operational state is "forced"',
-	'Class:MFAAdminRule/Attribute:operational_state' => 'Operational state',
-	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Forced',
+	'Class:MFAAdminRule/Attribute:denied_mfamodes_list' => 'Verbotene MFA-Methoden',
+	'Class:MFAAdminRule/Attribute:denied_mfamodes_list+' => 'Die Liste der Multi-Faktor-Authentifizierungsmethoden, die den Benutzern verboten sind',
+	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Aktivierungstermin',
+	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'Der Aktivierungstermin wird nur wirksam sein, wenn die Betriebsart "erzwingen" ist',
+	'Class:MFAAdminRule/Attribute:operational_state' => 'Betriebsart',
+	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Erzwingen',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
-	'Class:MFAAdminRule/Attribute:orgs_list' => 'Organisations list',
-	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Default mode',
-	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'The default MFA mode suggested to users when the activation state is "forced" and MFA is not yet configured for them',
-	'Class:MFAAdminRule/Attribute:profiles_list' => 'Profiles list',
-	'Class:MFAAdminRule/Attribute:rank' => 'Rank',
+	'Class:MFAAdminRule/Attribute:orgs_list' => 'Organisationsliste',
+	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Standardmodus',
+	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'Die vorgeschlagene Multi-Faktor-Authentifizierungsmethode für Benutzer, wenn die Betriebsart "erzwingen" ist und MFA noch nicht konfiguriert wurde',
+	'Class:MFAAdminRule/Attribute:profiles_list' => 'Profil-Liste',
+	'Class:MFAAdminRule/Attribute:rank' => 'Reihenfolge',
 	'Class:MFAAdminRule/Attribute:status' => 'Status',
-	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Active',
-	'Class:MFAAdminRule/Attribute:status/Value:inactive' => 'Inactive',
+	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Aktiv',
+	'Class:MFAAdminRule/Attribute:status/Value:inactive' => 'Inaktiv',
 
 ));
