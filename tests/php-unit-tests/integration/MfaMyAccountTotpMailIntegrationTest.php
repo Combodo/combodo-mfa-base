@@ -139,7 +139,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 
 		// Assert
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
-		$this->assertEquals('no', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
+		$this->assertEquals('no', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting, $sOutput), true));
 		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Config:Title'), $sOutput, 'The page should be the welcome page');
 	}
 
@@ -162,7 +162,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 
 		// Assert
 		$oActiveSetting->Reload();
-		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting), true));
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting, $sOutput), true));
 		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Config:Title'), $sOutput, 'The page should be the welcome page');
 	}
 

@@ -211,11 +211,12 @@ class AbstractMFATest extends ItopDataTestCase
 		return $iUser;
 	}
 
-	protected function PrintQRStuff(\MFAUserSettingsTOTP $oMFAUserSettings) : array {
+	protected function PrintQRStuff(\MFAUserSettingsTOTP $oMFAUserSettings, string $sOutput) : array {
 		$oOTPService = new OTPService($oMFAUserSettings);
 		$aData = [
 			'GetProvisioningUri' => $oOTPService->GetProvisioningUri(),
 			'GetQRCodeData' => urldecode($oOTPService->GetProvisioningUri()),
+			'sOutput' => $sOutput
 		];
 		\IssueLog::Info('PrintQRStuff', null, $aData);
 		return $aData;
