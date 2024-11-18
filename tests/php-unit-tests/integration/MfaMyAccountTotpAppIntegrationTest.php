@@ -60,6 +60,8 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 
 		$this->oiTopConfig = new \Config($sConfigPath);
 		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
+		$this->oiTopConfig->Set(\LogAPI::ENUM_CONFIG_PARAM_FILE, ['MFA' => 'Debug']);
+
 		//$this->oiTopConfig->Set('transactions_enabled', false);
 		//$this->oiTopConfig->Set('log_transactions', true);
 		$this->SaveItopConfFile();

@@ -218,7 +218,7 @@ class AbstractMFATest extends ItopDataTestCase
 			'GetQRCodeData' => urldecode($oOTPService->GetProvisioningUri()),
 			'sOutput' => $sOutput
 		];
-		\IssueLog::Info('PrintQRStuff', null, $aData);
+		//\IssueLog::Info('PrintQRStuff', null, $aData);
 		return $aData;
 	}
 
