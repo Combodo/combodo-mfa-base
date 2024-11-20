@@ -121,6 +121,7 @@ class MFATwigRenderer
 			$oMFABaseLoader = new FilesystemLoader([], APPROOT.'templates');
 			$aMFABaseTemplatesPaths = ['pages/login', utils::GetAbsoluteModulePath(MFABaseHelper::MODULE_NAME).'templates/login'];
 			$oMFABaseLoader->setPaths($aMFABaseTemplatesPaths);
+			$oMFABaseLoader->setPaths($aMFABaseTemplatesPaths, 'ItopCore');
 			$this->aTwigLoaders[] = $oMFABaseLoader;
 
 			$oLoader = new ChainLoader($this->aTwigLoaders);
