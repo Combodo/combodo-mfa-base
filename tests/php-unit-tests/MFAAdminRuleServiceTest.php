@@ -52,16 +52,6 @@ class MFAAdminRuleServiceTest extends AbstractMFATest
 		$this->assertEquals(null, MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($oOrgLessUser->GetKey()), 'Invalid rule should NOT be found');
 	}
 
-	protected function AssertRulesAreIdentical($oExpectedRule, ?MFAAdminRule $oRule, $sMessage = ''): void
-	{
-		if (is_null($oExpectedRule)) {
-			$this->assertNull($oRule, $sMessage);
-		} else {
-			$this->assertNotNull($oRule, $sMessage);
-			$this->assertEquals($oExpectedRule->GetKey(), $oRule->GetKey(), $sMessage);
-		}
-	}
-
 	public function testGetDeniedModes_null()
 	{
 		$this->assertEquals([], MFAAdminRuleService::GetInstance()->GetDeniedModes(null));
@@ -117,5 +107,15 @@ class MFAAdminRuleServiceTest extends AbstractMFATest
 		}
 		$sComment = "sNow: $sNow sForcedActivationDate: $sForcedActivationDate obj forced_activation_date : ".$oRule->Get('forced_activation_date');
 		$this->assertEquals($bExpectedForcedNow, MFAAdminRuleService::GetInstance()->IsForcedNow($oRule), $sComment);
+	}
+
+	protected function AssertRulesAreIdentical($oExpectedRule, ?MFAAdminRule $oRule, $sMessage = ''): void
+	{
+		if (is_null($oExpectedRule)) {
+			$this->assertNull($oRule, $sMessage);
+		} else {
+			$this->assertNotNull($oRule, $sMessage);
+			$this->assertEquals($oExpectedRule->GetKey(), $oRule->GetKey(), $sMessage);
+		}
 	}
 }

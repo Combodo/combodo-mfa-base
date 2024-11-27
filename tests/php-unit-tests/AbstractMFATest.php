@@ -103,7 +103,7 @@ class AbstractMFATest extends ItopDataTestCase
 
 		if (count($aDeniedModes) != 0) {
 			/** @var \ormLinkSet $oDeniedLinkset */
-			$oDeniedLinkset = $oRule->Get('denied_mfamodes_list');
+			$oDeniedLinkset = $oRule->Get('denied_mfamodes');
 			foreach ($aDeniedModes as $sMfaMode) {
 				/** @var MFAMode $oMfaMode */
 				$oMfaMode = $this->createObject(MFAMode::class, [
@@ -112,7 +112,7 @@ class AbstractMFATest extends ItopDataTestCase
 
 				$oDeniedLinkset->AddItem(\MetaModel::NewObject('lnkMFAAdminRuleToMFAMode', ['mfamode_id' => $oMfaMode]));
 			}
-			$aParams['denied_mfamodes_list'] = $oDeniedLinkset;
+			$aParams['denied_mfamodes'] = $oDeniedLinkset;
 		}
 
 		if (count($aParams) != 0) {

@@ -146,9 +146,9 @@ class MFAAdminRuleService
 		}
 
 		try {
-			$oDeniedLinkset = $oAdminRule->Get('denied_mfamodes_list');
+			$oDeniedSet = $oAdminRule->Get('denied_mfamodes');
 
-			return $oDeniedLinkset->GetColumnAsArray("mfamode_id_friendlyname");
+			return $oDeniedSet->GetValues();
 		} catch (MFABaseException $e) {
 			throw $e;
 		} catch (Exception $e) {

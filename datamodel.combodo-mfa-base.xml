@@ -468,18 +468,16 @@
           <dependencies/>
           <tracking_level>all</tracking_level>
         </field>
-        <field id="denied_mfamodes_list" xsi:type="AttributeLinkedSetIndirect">
-          <ext_key_to_remote>mfamode_id</ext_key_to_remote>
-          <ext_key_to_me>mfaadminrule_id</ext_key_to_me>
-          <linked_class>lnkMFAAdminRuleToMFAMode</linked_class>
-          <count_min>0</count_min>
-          <count_max>0</count_max>
+        <field id="denied_mfamodes" xsi:type="AttributeClassSet">
+          <class_category>DeniableMFAMode</class_category>
+          <sql>denied_mfamodes</sql>
+          <max_items>10</max_items>
+          <default_value/>
+          <more_values/>
+          <is_null_allowed>true</is_null_allowed>
+          <validation_pattern/>
+          <dependencies/>
           <tracking_level>all</tracking_level>
-          <duplicates>false</duplicates>
-          <with_php_constraint>false</with_php_constraint>
-          <with_php_computation>false</with_php_computation>
-          <display_style>property</display_style>
-          <edit_when>on_host_edition</edit_when>
         </field>
       </fields>
       <event_listeners>
@@ -559,7 +557,7 @@
                 <item id="preferred_mfa_mode">
                   <rank>30</rank>
                 </item>
-                <item id="denied_mfamodes_list">
+                <item id="denied_mfamodes">
                   <rank>40</rank>
                 </item>
                 <item id="operational_state">
@@ -769,156 +767,6 @@
               <rank>10</rank>
             </item>
             <item id="profile_id">
-              <rank>20</rank>
-            </item>
-          </items>
-        </details>
-      </presentation>
-      <parent>cmdbAbstractObject</parent>
-    </class>
-    <class id="MFAMode" _delta="define">
-      <properties>
-        <category>bizmodel,searchable</category>
-        <abstract>false</abstract>
-        <db_table>mfa_mode</db_table>
-        <style>
-          <icon>
-            <fileref ref="icons8-access-48_6ffd549ca99df301f29087ce569cbcdc"/>
-          </icon>
-        </style>
-        <naming>
-          <attributes>
-            <attribute id="name"/>
-          </attributes>
-        </naming>
-        <reconciliation>
-          <attributes>
-            <attribute id="name"/>
-            <attribute id="finalclass"/>
-          </attributes>
-        </reconciliation>
-      </properties>
-      <fields>
-        <field id="mfaadminrules_list" xsi:type="AttributeLinkedSetIndirect">
-          <ext_key_to_me>mfamode_id</ext_key_to_me>
-          <ext_key_to_remote>mfaadminrule_id</ext_key_to_remote>
-          <linked_class>lnkMFAAdminRuleToMFAMode</linked_class>
-          <count_min>0</count_min>
-          <count_max>0</count_max>
-          <tracking_level>all</tracking_level>
-          <duplicates>false</duplicates>
-          <with_php_constraint>false</with_php_constraint>
-          <with_php_computation>false</with_php_computation>
-          <display_style>property</display_style>
-          <edit_when>on_host_edition</edit_when>
-        </field>
-      </fields>
-      <methods/>
-      <presentation>
-        <list>
-          <items>
-            <item id="finalclass">
-              <rank>10</rank>
-            </item>
-          </items>
-        </list>
-        <search>
-          <items>
-            <item id="name">
-              <rank>10</rank>
-            </item>
-          </items>
-        </search>
-        <details>
-          <items>
-            <item id="name">
-              <rank>10</rank>
-            </item>
-            <item id="mfaadminrules_list">
-              <rank>20</rank>
-            </item>
-          </items>
-        </details>
-      </presentation>
-      <parent>Typology</parent>
-    </class>
-    <class id="lnkMFAAdminRuleToMFAMode" _delta="define">
-      <properties>
-        <category>grant_by_profile</category>
-        <abstract>false</abstract>
-        <db_table>lnkmfaadminruletomfamode</db_table>
-        <is_link>1</is_link>
-        <naming>
-          <attributes>
-            <attribute id="mfaadminrule_id_friendlyname"/>
-            <attribute id="mfamode_id_friendlyname"/>
-          </attributes>
-        </naming>
-        <reconciliation>
-          <attributes>
-            <attribute id="mfaadminrule_id"/>
-            <attribute id="mfamode_id"/>
-          </attributes>
-        </reconciliation>
-        <uniqueness_rules>
-          <rule id="no_duplicate">
-            <attributes>
-              <attribute id="mfaadminrule_id"/>
-              <attribute id="mfamode_id"/>
-            </attributes>
-            <filter><![CDATA[]]></filter>
-            <disabled>false</disabled>
-            <is_blocking>true</is_blocking>
-          </rule>
-        </uniqueness_rules>
-      </properties>
-      <fields>
-        <field id="mfaadminrule_id" xsi:type="AttributeExternalKey">
-          <sql>mfaadminrule_id</sql>
-          <filter/>
-          <dependencies/>
-          <is_null_allowed>false</is_null_allowed>
-          <target_class>MFAAdminRule</target_class>
-          <on_target_delete>DEL_AUTO</on_target_delete>
-        </field>
-        <field id="mfamode_id" xsi:type="AttributeExternalKey">
-          <category>bizmodel,DeniableMFAMode</category>
-          <sql>mfamode_id</sql>
-          <filter/>
-          <dependencies/>
-          <is_null_allowed>false</is_null_allowed>
-          <target_class>MFAMode</target_class>
-          <on_target_delete>DEL_AUTO</on_target_delete>
-        </field>
-      </fields>
-      <methods/>
-      <presentation>
-        <list>
-          <items>
-            <item id="mfaadminrule_id">
-              <rank>10</rank>
-            </item>
-            <item id="mfamode_id">
-              <rank>20</rank>
-            </item>
-          </items>
-        </list>
-        <search>
-          <items>
-            <item id="mfaadminrule_id">
-              <rank>10</rank>
-            </item>
-            <item id="mfamode_id">
-              <rank>20</rank>
-            </item>
-          </items>
-        </search>
-        <details>
-          <items>
-            <item id="mfaadminrule_id">
-              <rank>10</rank>
-            </item>
-            <item id="mfamode_id">
               <rank>20</rank>
             </item>
           </items>
