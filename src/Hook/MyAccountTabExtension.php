@@ -7,15 +7,22 @@
 namespace Combodo\iTop\MFABase\Hook;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
+use Combodo\iTop\MFABase\Service\MFAAdminRuleService;
 use Combodo\iTop\MyAccount\Hook\iMyAccountTabExtension;
 use Dict;
+use UserRights;
 
 class MyAccountTabExtension implements iMyAccountTabExtension
 {
 
 	public function IsTabPresent(): bool
 	{
-		return MFABaseConfig::GetInstance()->IsEnabled();
+		if (MFABaseConfig::GetInstance()->IsEnabled()) {
+			$sUserId = UserRights::GetUserId();
+			$oAdminRule = MFAAdminRuleService::GetInstance()->GetAdminRuleByUserId($sUserId);
+			return is_null($oAdminRule) || ! $oAdminRule->IsDenied();
+		}
+		return false;
 	}
 
 	public function GetTabCode(): string

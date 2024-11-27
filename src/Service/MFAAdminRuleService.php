@@ -147,6 +147,9 @@ class MFAAdminRuleService
 
 		try {
 			$oDeniedSet = $oAdminRule->Get('denied_mfamodes');
+			if (is_null($oDeniedSet)) {
+				return [];
+			}
 
 			return $oDeniedSet->GetValues();
 		} catch (MFABaseException $e) {

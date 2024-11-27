@@ -396,8 +396,12 @@
               <code>forced</code>
               <rank>20</rank>
             </value>
+            <value id="denied">
+              <code>denied</code>
+              <rank>30</rank>
+            </value>
           </values>
-          <sort_type>label</sort_type>
+          <sort_type>rank</sort_type>
           <default_value>forced</default_value>
           <is_null_allowed>false</is_null_allowed>
           <display_style>radio_horizontal</display_style>
@@ -509,7 +513,6 @@
         <method id="IsForced">
           <comment>/**
             *
-            * @author Eric Espie
             */
           </comment>
           <static>false</static>
@@ -518,6 +521,19 @@
           <code><![CDATA[	public function IsForced(): bool
 	{
 		return $this->Get('operational_state') === 'forced';
+	}]]></code>
+        </method>
+        <method id="IsDenied">
+          <comment>/**
+            *
+            */
+          </comment>
+          <static>false</static>
+          <access>public</access>
+          <type>Custom</type>
+          <code><![CDATA[	public function IsDenied(): bool
+	{
+		return $this->Get('operational_state') === 'denied';
 	}]]></code>
         </method>
       </methods>

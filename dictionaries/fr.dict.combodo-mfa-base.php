@@ -72,6 +72,7 @@ Pour configurer l\'authentification multifacteur, il vous suffit de vous rendre 
 	'Class:MFAAdminRule/Attribute:operational_state' => 'État opérationnel',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Forcé',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optionnel',
+	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Interdit',
 	'Class:MFAAdminRule/Attribute:orgs_list' => 'Liste des organisations',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Mode par défaut',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'Le mode MFA par défaut proposé aux utilisateurs lorsque l\'état d\'activation est "forcé" et que leur authentification multifacteur n\'est pas encore configurée',

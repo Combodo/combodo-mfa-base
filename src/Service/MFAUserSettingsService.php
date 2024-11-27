@@ -8,6 +8,7 @@ namespace Combodo\iTop\MFABase\Service;
 
 use Combodo\iTop\MFABase\Helper\MFABaseConfig;
 use Combodo\iTop\MFABase\Helper\MFABaseException;
+use Combodo\iTop\MFABase\Helper\MFABaseLog;
 use DBObjectSearch;
 use DBObjectSet;
 use DBSearch;
@@ -24,6 +25,8 @@ class MFAUserSettingsService
 
 	protected function __construct()
 	{
+
+		MFABaseLog::Enable();
 		if (!isset(self::$oMFAAdminRuleService)) {
 			self::$oMFAAdminRuleService = MFAAdminRuleService::GetInstance();
 		}
@@ -78,6 +81,9 @@ class MFAUserSettingsService
 
 		try {
 			$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
+			if (!is_null($oAdminRule) && $oAdminRule->IsDenied()) {
+				return [];
+			}
 			$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
 
 			$aConfiguredMFAModes = MetaModel::EnumChildClasses(MFAUserSettings::class);
@@ -162,6 +168,10 @@ class MFAUserSettingsService
 			$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
 			$sPreferredMFAMode = '';
 			if (!is_null($oAdminRule)) {
+				MFABaseLog::Debug(__FUNCTION__.': Admin rule denied');
+				if ($oAdminRule->IsDenied()) {
+					return [];
+				}
 				$sPreferredMFAMode = $oAdminRule->Get('preferred_mfa_mode');
 			}
 			$aDeniedMfaModes = self::$oMFAAdminRuleService->GetDeniedModes($oAdminRule);
@@ -330,8 +340,8 @@ class MFAUserSettingsService
 			case 'set_as_default':
 				// Set current mode as default
 				$this->SetAsDefaultMode($sUserId, $sModeClass);
-				$oUserSettings = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
-				//$aParams['sURL'] = $oUserSettings->GetConfigurationURLForMyAccountRedirection();
+				// Create if not exist
+				MFAUserSettingsService::GetInstance()->GetMFAUserSettings($sUserId, $sModeClass);
 				break;
 
 			default:
@@ -438,7 +448,7 @@ class MFAUserSettingsService
 			}
 
 			if (empty($aData)) {
-				return [];
+				return ['aColumns' => $aColumns, 'aData' => []];
 			}
 
 			return ['aColumns' => $aColumns, 'aData' => $aData];

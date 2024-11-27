@@ -6,7 +6,6 @@ use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Config;
 use MFAAdminRule;
-use MFAMode;
 use MFAUserSettings;
 use Organization;
 
@@ -102,17 +101,15 @@ class AbstractMFATest extends ItopDataTestCase
 		}
 
 		if (count($aDeniedModes) != 0) {
-			/** @var \ormLinkSet $oDeniedLinkset */
-			$oDeniedLinkset = $oRule->Get('denied_mfamodes');
-			foreach ($aDeniedModes as $sMfaMode) {
-				/** @var MFAMode $oMfaMode */
-				$oMfaMode = $this->createObject(MFAMode::class, [
-					'name' => $sMfaMode,
-				]);
-
-				$oDeniedLinkset->AddItem(\MetaModel::NewObject('lnkMFAAdminRuleToMFAMode', ['mfamode_id' => $oMfaMode]));
+			/** @var \ormSet $oDeniedModes */
+			$oDeniedModes = $oRule->Get('denied_mfamodes');
+			if ($oDeniedModes === null) {
+				$oDeniedModes = new \ormSet(get_class($oRule), 'denied_mfamodes');
 			}
-			$aParams['denied_mfamodes'] = $oDeniedLinkset;
+			foreach ($aDeniedModes as $sMfaMode) {
+				$oDeniedModes->Add($sMfaMode);
+			}
+			$aParams['denied_mfamodes'] = $oDeniedModes;
 		}
 
 		if (count($aParams) != 0) {

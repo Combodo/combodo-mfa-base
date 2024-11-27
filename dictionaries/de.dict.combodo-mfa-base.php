@@ -72,6 +72,7 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'Class:MFAAdminRule/Attribute:operational_state' => 'Betriebsart',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Erzwingen',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
+	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Verboten',
 	'Class:MFAAdminRule/Attribute:orgs_list' => 'Organisationsliste',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Standardmodus',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'Die vorgeschlagene Multi-Faktor-Authentifizierungsmethode für Benutzer, wenn die Betriebsart "erzwingen" ist und MFA noch nicht konfiguriert wurde',

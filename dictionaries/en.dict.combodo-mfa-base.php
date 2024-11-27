@@ -72,6 +72,7 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 	'Class:MFAAdminRule/Attribute:operational_state' => 'Operational state',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Forced',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
+	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Denied',
 	'Class:MFAAdminRule/Attribute:orgs_list' => 'Organisations list',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Default mode',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'The default MFA mode suggested to users when the activation state is "forced" and MFA is not yet configured for them',
