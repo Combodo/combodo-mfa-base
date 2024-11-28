@@ -18,6 +18,7 @@ use MFAAdminRule;
 use ormLinkSet;
 use User;
 use UserRights;
+use utils;
 
 class MFAAdminRuleService
 {
@@ -126,10 +127,15 @@ class MFAAdminRuleService
 
 	public function OnCheckToWrite(?MFAAdminRule $oAdminRule)
 	{
-		$sPreferredMode = $oAdminRule->Get('preferred_mfa_mode');
-		$aDeniedModes = $this->GetDeniedModes($oAdminRule);
-		if (in_array($sPreferredMode, $aDeniedModes)) {
-			$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeCannotBeDenied'));
+		if ($oAdminRule->Get('operational_state') === 'forced') {
+			$sPreferredMode = $oAdminRule->Get('preferred_mfa_mode');
+			if (utils::IsNullOrEmptyString($sPreferredMode)) {
+				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeIsMandatoryWhenRuleIsForced'));
+			}
+			$aDeniedModes = $this->GetDeniedModes($oAdminRule);
+			if (in_array($sPreferredMode, $aDeniedModes)) {
+				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeCannotBeDenied'));
+			}
 		}
 	}
 

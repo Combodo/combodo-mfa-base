@@ -31,12 +31,22 @@ class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 	{
 		$aMessages = [];
 		if (UserRights::IsAdministrator()) {
-			$aMessages[] = MessageFactory::MakeForLeftIllustrationAsSVGMarkupRightTexts(
-				'320_06_MFA',
-				Dict::S('UI:WelcomePopup:Message:320_06_MFA:Title'),
-				Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page?id=extensions:combodo-mfa-light'),
-				utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/undraw_two_factor_authentication.svg'
-			);
+			if (class_exists('MFAUserSettingsWebAuthn')) {
+				// MFA Extended
+				$aMessages[] = MessageFactory::MakeForLeftIllustrationAsSVGMarkupRightTexts(
+					'320_06_MFA',
+					Dict::S('UI:WelcomePopup:Message:320_06_MFA:Title'),
+					Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page?id=extensions:combodo-mfa-extended'),
+					utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/undraw_two_factor_authentication.svg'
+				);
+			} else {
+				$aMessages[] = MessageFactory::MakeForLeftIllustrationAsSVGMarkupRightTexts(
+					'320_06_MFA',
+					Dict::S('UI:WelcomePopup:Message:320_06_MFA:Title'),
+					Dict::Format('UI:WelcomePopup:Message:320_06_MFA:Description', 'https://www.itophub.io/wiki/page?id=extensions:combodo-mfa-light'),
+					utils::GetAbsoluteUrlModulesRoot().MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/undraw_two_factor_authentication.svg'
+				);
+			}
 		}
 		return $aMessages;
 	}

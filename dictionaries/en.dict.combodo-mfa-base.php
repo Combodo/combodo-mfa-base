@@ -42,13 +42,14 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 
 	'Login:MFA:Validation:Title' => 'Multi-Factor Authentication',
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor Authentication warning',
-	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to configure this mode.',
+	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to configure this mode. It is possible to configure MFA in "My Account" screen.',
 	'Login:MFA:Continue' => 'Continue',
 	'Login:MFA:Restart:Label' => 'Back to login',
 
 	'UI:MFA:Error:FailedToConfigure' => 'Failed to configure MFA Modes',
 	'UI:MFA:Error:FailedToSetDefaultMode' => 'Failed to set default MFA Modes',
 	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Default mode cannot be included in denied modes',
+	'UI:MFA:Error:PreferredModeIsMandatoryWhenRuleIsForced' => 'Preferred mode is mandatory when rule is forced',
 
 	'Class:MFAUserSettings' => 'MFA user settings',
 	'Class:MFAUserSettings/Attribute:validated' => 'Validated',
@@ -70,6 +71,7 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Activation date',
 	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'The activation date will be effective only if the operational state is "forced"',
 	'Class:MFAAdminRule/Attribute:operational_state' => 'Operational state',
+	'Class:MFAAdminRule/Attribute:operational_state+' => 'When optional, the user can choose to activate MFA or not. When forced, the user must activate MFA. When denied, the user cannot activate MFA.',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Forced',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Denied',
@@ -77,6 +79,7 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Default mode',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'The default MFA mode suggested to users when the activation state is "forced" and MFA is not yet configured for them',
 	'Class:MFAAdminRule/Attribute:profiles_list' => 'Profiles list',
+	'Class:MFAAdminRule/Attribute:profiles_list+' => 'Selecting no profile will apply the rule to all profiles',
 	'Class:MFAAdminRule/Attribute:rank' => 'Rank',
 	'Class:MFAAdminRule/Attribute:status' => 'Status',
 	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Active',

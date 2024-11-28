@@ -42,13 +42,14 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 
 	'Login:MFA:Validation:Title' => 'Multi-Faktor-Authentifizierung',
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Achtung zur Multi-Faktor-Authentifizierung',
-	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'Die Multi-Faktor-Authentifizierungsmethode %1$s muss vor dem %2$s aktiviert sein. Danach wird es erforderlich sein, diese Methode zu konfigurieren.',
+	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'Die Multi-Faktor-Authentifizierungsmethode %1$s muss vor dem %2$s aktiviert sein. Danach wird es erforderlich sein, diese Methode zu konfigurieren. Es ist möglich, MFA im Bildschirm "Mein Konto" zu konfigurieren.',
 	'Login:MFA:Continue' => 'Fortsetzen',
 	'Login:MFA:Restart:Label' => 'Zurück zur Anmeldung',
 
 	'UI:MFA:Error:FailedToConfigure' => 'Konfiguration der MFA-Methode fehlgeschlagen',
 	'UI:MFA:Error:FailedToSetDefaultMode' => 'Setzen der Standard-MFA-Methode fehlgeschlagen',
 	'UI:MFA:Error:PreferredModeCannotBeDenied' => 'Standardmethode kann nicht in verbotenen Methoden enthalten sein',
+	'UI:MFA:Error:PreferredModeIsMandatoryWhenRuleIsForced' => 'Standardmethode ist erforderlich, wenn die Regel erzwungen wird',
 
 	'Class:MFAUserSettings' => 'MFA Benutzereinstellungen',
 	'Class:MFAUserSettings/Attribute:validated' => 'Validiert',
@@ -70,6 +71,7 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Aktivierungstermin',
 	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'Der Aktivierungstermin wird nur wirksam sein, wenn die Betriebsart "erzwingen" ist',
 	'Class:MFAAdminRule/Attribute:operational_state' => 'Betriebsart',
+	'Class:MFAAdminRule/Attribute:operational_state+' => 'When optional, the user can choose to activate MFA or not. When forced, the user must activate MFA. When denied, the user cannot activate MFA.~~',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Erzwingen',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Verboten',
@@ -77,6 +79,7 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode' => 'Standardmodus',
 	'Class:MFAAdminRule/Attribute:preferred_mfa_mode+' => 'Die vorgeschlagene Multi-Faktor-Authentifizierungsmethode für Benutzer, wenn die Betriebsart "erzwingen" ist und MFA noch nicht konfiguriert wurde',
 	'Class:MFAAdminRule/Attribute:profiles_list' => 'Profil-Liste',
+	'Class:MFAAdminRule/Attribute:profiles_list+' => 'Wenn kein Profil ausgewählt ist, wird die Regel auf alle Profile angewendet',
 	'Class:MFAAdminRule/Attribute:rank' => 'Reihenfolge',
 	'Class:MFAAdminRule/Attribute:status' => 'Status',
 	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Aktiv',
