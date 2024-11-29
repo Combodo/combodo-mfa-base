@@ -88,9 +88,7 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		];
 		$sOutput = $this->CallItopUrl("/pages/UI.php", $aPostFields);
 
-		$sExpectedMessage = \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain',
-			"", //\MetaModel::GetName(get_class($oRule)),
-			$sMFAActivationDate);
+		$sExpectedMessage = str_replace('"', '&quot;', \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain', "", $sMFAActivationDate));
 		var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
 	}
