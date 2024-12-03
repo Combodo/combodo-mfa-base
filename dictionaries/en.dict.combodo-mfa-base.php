@@ -41,6 +41,7 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Reactivate previously deleted mode',
 
 	'Login:MFA:Validation:Title' => 'Multi-Factor Authentication',
+	'Login:MFA:Validation:Error' => 'Validation failed',
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Multi-Factor Authentication warning',
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'The Multi-Factor Authentication mode %1$s must be activated before %2$s. After this date it will be mandatory to configure this mode. It is possible to configure MFA in "My Account" screen.',
 	'Login:MFA:Continue' => 'Continue',

@@ -41,6 +41,7 @@ Pour configurer l\'authentification multifacteur, il vous suffit de vous rendre 
 	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Réactiver le mode précédemment supprimé',
 
 	'Login:MFA:Validation:Title' => 'Authentification multifacteur',
+	'Login:MFA:Validation:Error' => 'Échec de la validation',
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Avertissement',
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'Le mode d\'authentification multifacteur %1$s doit être activé avant %2$s. Après cette date, la configuration MFA sera obligatoire. Il est possible de configurer MFA dans l\'écran "Mon compte".',
 	'Login:MFA:Continue' => 'Continuer',

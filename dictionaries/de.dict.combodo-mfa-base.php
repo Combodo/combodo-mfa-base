@@ -41,6 +41,7 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'UI:MFA:Modes:Action:UndoDelete:ButtonTooltip' => 'Vorher entfernte MFA-Methode wiederherstellen',
 
 	'Login:MFA:Validation:Title' => 'Multi-Faktor-Authentifizierung',
+	'Login:MFA:Validation:Error' => 'Validierung fehlgeschlagen',
 	'Login:MFA:UserWarningAboutMFAMode:Title' => 'Achtung zur Multi-Faktor-Authentifizierung',
 	'Login:MFA:UserWarningAboutMFAMode:Explain' => 'Die Multi-Faktor-Authentifizierungsmethode %1$s muss vor dem %2$s aktiviert sein. Danach wird es erforderlich sein, diese Methode zu konfigurieren. Es ist möglich, MFA im Bildschirm "Mein Konto" zu konfigurieren.',
 	'Login:MFA:Continue' => 'Fortsetzen',

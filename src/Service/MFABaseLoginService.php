@@ -21,6 +21,7 @@ use utils;
 class MFABaseLoginService
 {
 	const SELECTED_MFA_MODE = 'selected_mfa_mode';
+	const MFA_LOGIN_VALIDATION_ERROR = 'mfa_login_validation_error';
 	private static MFABaseLoginService $oInstance;
 
 	private function __construct()
@@ -101,6 +102,7 @@ class MFABaseLoginService
 
 			// Validate 2FA user input
 			if (!$oChosenUserSettings->ValidateLogin()) {
+				Session::Set(self::MFA_LOGIN_VALIDATION_ERROR, 'true');
 				$this->DisplayValidation($oChosenUserSettings, $oMFATwigRenderer, $aUserSettings);
 			}
 		} catch (MFABaseException $e) {
@@ -139,6 +141,7 @@ class MFABaseLoginService
 		$oPage = new LoginWebPage();
 		$oPage->add_saas(MFABaseHelper::GetSCSSFile());
 		$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', ['aSwitchData' => $aSwitchData]);
+		Session::Unset(self::MFA_LOGIN_VALIDATION_ERROR);
 		exit();
 	}
 
