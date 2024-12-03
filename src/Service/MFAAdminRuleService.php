@@ -131,9 +131,7 @@ class MFAAdminRuleService
 			$sPreferredMode = $oAdminRule->Get('preferred_mfa_mode');
 			if (utils::IsNullOrEmptyString($sPreferredMode)) {
 				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeIsMandatoryWhenRuleIsForced'));
-			}
-			$aDeniedModes = $this->GetDeniedModes($oAdminRule);
-			if (in_array($sPreferredMode, $aDeniedModes)) {
+			} else if (in_array($sPreferredMode, $this->GetDeniedModes($oAdminRule))) {
 				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeCannotBeDenied'));
 			}
 		}
