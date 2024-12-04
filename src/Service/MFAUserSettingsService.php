@@ -168,8 +168,8 @@ class MFAUserSettingsService
 			$oAdminRule = self::$oMFAAdminRuleService->GetAdminRuleByUserId($sUserId);
 			$sPreferredMFAMode = '';
 			if (!is_null($oAdminRule)) {
-				MFABaseLog::Debug(__FUNCTION__.': Admin rule denied');
 				if ($oAdminRule->IsDenied()) {
+					MFABaseLog::Debug(__FUNCTION__.': Admin rule denied');
 					return [];
 				}
 				$sPreferredMFAMode = $oAdminRule->Get('preferred_mfa_mode');
@@ -213,7 +213,7 @@ class MFAUserSettingsService
 					return -1;
 				}
 
-				return 0;
+				return $a->GetKey() < $b->GetKey() ? -1 : 1;
 			});
 
 			// Allow modes that cannot be default only if a mode that can be default is already validated
