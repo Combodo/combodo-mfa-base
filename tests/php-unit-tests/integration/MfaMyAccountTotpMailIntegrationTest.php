@@ -5,15 +5,13 @@ namespace Combodo\iTop\MFABase\Test\Integration;
 use Combodo\iTop\MFABase\Service\MFAUserSettingsService;
 use Combodo\iTop\MFABase\Test\AbstractMFATest;
 use Combodo\iTop\MFABase\Test\MFAAbstractConfigurationTestInterface;
-use Combodo\iTop\MFABase\Test\MFAAbstractValidationTestInterface;
 use Combodo\iTop\MFATotp\Service\MFATOTPMailService;
 use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
-use MetaModel;
-use MFAAdminRule;
-use User;
 use EMail;
+use MetaModel;
+use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
 require_once __DIR__ . "/MFAAbstractValidationTestInterface.php";
@@ -54,10 +52,17 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 		$this->CleanupAdminRules();
 		$this->CleanupMFASettings();
 		$this->sPassword = "abCDEF12345@";
-		/** @var User oUser */
-		$this->oUser = $this->CreateContactlessUser('login' . uniqid(),
+		$aData = array(
+			'org_id' => $this->CreateOrganization($this->sUniqId),
+			'first_name' => 'Jesus',
+			'name' => 'Deus',
+			'email' => 'guru@combodo.com',
+		);
+		$iPerson = $this->CreateObject('Person', $aData);
+		$this->oUser = $this->CreateUser('login' . uniqid(),
 			ItopDataTestCase::$aURP_Profiles['Service Desk Agent'],
-			$this->sPassword
+			$this->sPassword,
+			$iPerson
 		);
 
 		$this->oiTopConfig = new \Config($sConfigPath);

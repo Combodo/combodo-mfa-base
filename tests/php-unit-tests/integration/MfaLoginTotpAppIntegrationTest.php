@@ -311,7 +311,7 @@ HTML;
 
 		// Assert
 		$oActiveSetting->Reload();
-		$this->assertEquals('yes', $oActiveSetting->Get('validated'));
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'), $sOutput);
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 
 		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
