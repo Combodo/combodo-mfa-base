@@ -66,7 +66,7 @@ class combodo_mfa_baseInstaller extends ModuleInstallerAPI
 		if (is_array($aExports)) {
 			$bFound = false;
 			foreach ($aExports as $aExport) {
-				if ($aExport['code'] === 'MFABase') {
+				if ($aExport['code'] === 'MFARules') {
 					$bFound = true;
 					break;
 				}
