@@ -21,6 +21,7 @@ SetupWebPage::AddModule(
 		],
 		'mandatory' => true,
 		'visible' => true,
+		'installer' => 'combodo_mfa_baseInstaller',
 
 		// Components
 		//
@@ -53,3 +54,36 @@ SetupWebPage::AddModule(
 		],
 	]
 );
+
+// Module installation handler
+//
+class combodo_mfa_baseInstaller extends ModuleInstallerAPI
+{
+	public static function BeforeWritingConfig(Config $oConfiguration)
+	{
+		// If you want to override/force some configuration values, do it here
+		$aExports = $oConfiguration->GetModuleSetting('combodo-data-replication', 'exports', null);
+		if (is_array($aExports)) {
+			$bFound = false;
+			foreach ($aExports as $aExport) {
+				if ($aExport['code'] === 'MFABase') {
+					$bFound = true;
+					break;
+				}
+			}
+			if (!$bFound) {
+				$aExports[] = [
+					'code' => 'MFARules',
+					'name' => 'Export MFA rules',
+					'OQLs' => [
+						'SELECT MFAAdminRule',
+						'SELECT lnkMFAAdminRuleToOrganization',
+						'SELECT lnkMFAAdminRuleToProfile',
+					],
+				];
+				$oConfiguration->SetModuleSetting('combodo-data-replication', 'exports', $aExports);
+			}
+		}
+		return $oConfiguration;
+	}
+}
