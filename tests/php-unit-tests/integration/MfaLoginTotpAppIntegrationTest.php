@@ -318,7 +318,7 @@ HTML;
 	 * @throws \ArchivedObjectException
 	 * @throws \CoreException
 	 */
-	public function GetLoginScreen(\MFAUserSettings $oActiveSetting, string $sLogin, bool $bRetry = true): string|bool
+	private function GetLoginScreen(\MFAUserSettings $oActiveSetting, string $sLogin, bool $bRetry = true): string|bool
 	{
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();

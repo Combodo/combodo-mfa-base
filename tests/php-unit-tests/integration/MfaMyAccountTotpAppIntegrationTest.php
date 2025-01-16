@@ -158,6 +158,21 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 
 		// Act
+		$sOutput = $this->GetMyAccountScreen($oActiveSetting, $sLogin);
+
+		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting, $sOutput), true));
+		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+	}
+
+	/**
+	 * @param \MFAUserSettings $oActiveSetting
+	 * @param mixed $sLogin
+	 *
+	 * @return bool|string
+	 * @throws \CoreException
+	 */
+	private function GetMyAccountScreen(\MFAUserSettings $oActiveSetting, string $sLogin, bool $bRetry = true): string|bool
+	{
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
@@ -165,13 +180,19 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 			'totp_code' => $sCode,
 			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword,
-			'Action' => "add:" . \MFAUserSettingsTOTPApp::class,
+			'Action' => 'add:'.\MFAUserSettingsTOTPApp::class,
 		]);
 
 		// Assert
 		$oActiveSetting->Reload();
-		$this->assertEquals('yes', $oActiveSetting->Get('validated'), var_export($this->PrintQRStuff($oActiveSetting, $sOutput), true));
-		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		if ($bRetry && $oActiveSetting->Get('validated') === 'no') {
+			// Maybe near the time window for code change
+			echo date('H:i:s').': Recall iTop MFA Login';
+
+			return $this->GetMyAccountScreen($oActiveSetting, $sLogin, false);
+		}
+
+		return $sOutput;
 	}
 
 	private function GetNewGeneratedTransId(string $sLogin) {
