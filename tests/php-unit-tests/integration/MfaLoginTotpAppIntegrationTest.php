@@ -33,6 +33,7 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 	protected User $oUser;
 	protected string $sUniqId;
 
+
 	protected function setUp(): void {
 		parent::setUp();
 		ItopDataTestCase::$DEBUG_UNIT_TEST =true;
@@ -174,17 +175,11 @@ HTML;
 	public function testValidationOK()
 	{
 		// Arrange
-		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
+		$oActiveSetting = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
-		$oTOTP = new OTPService($oActiveSetting1);
-		$sCode = $oTOTP->GetCode();
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
-			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
-			'totp_code' => $sCode,
-			'auth_user' => $sLogin,
-			'auth_pwd' => $this->sPassword]);
+		$sOutput = $this->GetLoginScreen($oActiveSetting, $sLogin);
 
 		// Assert
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:CodeValidation:Title'), $sOutput, 'The page should NOT be the TOTP App code validation screen');
@@ -301,16 +296,7 @@ HTML;
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 
-		$oTOTP = new OTPService($oActiveSetting);
-		$sCode = $oTOTP->GetCode();
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
-			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
-			'totp_code' => $sCode,
-			'auth_user' => $sLogin,
-			'auth_pwd' => $this->sPassword]);
-
-		// Assert
-		$oActiveSetting->Reload();
+		$sOutput = $this->GetLoginScreen($oActiveSetting, $sLogin);
 		$this->assertEquals('yes', $oActiveSetting->Get('validated'), $sOutput);
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 
@@ -320,6 +306,38 @@ HTML;
 		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
 		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
 		//$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
+	}
+
+
+	/**
+	 * @param \MFAUserSettings $oActiveSetting
+	 * @param mixed $sLogin
+	 * @param bool $bRetry
+	 *
+	 * @return bool|string
+	 * @throws \ArchivedObjectException
+	 * @throws \CoreException
+	 */
+	public function GetLoginScreen(\MFAUserSettings $oActiveSetting, string $sLogin, bool $bRetry = true): string|bool
+	{
+		$oTOTP = new OTPService($oActiveSetting);
+		$sCode = $oTOTP->GetCode();
+		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
+			'totp_code' => $sCode,
+			'auth_user' => $sLogin,
+			'auth_pwd' => $this->sPassword
+		]);
+
+		// Assert
+		$oActiveSetting->Reload();
+		if ($bRetry && $oActiveSetting->Get('validated') === 'no') {
+			// Maybe near the time window for code change
+			echo date('H:i:s').": Recall iTop MFA Login";
+			return $this->GetLoginScreen($oActiveSetting, $sLogin, false);
+		}
+
+		return $sOutput;
 	}
 
 	private function GetNewGeneratedTransId(string $sLogin) {
