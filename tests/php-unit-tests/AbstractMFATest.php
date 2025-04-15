@@ -126,7 +126,9 @@ class AbstractMFATest extends ItopDataTestCase
 		$sUrl = $this->oiTopConfig->Get('app_root_url')."/$sUri";
 		curl_setopt($ch, CURLOPT_URL, $sUrl);
 		curl_setopt($ch, CURLOPT_POST, $bIsPost ? 1 : 0);// set post data to true
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $aPostFields);
+		if (! is_null($aPostFields)){
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($aPostFields));
+		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);

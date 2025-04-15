@@ -57,13 +57,19 @@ class MFABaseHelper
 	public function PassPostedParams(array &$aParams, string $sPostedParamVarname='aPostedParams')
 	{
 		$aPostParams=[];
-		foreach ($_POST as $sKey => $oVal){
-			if (is_array($oVal)){
-				foreach ($oVal as $sSubKey => $oSubVal){
-					$aPostParams[sprintf("%s[%s]", $sKey, $sSubKey)]=$oVal;
+		foreach ($_POST as $sPostedKey => $postedValue){
+			if (is_array($postedValue))
+			{
+				\IssueLog::Error(__METHOD__, null, $postedValue);
+				foreach($postedValue as $sKey => $sValue)
+				{
+					$sName = "{$sPostedKey}[{$sKey}]";
+					$aPostParams[$sName] = $sValue;
 				}
-			} else {
-				$aPostParams[$sKey]=$oVal;
+			}
+			else
+			{
+				$aPostParams[$sPostedKey] = $postedValue;
 			}
 		}
 

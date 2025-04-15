@@ -85,11 +85,12 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		$aPostFields = [
 			'auth_user' => $sLogin,
 			'auth_pwd' => $this->sPassword,
+			'modules' => ['abc', 'def']
 		];
 		$sOutput = $this->CallItopUrl("/pages/UI.php", $aPostFields);
 
 		$sExpectedMessage = str_replace('"', '&quot;', \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain', "", $sMFAActivationDate));
-		var_export($sOutput);
+		//var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
 
 		$sSearchedHtml=<<<HTML
@@ -98,11 +99,21 @@ HTML;
 		$iStart = strpos($sOutput, $sSearchedHtml);
 		$sFormOutput = substr($sOutput, $iStart);
 		foreach ($aPostFields as $sKey => $sVal){
-			$sExpected=<<<HTML
-<input type="hidden" value="$sVal" name="$sKey">
+			if (is_array($sVal)){
+				$sExpected="";
+				foreach ($sVal as $sKey2 => $sVal2){
+					$sExpected .= <<<HTML
+<input type="hidden" value="$sVal2" name="{$sKey}[{$sKey2}]">
 HTML;
 
-			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "warning form should contain param to post $sKey with his value: $sFormOutput");
+				}
+			} else {
+				$sExpected=<<<HTML
+<input type="hidden" value="$sVal" name="$sKey">
+HTML;
+			}
+
+			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "warning form should contain param to post $sKey.\n expected: $sExpected\n\n with his value: \n $sFormOutput");
 		}
 
 
