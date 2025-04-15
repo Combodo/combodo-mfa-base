@@ -27,6 +27,9 @@
 			{% for sUserSettingsClass in aSwitchData %}
 				{% set sLinkLabel = "MFA:login:switch:label:" ~ sUserSettingsClass %}
 				<form id="switch-form-{{ sUserSettingsClass }}" method="post">
+                    {% for sKey, sVal in aPostedParams %}
+                        <input type="hidden" value="{{ sVal }}" name="{{ sKey }}">
+                    {% endfor %}
 					<input type="hidden" name="selected_mfa_mode" value="{{ sUserSettingsClass }}">
 					<div class="v-spacer"><a onclick="$('#switch-form-{{ sUserSettingsClass }}').submit();">{{ sLinkLabel|dict_s }}</a></div>
 				</form>
@@ -35,6 +38,9 @@
 
 		{% block mfa_restart_login %}
 			<form id="mfa_restart_login_form" method="post">
+                {% for sKey, sVal in aPostedParams %}
+                    <input type="hidden" value="{{ sVal }}" name="{{ sKey }}">
+                {% endfor %}
 				<input type="hidden" name="mfa_restart_login" value="true">
 				<div class="v-spacer"><a onclick="$('#mfa_restart_login_form').submit();">{{ 'Login:MFA:Restart:Label'|dict_s }}</a></div>
 			</form>
