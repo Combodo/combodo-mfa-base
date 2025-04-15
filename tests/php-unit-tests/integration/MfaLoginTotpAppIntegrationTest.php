@@ -96,12 +96,26 @@ HTML;
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPApp', $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/UI.php', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+		$aPostFields = ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword];
+		$sOutput = $this->CallItopUrl('/pages/UI.php', $aPostFields);
 
 		// Assert
 		$sTitle = Dict::S('MFATOTP:App:CodeValidation:Title');
 		$this->AssertStringContains($sTitle, $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringContains('<input type="text" id="totp_code" name="totp_code" value="" size="6"', $sOutput, 'The page should have a code input form');
+
+		foreach ($aPostFields as $sKey => $sVal) {
+			$sExpected = <<<HTML
+<input type="hidden" value="$sVal" name="$sKey">
+HTML;
+
+			$sSearchedHtml=<<<HTML
+<form id="totp_form" method="post">
+HTML;
+			$iStart = strpos($sOutput, $sSearchedHtml);
+			$sFormOutput = substr($sOutput, $iStart);
+			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sFormOutput");
+		}
 
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 
@@ -215,12 +229,27 @@ HTML;
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPApp', 'forced', [], [], 70);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$aPostFields = [
 			'auth_user' => $this->oUser->Get('login'),
-			'auth_pwd' => $this->sPassword]);
+			'auth_pwd'  => $this->sPassword
+		];
+		$sOutput = $this->CallItopUrl('/pages/UI.php', $aPostFields);
 
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+		foreach ($aPostFields as $sKey => $sVal) {
+			$sExpected = <<<HTML
+<input type="hidden" value="$sVal" name="$sKey">
+HTML;
+
+			$sSearchedHtml=<<<HTML
+<form id="totp_form" method="post">
+HTML;
+			$iStart = strpos($sOutput, $sSearchedHtml);
+			$sFormOutput = substr($sOutput, $iStart);
+			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sFormOutput");
+		}
+
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);
 	}
 

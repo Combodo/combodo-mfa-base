@@ -140,7 +140,10 @@ class MFABaseLoginService
 		// Render the MFA validation screen
 		$oPage = new LoginWebPage();
 		$oPage->add_saas(MFABaseHelper::GetSCSSFile());
-		$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', ['aSwitchData' => $aSwitchData]);
+
+		$aVars = ['aSwitchData' => $aSwitchData];
+		MFABaseHelper::GetInstance()->PassPostedParams($aVars);
+		$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', $aVars);
 		Session::Unset(self::MFA_LOGIN_VALIDATION_ERROR);
 		exit();
 	}
@@ -166,7 +169,9 @@ class MFABaseLoginService
 			$oMFATwigRenderer->RegisterTwigLoaders($oLoginContext);
 			$oPage = new LoginWebPage();
 			$oPage->add_saas(MFABaseHelper::GetSCSSFile());
-			$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig');
+			$aVars=[];
+			MFABaseHelper::GetInstance()->PassPostedParams($aVars);
+			$oMFATwigRenderer->Render($oPage, 'MFALogin.html.twig', $aVars);
 			exit();
 		} catch (MFABaseException $e) {
 			throw $e;
@@ -193,6 +198,7 @@ class MFABaseLoginService
 
 			$aParams = [];
 			$aParams['sMFAActivationDate'] = $oMFAAdminRule->Get('forced_activation_date');
+			MFABaseHelper::GetInstance()->PassPostedParams($aParams);
 
 			$oMFATwigRenderer = new MFATwigRenderer();
 			$oPage = new LoginWebPage();

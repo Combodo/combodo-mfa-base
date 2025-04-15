@@ -53,4 +53,20 @@ class MFABaseHelper
 			throw new MFABaseException(Dict::S("iTopUpdate:Error:InvalidToken"));
 		}
 	}
+
+	public function PassPostedParams(array &$aParams, string $sPostedParamVarname='aPostedParams')
+	{
+		$aPostParams=[];
+		foreach ($_POST as $sKey => $oVal){
+			if (is_array($oVal)){
+				foreach ($oVal as $sSubKey => $oSubVal){
+					$aPostParams[sprintf("%s[%s]", $sKey, $sSubKey)]=$oVal;
+				}
+			} else {
+				$aPostParams[$sKey]=$oVal;
+			}
+		}
+
+		$aParams[$sPostedParamVarname]=$aPostParams;
+	}
 }

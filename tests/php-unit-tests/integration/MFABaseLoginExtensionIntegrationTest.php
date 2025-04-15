@@ -91,6 +91,16 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		$sExpectedMessage = str_replace('"', '&quot;', \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain', "", $sMFAActivationDate));
 		var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
+
+		foreach ($aPostFields as $sKey => $sVal){
+			$sExpected=<<<HTML
+<input type="hidden" value="$sVal" name="$sKey">
+HTML;
+
+			$this->assertTrue(false !== strpos($sOutput, $sExpected), "warning form should contain param to post $sKey with his value");
+		}
+
+
 	}
 
 	public function MfaValidationWithSwitchLinksProvider(){
@@ -113,8 +123,9 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 			$oActiveSetting3 = $this->CreateSetting("MFAUserSettingsRecoveryCodes", $oUser->GetKey(), "yes", []);
 		}
 
+		$aPostFields = ['auth_user' => $oUser->Get('login'), 'auth_pwd' => $this->sPassword];
 		$sOutput = $this->CallItopUrl("/pages/UI.php",
-			[ 'auth_user' => $oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+			$aPostFields);
 
 		$this->assertNotNull($sOutput);
 		var_dump($sOutput);
@@ -124,12 +135,33 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 			$sNeedle = $sMfaSwitchModePattern;
 			$this->assertFalse(strpos($sOutput, $sNeedle), "No switch MFA mode form in the login page" . PHP_EOL . PHP_EOL . $sOutput);
 		} else {
-			foreach (["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes"] as $sMode){
+			$aModes = ["MFAUserSettingsTOTPMail", "MFAUserSettingsRecoveryCodes"];
+			foreach ($aModes as $sMode){
 				$sNeedle = "$sMfaSwitchModePattern-$sMode";
 				$this->assertTrue(false !== strpos($sOutput, $sNeedle), "MFA mode switch form must be present ($sNeedle)" . PHP_EOL . PHP_EOL . $sOutput);
 				$sNeedle = \Dict::Format("MFA:login:switch:label:$sMode");
 				$this->assertTrue(false !== strpos($sOutput, $sNeedle), "MFA mode switch label must be present ($sNeedle)" . PHP_EOL . PHP_EOL . $sOutput);
 			}
+
+			$sLogoutMfaPattern=<<<HTML
+<form id="mfa_restart_login_form" method="post">
+HTML;
+
+			$iStart = strpos($sOutput, $sMfaSwitchModePattern);
+			$iEnd = strpos($sOutput, $sLogoutMfaPattern);
+			$sSwitchFormOutput = substr($sOutput, $iStart, $iEnd);
+			$sLogoutFormPartOutput = substr($sOutput, $iEnd);
+			foreach ($aPostFields as $sKey => $sVal){
+				$sExpected=<<<HTML
+<input type="hidden" value="$sVal" name="$sKey">
+HTML;
+
+				$this->assertTrue(false !== strpos($sSwitchFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sSwitchFormOutput");
+				$this->assertTrue(count($aModes) !== substr_count($sSwitchFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sSwitchFormOutput for each MFA mode");
+				$this->assertTrue(false !== strpos($sLogoutFormPartOutput, $sExpected), "mfa_restart_login_form form should contain param to post $sKey with his value: $sSwitchFormOutput");
+			}
+
+
 		}
 	}
 
