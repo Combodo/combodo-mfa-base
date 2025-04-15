@@ -92,12 +92,17 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 		var_export($sOutput);
 		$this->assertTrue(false !== strpos($sOutput, $sExpectedMessage), "user should be connected and an intermediate warning MFA page is displayed with message : " . PHP_EOL . $sExpectedMessage . PHP_EOL . PHP_EOL . $sOutput);
 
+		$sSearchedHtml=<<<HTML
+<form id="login_form" method="post">
+HTML;
+		$iStart = strpos($sOutput, $sSearchedHtml);
+		$sFormOutput = substr($sOutput, $iStart);
 		foreach ($aPostFields as $sKey => $sVal){
 			$sExpected=<<<HTML
 <input type="hidden" value="$sVal" name="$sKey">
 HTML;
 
-			$this->assertTrue(false !== strpos($sOutput, $sExpected), "warning form should contain param to post $sKey with his value");
+			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "warning form should contain param to post $sKey with his value: $sFormOutput");
 		}
 
 

@@ -194,16 +194,17 @@ HTML;
 
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should be the welcome page');
+
+		$sSearchedHtml=<<<HTML
+<form id="totp_form" method="post">
+HTML;
+		$iStart = strpos($sOutput, $sSearchedHtml);
+		$sFormOutput = substr($sOutput, $iStart);
+
 		foreach ($aPostFields as $sKey => $sVal) {
 			$sExpected = <<<HTML
 <input type="hidden" value="$sVal" name="$sKey">
 HTML;
-
-			$sSearchedHtml=<<<HTML
-<form id="totp_form" method="post">
-HTML;
-			$iStart = strpos($sOutput, $sSearchedHtml);
-			$sFormOutput = substr($sOutput, $iStart);
 			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sFormOutput");
 		}
 		$this->CheckThereIsAReturnToLoginPageLink($sOutput);

@@ -104,16 +104,14 @@ HTML;
 		$this->AssertStringContains($sTitle, $sOutput, 'The page should be the TOTP App code validation screen');
 		$this->AssertStringContains('<input type="text" id="totp_code" name="totp_code" value="" size="6"', $sOutput, 'The page should have a code input form');
 
-		foreach ($aPostFields as $sKey => $sVal) {
+		$sSearchedHtml=<<<HTML
+<form id="totp_form" method="post">
+HTML;
+		$iStart = strpos($sOutput, $sSearchedHtml);
+		$sFormOutput = substr($sOutput, $iStart);		foreach ($aPostFields as $sKey => $sVal) {
 			$sExpected = <<<HTML
 <input type="hidden" value="$sVal" name="$sKey">
 HTML;
-
-			$sSearchedHtml=<<<HTML
-<form id="totp_form" method="post">
-HTML;
-			$iStart = strpos($sOutput, $sSearchedHtml);
-			$sFormOutput = substr($sOutput, $iStart);
 			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sFormOutput");
 		}
 
@@ -237,16 +235,17 @@ HTML;
 
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
+
+		$sSearchedHtml=<<<HTML
+<form id="totp_form" method="post">
+HTML;
+		$iStart = strpos($sOutput, $sSearchedHtml);
+		$sFormOutput = substr($sOutput, $iStart);
+
 		foreach ($aPostFields as $sKey => $sVal) {
 			$sExpected = <<<HTML
 <input type="hidden" value="$sVal" name="$sKey">
 HTML;
-
-			$sSearchedHtml=<<<HTML
-<form id="totp_form" method="post">
-HTML;
-			$iStart = strpos($sOutput, $sSearchedHtml);
-			$sFormOutput = substr($sOutput, $iStart);
 			$this->assertTrue(false !== strpos($sFormOutput, $sExpected), "switch form should contain param to post $sKey with his value: $sFormOutput");
 		}
 
