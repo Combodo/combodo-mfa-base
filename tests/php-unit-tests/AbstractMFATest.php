@@ -13,6 +13,13 @@ class AbstractMFATest extends ItopDataTestCase
 {
 	protected Config $oiTopConfig;
 
+	public function SkipTestWhenNoTransactionConfigured() : void
+	{
+		if (! \MetaModel::GetConfig()->Get('transactions_enabled', false)){
+			$this->markTestSkipped("transactions_enabled=false => test skipped to avoid meaningless failure");
+		}
+	}
+
 	public function CleanupAdminRules()
 	{
 		$oSearch = \DBObjectSearch::FromOQL("SELECT MFAAdminRule");
@@ -215,7 +222,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$aData = [
 			'GetProvisioningUri' => $oOTPService->GetProvisioningUri(),
 			'GetQRCodeData' => urldecode($oOTPService->GetProvisioningUri()),
-			'sOutput' => $sOutput
+			'sOutput' => $sOutput,
 		];
 		//\IssueLog::Info('PrintQRStuff', null, $aData);
 		return $aData;

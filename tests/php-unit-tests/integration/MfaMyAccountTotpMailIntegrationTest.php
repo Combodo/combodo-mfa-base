@@ -67,8 +67,6 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 
 		$this->oiTopConfig = new \Config($sConfigPath);
 		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		//$this->oiTopConfig->Set('transactions_enabled', false);
-		//$this->oiTopConfig->Set('log_transactions', true);
 		$this->SaveItopConfFile();
 
 		$this->sMfaMyAccountConfigurationUri = '/pages/exec.php?exec_module=combodo-mfa-totp&exec_page=index.php&exec_env=production&operation=MFATOTPMailConfig';
@@ -112,6 +110,8 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 
 	public function testConfigurationFailDueToInvalidTransactionId()
 	{
+		$this->SkipTestWhenNoTransactionConfigured();
+
 		// Act
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));

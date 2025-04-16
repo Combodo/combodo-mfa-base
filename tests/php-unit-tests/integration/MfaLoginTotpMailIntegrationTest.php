@@ -60,8 +60,6 @@ class MfaLoginTotpMailIntegrationTest extends AbstractMFATest implements MFAAbst
 
 		$this->oiTopConfig = new \Config($sConfigPath);
 		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		//$this->oiTopConfig->Set('transactions_enabled', false);
-		//$this->oiTopConfig->Set('log_transactions', true);
 		$this->SaveItopConfFile();
 	}
 
@@ -162,6 +160,8 @@ HTML;
 
 	public function testValidationFailDueToInvalidTransactionId()
 	{
+		$this->SkipTestWhenNoTransactionConfigured();
+
 		// Arrange
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
 
@@ -228,6 +228,8 @@ HTML;
 
 	public function testConfigurationFailDueToInvalidTransactionId()
 	{
+		$this->SkipTestWhenNoTransactionConfigured();
+
 		// Arrange
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPMail', 'forced', [], [], 70);
 

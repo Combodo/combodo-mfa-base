@@ -67,8 +67,6 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
 		$this->oiTopConfig->Set(\LogAPI::ENUM_CONFIG_PARAM_FILE, ['MFA' => 'Debug']);
 
-		//$this->oiTopConfig->Set('transactions_enabled', false);
-		//$this->oiTopConfig->Set('log_transactions', true);
 		$this->SaveItopConfFile();
 
 		$this->sMfaMyAccountConfigurationUri = '/pages/exec.php?exec_module=combodo-mfa-totp&exec_page=index.php&exec_env=production&operation=MFATOTPAppConfig';
@@ -112,6 +110,8 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 
 	public function testConfigurationFailDueToInvalidTransactionId()
 	{
+		$this->SkipTestWhenNoTransactionConfigured();
+
 		// Act
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPApp');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
