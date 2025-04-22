@@ -177,8 +177,8 @@ HTML;
 			'auth_pwd' => $this->sPassword]);
 
 		// Assert
-		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should NOT be the TOTP Mail code validation screen');
-		$this->AssertStringNotContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
+		$this->AssertStringNotContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should NOT be the TOTP Mail code validation screen');
+		$this->AssertStringContains(Dict::S('UI:Login:Welcome'), $sOutput, 'The page should be the initial login page');
 	}
 
 	public function testConfigurationFirstScreenDisplay()
