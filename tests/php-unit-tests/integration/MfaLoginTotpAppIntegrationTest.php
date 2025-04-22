@@ -197,6 +197,7 @@ HTML;
 		$this->AssertStringContains($sWelcomeWithoutIopApplicationName, $sOutput, 'The page should be the welcome page');
 		$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $sLogin);
 		$this->AssertStringContains($sLoggedInAsMessage, $sOutput, 'The proper user should be connected');
+		$this->AssertStringContains(Dict::S('UI:Preferences:Title'), $sOutput, 'The page should be the welcome page');
 	}
 
 	public function testValidationFailDueToInvalidTransactionId()
@@ -331,7 +332,8 @@ HTML;
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 
 		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
-		$this->AssertStringContains(sprintf('window.location = "%s";', \utils::GetAbsoluteUrlAppRoot()), $sOutput, 'The page should contain a redirection link');
+		$sExpectedUrl = \utils::GetAbsoluteUrlAppRoot() . '//pages/preferences.php';
+		$this->AssertStringContains(sprintf('window.location = "%s";', $sExpectedUrl), $sOutput, 'The page should contain a redirection link');
 
 		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
 		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
@@ -352,7 +354,7 @@ HTML;
 	{
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUrl('/pages/preferences.php', [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $sCode,
 			'auth_user' => $sLogin,
