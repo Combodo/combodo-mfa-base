@@ -8,6 +8,7 @@ use Config;
 use MFAAdminRule;
 use MFAUserSettings;
 use Organization;
+use MetaModel;
 
 class AbstractMFATest extends ItopDataTestCase
 {
