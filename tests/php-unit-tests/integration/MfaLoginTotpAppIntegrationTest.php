@@ -28,7 +28,6 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 	//users need to be persisted in DB
 	const USE_TRANSACTION = false;
 
-	protected string $sConfigTmpBackupFile;
 	protected string $sPassword;
 	protected User $oUser;
 	protected string $sUniqId;
@@ -37,16 +36,6 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 	protected function setUp(): void {
 		parent::setUp();
 		ItopDataTestCase::$DEBUG_UNIT_TEST =true;
-
-		$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-
-		clearstatcache();
-		echo sprintf("rights via ls on %s:\n %s \n", $sConfigPath, exec("ls -al $sConfigPath"));
-		$sFilePermOutput = substr(sprintf('%o', fileperms('/etc/passwd')), -4);
-		echo sprintf("rights via fileperms on %s:\n %s \n", $sConfigPath, $sFilePermOutput);
-
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
 
 		$this->sUniqId = "MFABASE" . uniqid();
 		$this->CleanupAdminRules();
@@ -57,25 +46,12 @@ class MfaLoginTotpAppIntegrationTest extends AbstractMFATest implements MFAAbstr
 			ItopDataTestCase::$aURP_Profiles['Service Desk Agent'],
 			$this->sPassword
 		);
-
-		$this->oiTopConfig = new \Config($sConfigPath);
-		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		$this->SaveItopConfFile();
 	}
 
 	protected function tearDown(): void {
 		\UserRights::Logoff();
 
 		parent::tearDown();
-
-		if (! is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)){
-			//put config back
-			$sConfigPath = $this->oiTopConfig->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new \Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-		}
 
 		$_SESSION = [];
 	}

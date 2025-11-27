@@ -11,32 +11,12 @@ use MetaModel;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFABaseServiceTest extends AbstractMFATest {
-	protected $sConfigTmpBackupFile;
-	
 	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->RequireOnceItopFile('/env-production/combodo-mfa-base/vendor/autoload.php');
 
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
-
 		MetaModel::GetConfig()->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-	}
-
-	protected function tearDown(): void
-	{
-		parent::tearDown();
-
-		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
-			//put config back
-			$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-			@unlink($this->sConfigTmpBackupFile);
-		}
 	}
 
 	/**

@@ -17,7 +17,6 @@ use MFAAdminRule;
 require_once __DIR__.'/AbstractMFATest.php';
 
 class MFABaseLoginExtensionTest extends AbstractMFATest {
-	private $sConfigTmpBackupFile;
 
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
 	private $oMFAAdminRuleService;
@@ -32,9 +31,6 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 	{
 		parent::setUp();
 		$this->RequireOnceItopFile('/env-production/combodo-mfa-base/vendor/autoload.php');
-
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
 
 		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
 		MFAAdminRuleService::SetInstance($this->oMFAAdminRuleService);
@@ -58,16 +54,6 @@ class MFABaseLoginExtensionTest extends AbstractMFATest {
 		MFAUserSettingsService::ResetInstance();
 		MFABaseLoginService::ResetInstance();
 		$this->SetNonPublicStaticProperty(LoginWebPage::class, "iOnExit", LoginWebPage::EXIT_PROMPT);
-
-		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
-			//put config back
-			$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-			@unlink($this->sConfigTmpBackupFile);
-		}
 	}
 
 	public function testOnCredentialsOK_MfaDisabled() {

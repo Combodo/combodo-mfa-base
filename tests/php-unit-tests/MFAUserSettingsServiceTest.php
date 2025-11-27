@@ -13,7 +13,6 @@ require_once __DIR__.'/AbstractMFATest.php';
 
 class MFAUserSettingsServiceTest extends AbstractMFATest
 {
-	private $sConfigTmpBackupFile;
 	/** @var MFAAdminRuleService $oMFAAdminRuleService */
 	private $oMFAAdminRuleService;
 
@@ -21,9 +20,6 @@ class MFAUserSettingsServiceTest extends AbstractMFATest
 	{
 		parent::setUp();
 		$this->RequireOnceItopFile('/env-production/combodo-mfa-base/vendor/autoload.php');
-
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
 
 		$this->oMFAAdminRuleService = $this->createMock(MFAAdminRuleService::class);
 		MFAUserSettingsService::SetMFAAdminRuleService($this->oMFAAdminRuleService);
@@ -34,16 +30,6 @@ class MFAUserSettingsServiceTest extends AbstractMFATest
 	protected function tearDown(): void
 	{
 		parent::tearDown();
-
-		if (!is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)) {
-			//put config back
-			$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-			@unlink($this->sConfigTmpBackupFile);
-		}
 	}
 
 	public function Rule_ModuleConfig()
