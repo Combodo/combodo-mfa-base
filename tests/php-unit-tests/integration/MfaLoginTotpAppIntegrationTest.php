@@ -307,8 +307,8 @@ HTML;
 		$this->AssertStringNotContains(Dict::S('MFATOTP:App:Config:Title'), $sOutput, 'The page should be the welcome page');
 
 		$this->AssertStringContains(Dict::S('MFATOTP:Redirection:Title'), $sOutput, 'The page should contain redirection title');
-		$sExpectedUrl = \utils::GetAbsoluteUrlAppRoot() . '//pages/preferences.php';
-		$this->AssertStringContains(sprintf('window.location = "%s";', $sExpectedUrl), $sOutput, 'The page should contain a redirection link');
+		$this->AssertStringContains(sprintf('window.location = "%s";', \utils::GetAbsoluteUrlAppRoot()), $sOutput, 'The page should contain a redirection link');
+		$this->AssertStringContains('pages/preferences.php', $sOutput, 'The page should contain a redirection link');
 
 		//$this->AssertStringContains(Dict::S('UI:WelcomeToITop'), $sOutput, 'The page should be the welcome page');
 		//$sLoggedInAsMessage = Dict::Format('UI:LoggedAsMessage', '', $this->oUser->Get('login'));
