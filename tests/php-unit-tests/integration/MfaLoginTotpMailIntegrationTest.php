@@ -10,8 +10,6 @@ use Combodo\iTop\MFATotp\Service\MFATOTPMailService;
 use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
-use MetaModel;
-use MFAAdminRule;
 use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
@@ -69,7 +67,7 @@ HTML;
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/UI.php', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+		$sOutput = $this->CallItopUri('pages/UI.php', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
 
 		// Assert
 		$sTitle = Dict::S('MFATOTP:Mail:Validation:Title');
@@ -87,7 +85,7 @@ HTML;
 
 		// Act
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'WrongCode',
 			'auth_user' => $sLogin,
@@ -105,7 +103,7 @@ HTML;
 		$oActiveSetting1 = $this->CreateSetting('MFAUserSettingsTOTPMail', $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword,
 			'mfa_restart_login' => 'true',
@@ -123,7 +121,7 @@ HTML;
 
 		// Act
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/preferences.php', [
+		$sOutput = $this->CallItopUri('pages/preferences.php', [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting1),
 			'auth_user' => $sLogin,
@@ -146,7 +144,7 @@ HTML;
 		$oTOTP = new OTPService($oActiveSetting1);
 		$sCode = $oTOTP->GetCode();
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'transaction_id' => "WrongID",
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting1),
 			'auth_user' => $sLogin,
@@ -167,7 +165,7 @@ HTML;
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd'  => $this->sPassword
 		];
-		$sOutput = $this->CallItopUrl('/pages/UI.php', $aPostFields);
+		$sOutput = $this->CallItopUri('pages/UI.php', $aPostFields);
 
 		// Assert
 		$this->AssertStringContains(Dict::S('MFATOTP:Mail:Validation:Title'), $sOutput, 'The page should be the welcome page');
@@ -193,7 +191,7 @@ HTML;
 		$oRule = $this->CreateRule('rule', 'MFAUserSettingsTOTPMail', 'forced', [], [], 70);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword,
 			'mfa_restart_login' => 'true']);
@@ -216,7 +214,7 @@ HTML;
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'transaction_id' => '753951',
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting),
 			'auth_user' => $sLogin,
@@ -236,7 +234,7 @@ HTML;
 
 		// Act
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl('/pages/UI.php', [
+		$sOutput = $this->CallItopUri('pages/UI.php', [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'Wrong Code',
 			'auth_user' => $sLogin,
@@ -263,7 +261,7 @@ HTML;
 
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
-		$sOutput = $this->CallItopUrl('/pages/preferences.php', [
+		$sOutput = $this->CallItopUri('pages/preferences.php', [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting),
 			'auth_user' => $sLogin,

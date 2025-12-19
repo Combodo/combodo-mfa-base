@@ -8,7 +8,6 @@ use Combodo\iTop\MFABase\Test\MFAAbstractConfigurationTestInterface;
 use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
-use MetaModel;
 use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
@@ -65,7 +64,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 	public function testConfigurationFirstScreenDisplay()
 	{
 		// Act
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword,
 			'Action' => "add:" . \MFAUserSettingsTOTPApp::class,
@@ -92,7 +91,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => '753951',
 			'totp_code' => $sCode,
 			'auth_user' => $sLogin,
@@ -110,7 +109,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 	{
 		// Act
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'Wrong Code',
 			'auth_user' => $sLogin,
@@ -149,7 +148,7 @@ class MfaMyAccountTotpAppIntegrationTest extends AbstractMFATest implements MFAA
 	{
 		$oTOTP = new OTPService($oActiveSetting);
 		$sCode = $oTOTP->GetCode();
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $sCode,
 			'auth_user' => $sLogin,

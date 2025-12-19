@@ -4,10 +4,8 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\AuthentToken\Helper\TokenAuthHelper;
 use Combodo\iTop\AuthentToken\Hook\TokenLoginExtension;
-use Combodo\iTop\HybridAuth\Test\Provider\ServiceProviderMock;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use DateTime;
-use MetaModel;
 use MFAAdminRule;
 use User;
 
@@ -63,7 +61,7 @@ class MFABaseLoginExtensionIntegrationTest extends AbstractMFATest {
 			'auth_pwd' => $this->sPassword,
 			'modules' => ['abc', 'def']
 		];
-		$sOutput = $this->CallItopUrl("/pages/UI.php", $aPostFields);
+		$sOutput = $this->CallItopUri("/pages/UI.php", $aPostFields);
 
 		$sExpectedMessage = str_replace('"', '&quot;', \Dict::Format('Login:MFA:UserWarningAboutMFAMode:Explain', "", $sMFAActivationDate));
 		//var_export($sOutput);
@@ -116,7 +114,7 @@ HTML;
 		}
 
 		$aPostFields = ['auth_user' => $oUser->Get('login'), 'auth_pwd' => $this->sPassword];
-		$sOutput = $this->CallItopUrl("/pages/UI.php",
+		$sOutput = $this->CallItopUri("pages/UI.php",
 			$aPostFields);
 
 		$this->assertNotNull($sOutput);
@@ -192,7 +190,7 @@ HTML;
 }
 QUERY;
 
-		$sOutput = $this->CallItopUrl("/webservices/rest.php",
+		$sOutput = $this->CallItopUri("webservices/rest.php",
 			[
 				'auth_user' => $sLogin,
 				'auth_pwd' => $bMfaEnabled ? $this->sPassword : "WRONG PWD",
@@ -245,7 +243,7 @@ QUERY;
 }
 QUERY;
 
-		$sOutput = $this->CallItopUrl("/webservices/rest.php",
+		$sOutput = $this->CallItopUri("webservices/rest.php",
 			[
 				'auth_token' => $sTokenCredential,
 				'json_data' => $sJsonRequest,

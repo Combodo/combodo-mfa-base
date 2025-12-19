@@ -4,49 +4,19 @@ namespace Combodo\iTop\MFABase\Test;
 
 use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
-use Config;
 use MFAAdminRule;
 use MFAUserSettings;
-use Organization;
-use MetaModel;
 
 class AbstractMFATest extends ItopDataTestCase
 {
-	protected Config $oiTopConfig;
-	protected string $sConfigTmpBackupFile;
-
 	protected function setUp(): void {
 		parent::setUp();
 
-		$sConfigPath = MetaModel::GetConfig()->GetLoadedFile();
-
-		clearstatcache();
-		echo sprintf("rights via ls on %s:\n %s \n", $sConfigPath, exec("ls -al $sConfigPath"));
-		$sFilePermOutput = substr(sprintf('%o', fileperms('/etc/passwd')), -4);
-		echo sprintf("rights via fileperms on %s:\n %s \n", $sConfigPath, $sFilePermOutput);
-
-		$this->sConfigTmpBackupFile = tempnam(sys_get_temp_dir(), "config_");
-		MetaModel::GetConfig()->WriteToFile($this->sConfigTmpBackupFile);
-
-		$this->oiTopConfig = new \Config($sConfigPath);
-		$this->oiTopConfig->SetModuleSetting('combodo-mfa-base', 'enabled', true);
-		$this->oiTopConfig->Set('log_level_min', ['MFA' => 'Debug']);
-		$this->SaveItopConfFile();
-
-		\IssueLog::Info(__FILE__ . ':' . $this->getName());
+		$this->BackupConfiguration();
 	}
 
 	protected function tearDown(): void {
 		parent::tearDown();
-
-		if (! is_null($this->sConfigTmpBackupFile) && is_file($this->sConfigTmpBackupFile)){
-			//put config back
-			$sConfigPath = $this->oiTopConfig->GetLoadedFile();
-			@chmod($sConfigPath, 0770);
-			$oConfig = new \Config($this->sConfigTmpBackupFile);
-			$oConfig->WriteToFile($sConfigPath);
-			@chmod($sConfigPath, 0440);
-		}
 	}
 
 	public function SkipTestWhenNoTransactionConfigured() : void
@@ -161,27 +131,7 @@ class AbstractMFATest extends ItopDataTestCase
 
 		return $oRule;
 	}
-
-	protected function CallItopUrl($sUri, ?array $aPostFields = null, $bIsPost=true)
-	{
-		$ch = curl_init();
-
-		$sUrl = $this->oiTopConfig->Get('app_root_url')."/$sUri";
-		curl_setopt($ch, CURLOPT_URL, $sUrl);
-		curl_setopt($ch, CURLOPT_POST, $bIsPost ? 1 : 0);// set post data to true
-		if (! is_null($aPostFields)){
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($aPostFields));
-		}
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		$sOutput = curl_exec($ch);
-		//echo "$sUrl error code:".curl_error($ch);
-		curl_close($ch);
-
-		return $sOutput;
-	}
-
+	
 	protected function SaveItopConfFile()
 	{
 		@chmod($this->oiTopConfig->GetLoadedFile(), 0770);

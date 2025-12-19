@@ -10,7 +10,6 @@ use Combodo\iTop\MFATotp\Service\OTPService;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
 use EMail;
-use MetaModel;
 use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
@@ -67,7 +66,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 	public function testConfigurationFirstScreenDisplay()
 	{
 		// Act
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'auth_user' => $this->oUser->Get('login'),
 			'auth_pwd' => $this->sPassword,
 			'Action' => "add:" . \MFAUserSettingsTOTPMail::class,
@@ -92,7 +91,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => '753951',
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting),
 			'auth_user' => $sLogin,
@@ -110,7 +109,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 	{
 		// Act
 		$sLogin = $this->oUser->Get('login');
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => 'Wrong Code',
 			'auth_user' => $sLogin,
@@ -133,7 +132,7 @@ class MfaMyAccountTotpMailIntegrationTest extends AbstractMFATest implements MFA
 		$oActiveSetting = MFAUserSettingsService::GetInstance()->GetMFAUserSettings($this->oUser->GetKey(), 'MFAUserSettingsTOTPMail');
 		$this->assertEquals('no', $oActiveSetting->Get('validated'));
 
-		$sOutput = $this->CallItopUrl($this->sMfaMyAccountConfigurationUri, [
+		$sOutput = $this->CallItopUri($this->sMfaMyAccountConfigurationUri, [
 			'transaction_id' => $this->GetNewGeneratedTransId($sLogin),
 			'totp_code' => $this->GetCodeFromSentEmail($oActiveSetting),
 			'auth_user' => $sLogin,

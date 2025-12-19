@@ -5,7 +5,6 @@ namespace Combodo\iTop\MFABase\Test\Integration;
 use Combodo\iTop\MFABase\Test\AbstractMFATest;
 use Combodo\iTop\Test\UnitTest\ItopDataTestCase;
 use Dict;
-use MetaModel;
 use User;
 
 require_once dirname(__DIR__) . "/AbstractMFATest.php";
@@ -57,7 +56,7 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 
 	public function testMyAccountMfaTab_DisplayMFATab()
 	{
-		$sOutput = $this->CallItopUrl('/pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
+		$sOutput = $this->CallItopUri('pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&exec_env=production#TwigBaseTabContainer=tab_MyAccountTabMFA', ['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
 
 		// Assert
 		$this->AssertStringContains(Dict::S('UI:MyAccount'), $sOutput, 'The page should display my account page title');
@@ -72,7 +71,7 @@ class MFAMyAccountIntegrationTest extends AbstractMFATest {
 		//$oActiveSetting3 = $this->CreateSetting(\MFAUserSettingsRecoveryCodes::class, $this->oUser->GetKey(), 'yes', [], true);
 
 		// Act
-		$sOutput = $this->CallItopUrl('/pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&operation=MyAccountTab&exec_env=production&tab=MyAccount%3ATab%3AMFA',
+		$sOutput = $this->CallItopUri('pages/exec.php?exec_module=combodo-my-account&exec_page=index.php&operation=MyAccountTab&exec_env=production&tab=MyAccount%3ATab%3AMFA',
 			['auth_user' => $this->oUser->Get('login'), 'auth_pwd' => $this->sPassword]);
 
 		// Assert
