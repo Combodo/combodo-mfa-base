@@ -1,4 +1,5 @@
 <?php
+
 //
 // iTop module definition file
 //
@@ -66,7 +67,7 @@ class combodo_mfa_baseInstaller extends ModuleInstallerAPI
 		if (is_array($aExports)) {
 			$bFound = false;
 			foreach ($aExports as $aExport) {
-				if ($aExport['code'] === 'MFARules') {
+				if (isset($aExport['code']) && $aExport['code'] === 'MFARules') {
 					$bFound = true;
 					break;
 				}
