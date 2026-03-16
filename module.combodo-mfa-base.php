@@ -20,7 +20,7 @@ SetupWebPage::AddModule(
 			'itop-portal-base/3.2.0',
 			'itop-attribute-class-set/1.0.0',
 		],
-		'mandatory' => false,
+		'mandatory' => true,
 		'visible' => true,
 		'installer' => 'combodo_mfa_baseInstaller',
 
