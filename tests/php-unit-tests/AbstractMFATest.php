@@ -131,13 +131,6 @@ class AbstractMFATest extends ItopDataTestCase
 
 		return $oRule;
 	}
-	
-	protected function SaveItopConfFile()
-	{
-		@chmod($this->oiTopConfig->GetLoadedFile(), 0770);
-		$this->oiTopConfig->WriteToFile();
-		@chmod($this->oiTopConfig->GetLoadedFile(), 0440);
-	}
 
 	protected function AssertStringContains($sNeedle, $sHaystack, $sMessage): void
 	{
