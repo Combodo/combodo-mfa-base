@@ -9,19 +9,21 @@ use MFAUserSettings;
 
 class AbstractMFATest extends ItopDataTestCase
 {
-	protected function setUp(): void {
+	protected function setUp(): void
+	{
 		parent::setUp();
 
 		$this->BackupConfiguration();
 	}
 
-	protected function tearDown(): void {
+	protected function tearDown(): void
+	{
 		parent::tearDown();
 	}
 
-	public function SkipTestWhenNoTransactionConfigured() : void
+	public function SkipTestWhenNoTransactionConfigured(): void
 	{
-		if (! \MetaModel::GetConfig()->Get('transactions_enabled', false)){
+		if (! \MetaModel::GetConfig()->Get('transactions_enabled', false)) {
 			$this->markTestSkipped("transactions_enabled=false => test skipped to avoid meaningless failure");
 		}
 	}
@@ -87,7 +89,7 @@ class AbstractMFATest extends ItopDataTestCase
 	{
 		/** @var MFAAdminRule $oRule */
 		$oRule = $this->createObject(MFAAdminRule::class, [
-			'name' => $sName . uniqid(),
+			'name' => $sName.uniqid(),
 			'preferred_mfa_mode' => $sMfaClass,
 			'operational_state' => $sState,
 			'rank' => $iRank,
@@ -137,7 +139,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$this->assertNotNull($sNeedle, $sMessage);
 		$this->assertNotNull($sHaystack, $sMessage);
 
-		$this->assertTrue(false !== strpos($sHaystack, $sNeedle), $sMessage . PHP_EOL . "needle: '$sNeedle' not found in content below:" . PHP_EOL . PHP_EOL . $sHaystack);
+		$this->assertTrue(false !== strpos($sHaystack, $sNeedle), $sMessage.PHP_EOL."needle: '$sNeedle' not found in content below:".PHP_EOL.PHP_EOL.$sHaystack);
 	}
 
 	protected function AssertStringNotContains($sNeedle, $sHaystack, $sMessage): void
@@ -145,7 +147,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$this->assertNotNull($sNeedle, $sMessage);
 		$this->assertNotNull($sHaystack, $sMessage);
 
-		$this->assertFalse(false !== strpos($sHaystack, $sNeedle), $sMessage. PHP_EOL . "needle: '$sNeedle' should not be found in content below:" . PHP_EOL . PHP_EOL . $sHaystack);
+		$this->assertFalse(false !== strpos($sHaystack, $sNeedle), $sMessage.PHP_EOL."needle: '$sNeedle' should not be found in content below:".PHP_EOL.PHP_EOL.$sHaystack);
 	}
 
 	/**
@@ -160,7 +162,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$sLogin = 'demo_test_'.uniqid(__CLASS__, true);
 		$sPassword = 'ABCdefg@12345#';
 
-		$aProfileList = array_map(function($sProfileId) {
+		$aProfileList = array_map(function ($sProfileId) {
 			return 'profileid:'.self::$aURP_Profiles[$sProfileId];
 		}, $aProfiles);
 
@@ -173,7 +175,7 @@ class AbstractMFATest extends ItopDataTestCase
 		return $iUser;
 	}
 
-	protected function GivenUserWithContactInDB($sOrgId, array $aProfiles)
+	protected function MFAGivenUserWithContactInDB($sOrgId, array $aProfiles)
 	{
 		static $i = 0;
 
@@ -181,7 +183,7 @@ class AbstractMFATest extends ItopDataTestCase
 		$sLogin = 'demo_test_'.uniqid(__CLASS__, true);
 		$sPassword = 'ABCdefg@12345#';
 
-		$aProfileList = array_map(function($sProfileId) {
+		$aProfileList = array_map(function ($sProfileId) {
 			return 'profileid:'.self::$aURP_Profiles[$sProfileId];
 		}, $aProfiles);
 
@@ -196,7 +198,8 @@ class AbstractMFATest extends ItopDataTestCase
 		return $iUser;
 	}
 
-	protected function PrintQRStuff(\MFAUserSettingsTOTP $oMFAUserSettings, string $sOutput) : array {
+	protected function PrintQRStuff(\MFAUserSettingsTOTP $oMFAUserSettings, string $sOutput): array
+	{
 		$oOTPService = new OTPService($oMFAUserSettings);
 		$aData = [
 			'GetProvisioningUri' => $oOTPService->GetProvisioningUri(),
