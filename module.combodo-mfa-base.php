@@ -17,6 +17,7 @@ SetupWebPage::AddModule(
 		//
 		'dependencies' => [
 			'combodo-my-account/1.0.0',
+			'itop-structure/3.2.1',
 			'itop-portal-base/3.2.1||true',
 			'itop-attribute-class-set/1.0.0',
 		],
