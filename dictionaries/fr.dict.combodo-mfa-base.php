@@ -16,8 +16,8 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Menu:MFAUserSettings' => 'Réglages utilisateur MFA',
 	'Menu:MFAUserSettings+' => 'Réglages utilisateur de l\'authentification multifacteur',
 
-	'UI:WelcomePopup:Message:320_06_MFA:Title' => 'Améliorez la sécurité de vos utilisateurs avec l\'authentification multifacteur iTop !',
-	'UI:WelcomePopup:Message:320_06_MFA:Description' => '<div> Renforcez la sécurité de votre équipe en offrant une couche de protection supplémentaire à vos utilisateurs. 
+	'UI:WelcomePopup:Message:999_06_MFA:Title' => 'Améliorez la sécurité de vos utilisateurs avec l\'authentification multifacteur iTop !',
+	'UI:WelcomePopup:Message:999_06_MFA:Description' => '<div> Renforcez la sécurité de votre équipe en offrant une couche de protection supplémentaire à vos utilisateurs. 
 Appliquez sélectivement l\'authentification à deux facteurs pour des profils spécifiques tout en conservant la possibilité de l\'appliquer à d\'autres. 
 Choisissez parmi une sélection de méthodes d\'authentification, de TOTP par application ou par e-mail à l\'authentification Web et aux codes de récupération, et maintenez le contrôle sur la sécurité de votre instance iTop. <br>
 Pour configurer l\'authentification multifacteur, il vous suffit de vous rendre dans vos paramètres de compte et de cliquer sur "Authentification multifacteur". <br>

@@ -16,8 +16,8 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Menu:MFAUserSettings' => 'MFA Benutzereinstellungen',
 	'Menu:MFAUserSettings+' => 'Einstellungen für Multi-Faktor-Authentifizierung des Benutzers',
 
-	'UI:WelcomePopup:Message:320_06_MFA:Title' => 'Verbessern Sie die Sicherheit Ihrer Benutzer mit iTop Multi-Faktor-Authentifizierung!',
-	'UI:WelcomePopup:Message:320_06_MFA:Description' => '<div>
+	'UI:WelcomePopup:Message:999_06_MFA:Title' => 'Verbessern Sie die Sicherheit Ihrer Benutzer mit iTop Multi-Faktor-Authentifizierung!',
+	'UI:WelcomePopup:Message:999_06_MFA:Description' => '<div>
 Bereichern Sie Ihre Teammitglieder mit erweitertem Sicherheitsmaßnahmen, indem Sie mehr als nur ein Passwort benötigen, um sich anzumelden. Wählen Sie aus, 2FA für bestimmte Profile zu erzwingen, während anderen Benutzern Flexibilität gewährt wird. Wählen Sie aus einer Vielzahl von Authentifizierungsmethoden wie TOTP über App oder E-Mail, Web-Authentifizierung und Recovery-Codes und behalten Sie die Kontrolle über die Sicherheit Ihrer iTop-Instanz.<br>
 Um MFA zu konfigurieren, navigieren Sie einfach zu Ihren Account-Einstellungen und klicken auf "Multi-Faktor-Authentifizierung." <br>
 Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminregeln" unter "Administration" an. 
