@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localized data
  *
@@ -6,7 +7,7 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-Dict::Add('EN US', 'English', 'English', array(
+Dict::Add('EN US', 'English', 'English', [
 	'combodo-mfa-base/Operation:Action/Title' => '',
 	'MFA:MFAUserSettings:Description' => 'Multi-factor authentication adds an additional layer of security to your account by requiring more than just a password to sign in.',
 
@@ -24,7 +25,6 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 </div>
 <div>Start securing your iTop experience today! 🔐🌟</div>
 <div><a href="%1$s" target="_blank">Read more</a></div>',
-
 
 	'UI:MFA' => 'MFA user settings',
 	'UI:MFA:Portal:Menu' => 'Multi-Factor Authentication',
@@ -86,4 +86,4 @@ To create rules for your customers, have a look to the "MFA admin rules" menu un
 	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Active',
 	'Class:MFAAdminRule/Attribute:status/Value:inactive' => 'Inactive',
 
-));
+]);

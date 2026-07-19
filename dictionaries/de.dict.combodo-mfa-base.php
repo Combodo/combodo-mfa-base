@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localized data
  *
@@ -7,7 +8,7 @@
  * @author      Lars Kaltefleiter <lars.kaltefleiter@itomig.de>
  */
 
-Dict::Add('DE DE', 'German', 'Deutsch', array(
+Dict::Add('DE DE', 'German', 'Deutsch', [
 	'combodo-mfa-base/Operation:Action/Title' => '',
 	'MFA:MFAUserSettings:Description' => 'Multi-Faktor-Authentifizierung führt eine zusätzliche Sicherheitschicht für Ihr Benutzerkonto ein, indem sie mehr als nur ein Passwort erfordert, um sich anzumelden.',
 	'MyAccount:Tab:MFA' => 'Multi-Faktor-Authentifizierung',
@@ -24,7 +25,6 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 </div>
 <div>Beginnen Sie heute, Ihre iTop-Erfahrung sicherer zu machen! 🔐🌟</div>
 <div><a href="%1$s" target="_blank">Weitere Informationen lesen</a></div>',
-
 
 	'UI:MFA' => 'MFA Benutzereinstellungen',
 	'UI:MFA:Portal:Menu' => 'Multi-Faktor-Authentifizierung',
@@ -86,4 +86,4 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Aktiv',
 	'Class:MFAAdminRule/Attribute:status/Value:inactive' => 'Inaktiv',
 
-));
+]);

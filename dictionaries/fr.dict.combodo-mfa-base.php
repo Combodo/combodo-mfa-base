@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Localized data
  *
@@ -6,7 +7,7 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-Dict::Add('FR FR', 'French', 'Français', array(
+Dict::Add('FR FR', 'French', 'Français', [
 	'combodo-mfa-base/Operation:Action/Title' => '',
 	'MFA:MFAUserSettings:Description' => 'L\'authentification multifacteur ajoute une couche de sécurité supplémentaire à votre compte en exigeant plus qu\'un simple mot de passe pour vous connecter.',
 
@@ -24,7 +25,6 @@ Pour configurer l\'authentification multifacteur, il vous suffit de vous rendre 
 </div>
 <div>Commencez à sécuriser votre expérience iTop dès aujourd\'hui ! 🔐🌟</div>
 <div><a href="%1$s" target="_blank">En savoir plus</a></div>',
-
 
 	'UI:MFA' => 'Réglages utilisateur',
 	'UI:MFA:Portal:Menu' => 'Authentification multifacteur',
@@ -86,4 +86,4 @@ Pour configurer l\'authentification multifacteur, il vous suffit de vous rendre 
 	'Class:MFAAdminRule/Attribute:status/Value:active' => 'Actif',
 	'Class:MFAAdminRule/Attribute:status/Value:inactive' => 'Inactif',
 
-));
+]);

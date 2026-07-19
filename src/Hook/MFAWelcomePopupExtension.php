@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   Copyright (C) 2010-2024 Combodo SARL
  * @license     http://opensource.org/licenses/AGPL-3.0
@@ -15,7 +16,6 @@ use utils;
 
 class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 {
-
 	/**
 	 * @inheritDoc
 	 */
@@ -23,7 +23,7 @@ class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 	{
 		return 'env-'.utils::GetCurrentEnvironment().'/'.MFABaseHelper::MODULE_NAME.'/assets/img/illustrations/thumbnail_square.jpg';
 	}
-	
+
 	/**
 	 * @inheritDoc
 	 */
