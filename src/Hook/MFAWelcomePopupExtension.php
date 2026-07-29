@@ -30,7 +30,7 @@ class MFAWelcomePopupExtension extends AbstractWelcomePopupExtension
 	public function GetMessages(): array
 	{
 		$aMessages = [];
-		if (UserRights::IsAdministrator()) {
+		if (UserRights::IsAdministrator() && version_compare(ITOP_DESIGN_LATEST_VERSION, '3.2', '<=')) {
 			if (class_exists('MFAUserSettingsWebAuthn')) {
 				// MFA Extended
 				$aMessages[] = MessageFactory::MakeForLeftIllustrationAsSVGMarkupRightTexts(
