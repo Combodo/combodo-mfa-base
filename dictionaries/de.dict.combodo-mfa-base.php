@@ -72,7 +72,7 @@ Um Regeln für Ihre Kunden zu erstellen, sehen Sie sich das Menü "MFA Adminrege
 	'Class:MFAAdminRule/Attribute:forced_activation_date' => 'Aktivierungstermin',
 	'Class:MFAAdminRule/Attribute:forced_activation_date+' => 'Der Aktivierungstermin wird nur wirksam sein, wenn die Betriebsart "erzwingen" ist',
 	'Class:MFAAdminRule/Attribute:operational_state' => 'Betriebsart',
-	'Class:MFAAdminRule/Attribute:operational_state+' => 'When optional, the user can choose to activate MFA or not. When forced, the user must activate MFA. When denied, the user cannot activate MFA.~~',
+	'Class:MFAAdminRule/Attribute:operational_state+' => 'Bei "optional" kann der Benutzer selbst entscheiden, ob er MFA aktiviert. Bei "erzwungen" muss der Benutzer MFA aktivieren. Bei "verweigert" kann der Benutzer MFA nicht aktivieren.',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:forced' => 'Erzwingen',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:optional' => 'Optional',
 	'Class:MFAAdminRule/Attribute:operational_state/Value:denied' => 'Verboten',
