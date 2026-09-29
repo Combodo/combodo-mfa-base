@@ -60,7 +60,7 @@ class MFABaseHelper
 		foreach ($_POST as $sPostedKey => $postedValue){
 			if (is_array($postedValue))
 			{
-				\IssueLog::Error(__METHOD__, null, $postedValue);
+				\IssueLog::Debug(__METHOD__, null, $postedValue);
 				foreach($postedValue as $sKey => $sValue)
 				{
 					$sName = "{$sPostedKey}[{$sKey}]";
