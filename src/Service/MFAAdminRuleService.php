@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   Copyright (C) 2010-2024 Combodo SARL
  * @license     http://opensource.org/licenses/AGPL-3.0
@@ -71,7 +72,6 @@ class MFAAdminRuleService
 			/** @var User $oUser */
 			$oUser = MetaModel::GetObject(User::class, $sUserId, true, true);
 			$sUserOrgId = $oUser->Get('org_id');
-			$aUserProfiles = $this->GetUserProfiles($oUser);
 		} catch (Exception $e) {
 			MFABaseLog::Error(__FUNCTION__.' Failed to get MFA rule', null, ['error' => $e->getMessage(), 'stack' => $e->getTraceAsString()]);
 			return null;
@@ -92,7 +92,7 @@ class MFAAdminRuleService
 					$bProfileOk = true;
 				} else {
 					while ($oProfile = $aProfileSet->Fetch()) {
-						if (in_array($oProfile->Get('profile_id'), $aUserProfiles)) {
+						if (UserRights::HasProfile($oProfile->Get('profile_id_friendlyname'), $oUser)) {
 							$bProfileOk = true;
 							break;
 						}
@@ -131,7 +131,7 @@ class MFAAdminRuleService
 			$sPreferredMode = $oAdminRule->Get('preferred_mfa_mode');
 			if (utils::IsNullOrEmptyString($sPreferredMode)) {
 				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeIsMandatoryWhenRuleIsForced'));
-			} else if (in_array($sPreferredMode, $this->GetDeniedModes($oAdminRule))) {
+			} elseif (in_array($sPreferredMode, $this->GetDeniedModes($oAdminRule))) {
 				$oAdminRule->AddCheckIssue(Dict::S('UI:MFA:Error:PreferredModeCannotBeDenied'));
 			}
 		}
@@ -158,32 +158,6 @@ class MFAAdminRuleService
 			return $oDeniedSet->GetValues();
 		} catch (MFABaseException $e) {
 			throw $e;
-		} catch (Exception $e) {
-			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
-		}
-	}
-
-	/**
-	 * @param \User $oUser
-	 *
-	 * @return array
-	 * @throws \Combodo\iTop\MFABase\Helper\MFABaseException
-	 */
-	private function GetUserProfiles(User $oUser): array
-	{
-		try {
-			/** @var ormLinkSet $aProfileSet */
-			$aProfileSet = $oUser->Get('profile_list');
-			if ($aProfileSet->count() == 0) {
-				return [];
-			}
-
-			$aRes = [];
-			while ($oProfile = $aProfileSet->Fetch()) {
-				$aRes[] = $oProfile->Get('profileid');
-			}
-
-			return $aRes;
 		} catch (Exception $e) {
 			throw new MFABaseException(__FUNCTION__.' failed', 0, $e);
 		}
